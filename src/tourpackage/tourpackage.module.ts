@@ -1,4 +1,4 @@
-import { S3Module } from './../s3/s3.module';
+// import { S3Module } from './../s3/s3.module';
 import { ConfigModule, } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
@@ -25,7 +25,7 @@ import { ConfigService } from 'aws-sdk';
     ConfigModule.forRoot({
       isGlobal:true
     }),
-    S3Module,
+    // S3Module,
     ConfigService,
     TravellerModule,
     TypeOrmModule.forFeature([

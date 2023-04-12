@@ -10,7 +10,7 @@ import { CreateUserProfileDto } from "./Dto/create-userprofile.dto";
 import { updateUserProfileDto } from "./Dto/update-userprofile.dto";
 import { Userprofile } from "./entitties/userprofile.entities";
 import { UserProfileServices } from "./userprofile.services";
-import { S3Service } from "src/s3/s3.service";
+// import { S3Service } from "src/s3/s3.service";
 
 
 
@@ -18,7 +18,8 @@ import { S3Service } from "src/s3/s3.service";
 export class userProfileController {
    constructor(@InjectRepository(Userprofile) private profileRepository: Repository<Userprofile>,
       private readonly UserProfileServices: UserProfileServices,
-      private s3service: S3Service) {}
+      // private s3service: S3Service
+      ) {}
 
    // Add Traveller
    @Post('addProfile')
@@ -33,11 +34,11 @@ export class userProfileController {
       @Req() req: Request,
       @Res() res: Response) {
 
-      const PassportsizephotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0])
-      const passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0])
+      // const PassportsizephotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0])
+      // const passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0])
       const userprofile = new Userprofile();
-      userprofile.PassportCopy = passportphotoUrl
-      userprofile.PassportsizephotoUrl = PassportsizephotoUrl
+      // userprofile.PassportCopy = passportphotoUrl
+      // userprofile.PassportsizephotoUrl = PassportsizephotoUrl
       userprofile.NameTitle = req.body.NameTitle
       userprofile.FirstName = req.body.FirstName
       userprofile.LastName = req.body.LastName

@@ -23,7 +23,7 @@ import { CreatePackageHighlightDto } from './dto/create-packagehighlights.dto';
 import { UpdatepackageHighlightDto } from './dto/update-packagehighlightdto';
 import { MainImage } from './entities/mainimage.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3Service } from 'src/s3/s3.service';
+// import { S3Service } from 'src/s3/s3.service';
 import { updateinstallmentdto } from './dto/update-installmentDto';
 
 @Controller('tourpackage')
@@ -34,7 +34,7 @@ export class TourpackageController {
     @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
     @InjectRepository(VisitedPlace) private visitedplaceRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
-    private s3service: S3Service
+    // private s3service: S3Service
 
   ) {
   }
@@ -50,9 +50,9 @@ export class TourpackageController {
     @Req() req: Request,
     @Body() body,
     @Res() res: Response) {
-    const coverimageurl = await this.s3service.Addimage(file)
+    // const coverimageurl = await this.s3service.Addimage(file)
     const tourpackage = new Tourpackage();
-    tourpackage.coverimageurl = coverimageurl
+    // tourpackage.coverimageurl = coverimageurl
     tourpackage.MainTitle = req.body.MainTitle
     tourpackage.SubTitle = req.body.SubTitle
     tourpackage.Price = req.body.Price
@@ -145,9 +145,9 @@ export class TourpackageController {
     @Res() res: Response,
   
   ) {
-  const imageurl = await this.s3service.updateImage(Id,file)
+  // const imageurl = await this.s3service.updateImage(Id,file)
   const  tourpackage = new Tourpackage()
-  tourpackage.coverimageurl = imageurl
+  // tourpackage.coverimageurl = imageurl
   // this is necessary when only one object is passed
   // await this.TourpackageRepo.update(Id,tourpackage)
   //for multiple object but both will work
@@ -257,9 +257,9 @@ export class TourpackageController {
     }
 
     for (const file of files) {
-      const coverimageurl = await this.s3service.Addimage(file)
+      // const coverimageurl = await this.s3service.Addimage(file)
       const mainimage = new MainImage();
-      mainimage.MainImageUrl = coverimageurl
+      // mainimage.MainImageUrl = coverimageurl
       mainimage.MainImageTitle = req.body.MainImageTitle
       await this.MainImageRepo.save({ ...mainimage, tourpackage })
     }
@@ -489,9 +489,9 @@ export class TourpackageController {
   
   ) {
     for(const file of files){
-      const albumImageUrl = await this.s3service.updateAlbumImage(Id,AlbumId,file)
+      // const albumImageUrl = await this.s3service.updateAlbumImage(Id,AlbumId,file)
       const  albumImage = new AlbumImage()
-      albumImage.albumImageUrl = albumImageUrl
+      // albumImage.albumImageUrl = albumImageUrl
       // this is necessary when only one object is passed
       // await this.TourpackageRepo.update(Id,tourpackage)
       //for multiple object but both will work
@@ -519,9 +519,9 @@ export class TourpackageController {
   
   ) {
     for(const file of files){
-      const mainImageUrl = await this.s3service.updateAlbumImage(Id,mainimgId,file)
+      // const mainImageUrl = await this.s3service.updateAlbumImage(Id,mainimgId,file)
       const  mainImage = new MainImage()
-      mainImage.MainImageUrl = mainImageUrl
+      // mainImage.MainImageUrl = mainImageUrl
       // this is necessary when only one object is passed
       // await this.TourpackageRepo.update(Id,tourpackage)
       //for multiple object but both will work
@@ -550,9 +550,9 @@ export class TourpackageController {
   
   ) {
     for(const file of files){
-      const ImageUrl = await this.s3service.updatevisitedImage(Id,VimageId,file)
+      // const ImageUrl = await this.s3service.updatevisitedImage(Id,VimageId,file)
       const  visitedimage = new VisitedPlace()
-      visitedimage.VisitedImagePath = ImageUrl
+      // visitedimage.VisitedImagePath = ImageUrl
       // this is necessary when only one object is passed
       // await this.TourpackageRepo.update(Id,tourpackage)
       //for multiple object but both will work
@@ -621,9 +621,9 @@ export class TourpackageController {
     }
 
     for (const file of files) {
-      const albumImageUrl = await this.s3service.Addimage(file)
+      // const albumImageUrl = await this.s3service.Addimage(file)
       const newalbum = new AlbumImage();
-      newalbum.albumImageUrl = albumImageUrl
+      // newalbum.albumImageUrl = albumImageUrl
       newalbum.AlbumTitle = req.body.AlbumTitle
       await this.AlbumimageRepo.save({ ...newalbum, tourpackage })
     }
@@ -666,9 +666,9 @@ export class TourpackageController {
       );
     }
     for (const file of files) {
-      const VisitedImagePath = await this.s3service.Addimage(file)
+      // const VisitedImagePath = await this.s3service.Addimage(file)
       const newalbum = new VisitedPlace();
-      newalbum.VisitedImagePath = VisitedImagePath
+      // newalbum.VisitedImagePath = VisitedImagePath
       newalbum.PlaceName = req.body.PlaceName
       await this.visitedplaceRepo.save({ ...newalbum, tourpackage })
     }

@@ -1,4 +1,4 @@
-import { S3Service } from './../s3/s3.service';
+
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
@@ -16,7 +16,7 @@ export class BookingService {
       private travelerRepository: Repository<Traveller>,
       @InjectRepository(Booking)
       private bookingRepository: Repository<Booking>,
-      private s3service: S3Service
+      
 
    ) {}
 
