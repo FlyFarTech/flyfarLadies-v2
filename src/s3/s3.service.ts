@@ -3,7 +3,6 @@ import { DeleteObjectCommand, PutObjectCommand, PutObjectCommandInput, PutObject
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Express } from 'express';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';

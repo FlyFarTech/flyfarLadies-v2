@@ -1,7 +1,7 @@
 import { S3Module } from './../s3/s3.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TourpackageService } from './tourpackage.service';
 import { TourpackageController } from './tourpackage.controller';
 import { Tourpackage } from './entities/tourpackage.entity';
@@ -17,7 +17,7 @@ import { MainImage } from './entities/mainimage.entity';
 import { Installment } from './entities/installment.entity';
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { TravellerModule } from 'src/Traveller/traveller.module';
-import { DepositModule } from 'src/deposit_request/deposit.module';
+import { ConfigService } from 'aws-sdk';
 
 
 @Module({
@@ -26,6 +26,7 @@ import { DepositModule } from 'src/deposit_request/deposit.module';
       isGlobal:true
     }),
     S3Module,
+    ConfigService,
     TravellerModule,
     TypeOrmModule.forFeature([
     Traveller,

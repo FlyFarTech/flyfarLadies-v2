@@ -8,9 +8,13 @@ import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { AlbumImage } from 'src/tourpackage/entities/albumimage.entity';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
+import { ConfigService } from 'aws-sdk';
 
 @Module({
-  imports: [ConfigModule,TypeOrmModule.forFeature([Tourpackage, AlbumImage, MainImage, VisitedPlace])],
+  imports: [
+  ConfigModule.forRoot({ isGlobal:true }),
+  ConfigService,
+  TypeOrmModule.forFeature([Tourpackage, AlbumImage, MainImage, VisitedPlace])],
   controllers: [S3Controller],
   providers: [S3Service],
   exports:[S3Service]
