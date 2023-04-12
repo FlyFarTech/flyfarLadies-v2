@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.310.0",
     "@nestjs/class-validator": "^0.13.4",
     "@nestjs/common": "^9.3.11",
     "@nestjs/config": "^2.3.1",
@@ -38,6 +39,7 @@
     "multer-s3": "^3.0.1",
     "mysql2": "^3.2.0",
     "node-fetch": "^3.3.1",
+    "npm-install-global": "^1.0.0",
     "ormconfig.json": "^1.0.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
