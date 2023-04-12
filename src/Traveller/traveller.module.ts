@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Traveller } from "./entities/traveller.entity";
 import { TravellerServices } from "./traveller.services";
 // import { S3Module } from 'src/s3/s3.module';
-import { ConfigService } from 'aws-sdk';
+
 
 
 

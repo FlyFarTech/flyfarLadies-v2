@@ -17,7 +17,6 @@ import { MainImage } from './entities/mainimage.entity';
 import { Installment } from './entities/installment.entity';
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { TravellerModule } from 'src/Traveller/traveller.module';
-import { ConfigService } from 'aws-sdk';
 
 
 @Module({
@@ -26,7 +25,6 @@ import { ConfigService } from 'aws-sdk';
       isGlobal:true
     }),
     // S3Module,
-    ConfigService,
     TravellerModule,
     TypeOrmModule.forFeature([
     Traveller,
