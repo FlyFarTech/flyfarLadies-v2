@@ -1,4 +1,4 @@
-// import { S3Module } from './../s3/s3.module';
+import { S3Module } from './../s3/s3.module';
 import { ConfigModule, } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
@@ -24,7 +24,7 @@ import { TravellerModule } from 'src/Traveller/traveller.module';
     ConfigModule.forRoot({
       isGlobal:true
     }),
-    // S3Module,
+    S3Module,
     TravellerModule,
     TypeOrmModule.forFeature([
     Traveller,

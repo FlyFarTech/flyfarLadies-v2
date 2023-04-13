@@ -1,7 +1,7 @@
 import { Controller, Get, HttpException, HttpStatus, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { DepositService } from './deposit.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-// import { S3Service } from 'src/s3/s3.service';
+import { S3Service } from 'src/s3/s3.service';
 import { Cheque } from './Entity/cheq.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,7 +22,7 @@ export class DepositController {
   @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
   @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
   private readonly depositService: DepositService,
-  // private s3service: S3Service
+  private s3service: S3Service
   ) {}
   
   @Post('Addchequedeposit')
@@ -34,9 +34,9 @@ export class DepositController {
     file: Express.Multer.File,
     @Req() req: Request,
     @Res() res: Response) {
-    // const chequeattachmenturl = await this.s3service.Addimage(file)
+    const chequeattachmenturl = await this.s3service.Addimage(file)
     const cheque = new Cheque();
-    // cheque.chequeattachmenturl =chequeattachmenturl
+    cheque.chequeattachmenturl =chequeattachmenturl
     cheque.ChequeNumber =req.body.ChequeNumber
     cheque.BankName =req.body.BankName
     cheque.ChequeDate =req.body.ChequeDate
@@ -76,9 +76,9 @@ export class DepositController {
     file: Express.Multer.File,
     @Req() req: Request,
     @Res() res: Response) {
-    // const cashattachmenturl = await this.s3service.Addimage(file)
+    const cashattachmenturl = await this.s3service.Addimage(file)
     const cash = new Cash();
-    // cash.cashattachmenturl =cashattachmenturl
+    cash.cashattachmenturl =cashattachmenturl
     cash.Name = req.body.Name
     cash.ReceiverName = req.body.ReceiverName
     cash.Reference =req.body.Reference
@@ -117,9 +117,9 @@ export class DepositController {
     file: Express.Multer.File,
     @Req() req: Request,
     @Res() res: Response) {
-    // const Bankattachmenturl = await this.s3service.Addimage(file)
+    const Bankattachmenturl = await this.s3service.Addimage(file)
     const Banktransfer = new BankTransfer();
-    // Banktransfer.Bankattachmenturl =Bankattachmenturl
+    Banktransfer.Bankattachmenturl =Bankattachmenturl
     Banktransfer.DepositFrom = req.body.DepositFrom
     Banktransfer.DepositTo = req.body.DepositTo
     Banktransfer.ChequeDate =req.body.ChequeDate
@@ -252,9 +252,9 @@ export class DepositController {
     file: Express.Multer.File,
     @Req() req: Request,
     @Res() res: Response) {
-    // const MobBankattachmenturl = await this.s3service.Addimage(file)
+    const MobBankattachmenturl = await this.s3service.Addimage(file)
     const MobileBank = new MobileBanking();
-    // MobileBank.MobBankattachmenturl =MobBankattachmenturl
+    MobileBank.MobBankattachmenturl =MobBankattachmenturl
     MobileBank.AgentType =req.body.AgentType
     MobileBank.AccountNumber =req.body.AccountNumber
     MobileBank.Reference =req.body.Reference

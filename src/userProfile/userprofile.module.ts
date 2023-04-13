@@ -6,10 +6,10 @@ import { userProfileController } from './userprofile.controller';
 import { UserProfileServices } from './userprofile.services';
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
 import { TourpackageModule } from "src/tourpackage/tourpackage.module";
-// import { S3Module } from "src/s3/s3.module";
+import { S3Module } from "src/s3/s3.module";
 
 @Module({
-   imports: [TypeOrmModule.forFeature([Userprofile,Tourpackage]),TourpackageModule,],
+   imports: [TypeOrmModule.forFeature([Userprofile,Tourpackage]), S3Module,TourpackageModule,],
    controllers:[userProfileController],
    providers:[UserProfileServices]
 

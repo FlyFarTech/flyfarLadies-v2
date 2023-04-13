@@ -7,14 +7,14 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { Traveller } from "./entities/traveller.entity";
 import { Repository } from "typeorm/repository/Repository";
 import { InjectRepository } from "@nestjs/typeorm";
-// import { S3Service } from "src/s3/s3.service";
+import { S3Service } from "src/s3/s3.service";
 
 
 @Controller('Traveller')
 export class TravellerController {
    constructor(@InjectRepository(Traveller) private tarvellerRepository: Repository<Traveller>,
       private readonly travellerServices: TravellerServices,
-      // private s3service: S3Service
+      private s3service: S3Service
       ) { }
 
    //Add Traveller
@@ -40,9 +40,9 @@ export class TravellerController {
       @Req() req: Request,
       @Res() res: Response) { 
       for (const file of files) {
-         // const passportCopyurl  = await this.s3service.Addimage(file)
+         const passportCopyurl  = await this.s3service.Addimage(file)
          const traveller = new Traveller();
-         // traveller.PassportCopyURL =passportCopyurl
+         traveller.PassportCopyURL =passportCopyurl
          traveller.FirstName = req.body.FirstName
          traveller.LastName = req.body.LastName
          traveller.PassportNumber = req.body.PassportNumber

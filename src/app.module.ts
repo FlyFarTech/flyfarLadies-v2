@@ -21,7 +21,7 @@ import { TravellerModule } from './Traveller/traveller.module';
 import { UsderProfileModule } from './userProfile/userprofile.module';
 import { refundpolicy } from './tourpackage/entities/refundpolicy.entity';
 import { MainImage } from './tourpackage/entities/mainimage.entity';
-// import { S3Module } from './s3/s3.module';
+import { S3Module } from './s3/s3.module';
 import { Installment } from './tourpackage/entities/installment.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entity/booking.entity';
@@ -71,7 +71,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
     TourpackageModule,
     TravellerModule,
     UsderProfileModule,
-    // S3Module,
+    S3Module,
     ConfigModule,
     BookingModule,
     DepositModule,
