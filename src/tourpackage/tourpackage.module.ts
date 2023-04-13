@@ -21,9 +21,6 @@ import { TravellerModule } from 'src/Traveller/traveller.module';
 
 @Module({
   imports:[
-    ConfigModule.forRoot({
-      isGlobal:true
-    }),
     S3Module,
     TravellerModule,
     TypeOrmModule.forFeature([

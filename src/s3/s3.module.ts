@@ -1,6 +1,5 @@
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { S3Service } from './s3.service';
 import { S3Controller } from './s3.controller';
@@ -12,8 +11,6 @@ import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
 
 @Module({
   imports: [
-  ConfigModule.forRoot({ isGlobal:true }),
-  ConfigService,
   TypeOrmModule.forFeature([Tourpackage, AlbumImage, MainImage, VisitedPlace])],
   controllers: [S3Controller],
   providers: [S3Service],
