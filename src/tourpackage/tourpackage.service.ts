@@ -64,7 +64,7 @@ async  findOne(Id: number) {
   }
 
   async FindAllPackages(){
-    const packages= await this.TourpackageRepo.find({})
+    const packages= await this.TourpackageRepo.find()
     return packages;
    }
 

@@ -34,128 +34,114 @@ export class TourpackageController {
     @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
     @InjectRepository(VisitedPlace) private visitedplaceRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
-    private s3service: S3Service
-
-  ) {
-  }
-
+    private s3service: S3Service) {}
   @Post('Addpackage')
   @UseInterceptors(
     FileInterceptor('coverimageurl'),
   )
-
-  async AddTravelPAckage(
-    @UploadedFile()
-    file: Express.Multer.File,
+  async AddTravelPackage(
+    @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
     @Body() body,
     @Res() res: Response) {
+    const { MainTitle, SubTitle, Price, City, Discount, Location, Availability, StartDate, EndDate,
+        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Code } = req.body;
     const coverimageurl = await this.s3service.Addimage(file)
     const tourpackage = new Tourpackage();
     tourpackage.coverimageurl = coverimageurl
-    tourpackage.MainTitle = req.body.MainTitle
-    tourpackage.SubTitle = req.body.SubTitle
-    tourpackage.Price = req.body.Price
-    tourpackage.City = req.body.City
-    tourpackage.Discount =req.body.Discount
-    tourpackage.Location = req.body.Location
-    tourpackage.Availability = req.body.Availability
-    tourpackage.StartDate = req.body.StartDate
-    tourpackage.EndDate = req.body.EndDate
-    tourpackage.TripType = req.body.TripType
-    tourpackage.TotalDuration = req.body.TotalDuration
-    tourpackage.PackageOverview = req.body.PackageOverview
-    tourpackage.Showpackage = req.body.Showpackage
-    tourpackage.Flight = req.body.Flight
-    tourpackage.Transport = req.body.Transport
-    tourpackage.Food = req.body.Food
-    tourpackage.Hotel = req.body.Hotel
-    tourpackage.Code = req.body.Code
+    tourpackage.MainTitle = MainTitle
+    tourpackage.SubTitle = SubTitle
+    tourpackage.Price = Price
+    tourpackage.City = City
+    tourpackage.Discount = Discount
+    tourpackage.Location = Location
+    tourpackage.Availability = Availability
+    tourpackage.StartDate = StartDate
+    tourpackage.EndDate = EndDate
+    tourpackage.TripType = TripType
+    tourpackage.TotalDuration = TotalDuration
+    tourpackage.PackageOverview = PackageOverview
+    tourpackage.Showpackage = Showpackage
+    tourpackage.Flight = Flight
+    tourpackage.Transport = Transport
+    tourpackage.Food = Food
+    tourpackage.Hotel = Hotel
+    tourpackage.Code = Code
     await this.TourpackageRepo.save(tourpackage)
-    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added succesfully", })
-  }
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully", })
+}
+
 
   
-  @Get('AllPackage')
-  async FindAll(   
-  @Req() req: Request,
-  @Res() res: Response) {
-  const Alltourpackage = await this.tourpackageService.FindAllPackages();
-  return res.status(HttpStatus.OK).json({ Alltourpackage});
-  }
+@Get('AllPackage')
+async findAll(@Res() res: Response) {
+    const allTourPackages = await this.tourpackageService.FindAllPackages(); // Use camelCase for variable names
+    return res.status(HttpStatus.OK).json({ allTourPackages }); // Use camelCase for variable names
+}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-  const gettourpackage =  this.tourpackageService.findOne(+id);
-    if (!gettourpackage) {
-      throw new HttpException(
-        `TourPackage not found with this id=${id}`,
-        HttpStatus.BAD_REQUEST,
-      );
+@Get(':id')
+async findOne(@Param('id') id: string) {
+    const getTourPackage = await this.tourpackageService.findOne(+id); // Use camelCase for variable names
+    if (!getTourPackage) {
+        throw new HttpException(
+            `TourPackage not found with this id=${id}`,
+            HttpStatus.BAD_REQUEST,
+        );
     }
-    return gettourpackage
-  }
+    return getTourPackage;
+}
 
-  @Get('/location/:TripType')
-  findOneBytriptype(@Param('TripType') TripType: string): Promise<{name:string}[]> {
-    return this.tourpackageService.getCityByTripType(TripType);
-  }
+@Get('/location/:tripType')
+async findOneByTripType(@Param('tripType') tripType: string): Promise<{ name: string }[]> {
+    return this.tourpackageService.getCityByTripType(tripType); // Use camelCase for variable names
+}
 
-  @Get('/')
-  async getTourPackages(
-    @Query('TripType') TripType: string,
-    @Query('City') City: string,
-    @Query('StartDate') StartDate: string,
-  ): Promise<Tourpackage[]>{
-    return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate);
-  }
+@Get('/')
+async getTourPackages(
+    @Query('tripType') tripType: string,
+    @Query('city') city: string,
+    @Query('startDate') startDate: string,
+): Promise<Tourpackage[]> {
+    return this.tourpackageService.GetTourpackageByDiffirentfield(tripType, city, startDate); // Use camelCase for variable names
+}
 
-  @Patch(':id')
-  async update(
+@Patch(':id')
+async update(
     @Param('id') id: number,
     @Req() req: Request,
     @Res() res: Response,
-    @Body() body,
-    @Body() updateTourpackageDto: UpdateTourpackageDto) {
-    const updatepackage = await this.tourpackageService.updatePackage(
-      +id,
-      updateTourpackageDto,
-    );
-    if (!updatepackage) {
-      throw new HttpException(
-        `TourPackage not found with this = ${id}`,
-        HttpStatus.BAD_REQUEST,
-      );
+    @Body() updateTourPackageDto: UpdateTourpackageDto,
+) {
+    const updatePackage = await this.tourpackageService.updatePackage(+id, updateTourPackageDto); // Use camelCase for variable names
+    if (!updatePackage) {
+        throw new HttpException(
+            `TourPackage not found with this id=${id}`,
+            HttpStatus.BAD_REQUEST,
+        );
     }
     return res.status(HttpStatus.OK).json({
-      status: "success",
-      message: `Tour Package  has updated successfully`,
-
+        status: 'success',
+        message: `Tour Package has been updated successfully`,
     });
-  }
+}
+
 
   @Patch('updateimage/:Id')
   @UseInterceptors( FileInterceptor('coverimageurl'))
   async updateImageUrl(
-    @UploadedFile()
-    file:Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
     @Param('Id') Id: number,
     @Body() bodyParser,
     @Req() req: Request,
     @Res() res: Response,
-  
   ) {
-  const imageurl = await this.s3service.updateImage(Id,file)
-  const  tourpackage = new Tourpackage()
-  tourpackage.coverimageurl = imageurl
-  // this is necessary when only one object is passed
-  // await this.TourpackageRepo.update(Id,tourpackage)
-  //for multiple object but both will work
-  await this.TourpackageRepo.update({Id},{...tourpackage})
-  return res.status(HttpStatus.OK).json({ 
-      status: "success",
-      message: `Cover image  has updated successfully`,
-
+    const imageUrl = await this.s3service.updateImage(Id, file);
+    const tourPackage = new Tourpackage();
+    tourPackage.coverimageurl = imageUrl;
+    await this.TourpackageRepo.update({ Id }, { ...tourPackage }); // Use object destructuring
+    return res.status(HttpStatus.OK).json({
+      status: 'success',
+      message: 'Cover image has been updated successfully',
     });
   }
 

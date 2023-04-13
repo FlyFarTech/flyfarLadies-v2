@@ -35,7 +35,7 @@ export class UserServices{
 
 
    // login user
-   async login(Email: string, Password:string,): Promise<string> {
+   async login(Email: string, Password:string): Promise<string> {
    const user = await this.userRepo.findOne({ where:{Email} });
    if (!user) {
       throw new HttpException("User does not exists", HttpStatus.BAD_REQUEST,);
@@ -67,7 +67,7 @@ export class UserServices{
 
       // get All User
       async FindAllUser() {
-         const user = await this.userRepo.find({});
+         const user = await this.userRepo.find();
          if (!user) {
             throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
          }

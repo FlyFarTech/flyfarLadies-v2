@@ -30,12 +30,13 @@ export class UserController{
    @Post('login')
    async login(@Body('Email') Email: string, @Body('Password') Password: string,  @Req() req: Request,
    @Res() res: Response){
-     const token = await this.userServices.login(Email, Password);
+      
+     const token = await this.userServices.login(Email,Password);
      return res.status(HttpStatus.CREATED).json({ status:"success", message:'user login successfully',JwtToken:token}); ;
    }
 
    // verify token
-   @Post('verify')
+   @Get('verify')
    async verify(@Body('jwtToken') jwtToken: string): Promise<User> {
      const user = await this.userServices.verifyToken(jwtToken);
      return user;
@@ -66,7 +67,6 @@ export class UserController{
    @Patch(':id')
    async updateUser(
       @Param('id') id:string,
-      @Req() req: Request,
       @Res() res: Response,
       @Body() userupdatedto:updateUserDto){
          await this.userServices.UpdateUser(id,userupdatedto)
