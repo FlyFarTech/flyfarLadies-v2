@@ -1,6 +1,6 @@
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
+import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 
@@ -17,6 +17,8 @@ export class Booking{
    CreatedAt:Date
    @UpdateDateColumn()
    UpdatedAt:Date
+   @Column()
+   TotalPrice:number
 
 
 }

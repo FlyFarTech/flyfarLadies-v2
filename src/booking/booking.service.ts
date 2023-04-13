@@ -21,7 +21,6 @@ export class BookingService {
    ) {}
 
 
-   
    async BookTravelpackage(Id:number,bookingDto: CreateBookingDto) {
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
@@ -33,6 +32,7 @@ export class BookingService {
       }
 
       const arrayoftravlers =[]
+      let TotalPrice:number =tourPackage.Price
       for(const traveler of travelers){
       const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality} = traveler;
         const newTraveler = new Traveller();
@@ -44,6 +44,8 @@ export class BookingService {
         newTraveler.PassportExpireDate =PassportExpireDate
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
+        TotalPrice+=traveler.Price
+        
    }
 
       const booking = await this.bookingRepository.create({

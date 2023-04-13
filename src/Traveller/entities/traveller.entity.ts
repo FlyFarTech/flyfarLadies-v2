@@ -18,6 +18,8 @@ export class Traveller {
    @Column()
    Gender:string
    @Column()
+   Price:number
+   @Column()
    Nationality:string
    @Column()
    PassportNumber:string

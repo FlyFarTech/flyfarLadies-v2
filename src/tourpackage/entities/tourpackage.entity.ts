@@ -23,7 +23,7 @@ export class Tourpackage {
     @Column({ nullable: true })
     SubTitle: string;
     @Column({ nullable: true })
-    Price: string;
+    Price: number;
     @Column({ nullable: true })
     Location: string;
     @Column({ nullable: true })

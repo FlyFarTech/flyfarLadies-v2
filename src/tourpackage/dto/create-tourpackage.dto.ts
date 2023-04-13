@@ -3,7 +3,7 @@ export class CreateTourpackageDto {
     Id: number
     MainTitle: string
     SubTitle: string
-    Price: string
+    Price: number
     City:string
     Discount:number
     Location: string

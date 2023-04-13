@@ -37,12 +37,12 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
-      type:'mysql',
-      host: '192.241.145.76',
-      port: 3306,
-      username: 'flyfarladies',
-      password: 'F3r2r28AsiFzW8Ke',
-      database: 'flyfarladies',
+    type:'mysql',
+    host: '192.241.145.76',
+    port: 3306,
+    username: 'flyfarladies',
+    password: 'F3r2r28AsiFzW8Ke',
+    database: 'flyfarladies',
       entities: [User,
         Cheque,
         Cash,
@@ -65,7 +65,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Installment,
         Booking
       ],
-      synchronize: false,
+      synchronize: true,
     }),
     UserModule,
     TourpackageModule,
