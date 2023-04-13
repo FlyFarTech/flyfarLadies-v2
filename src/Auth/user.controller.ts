@@ -36,7 +36,7 @@ export class UserController{
    }
 
    // verify token
-   @Get('verify')
+   @Post('verify')
    async verify(@Body('jwtToken') jwtToken: string): Promise<User> {
      const user = await this.userServices.verifyToken(jwtToken);
      return user;
