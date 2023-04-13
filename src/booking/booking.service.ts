@@ -44,7 +44,7 @@ export class BookingService {
         newTraveler.PassportExpireDate =PassportExpireDate
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
-        TotalPrice+=traveler.Price
+      //   TotalPrice+=traveler.Price
         
    }
 
