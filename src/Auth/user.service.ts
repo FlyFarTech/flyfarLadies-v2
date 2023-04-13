@@ -49,7 +49,10 @@ export class UserServices{
 }
 
    // verified token
-   async verifyToken(jwtToken: string): Promise<User> {
+   async verifyToken(jwtToken?: string): Promise<User> {
+      if (!jwtToken) {
+         throw new HttpException('JWT token is required', HttpStatus.BAD_REQUEST);
+       }
       const user = await this.userRepo.findOne({ where:{jwtToken} });
       if (!user) {
          throw new HttpException("Invalid jwt token", HttpStatus.BAD_REQUEST);
