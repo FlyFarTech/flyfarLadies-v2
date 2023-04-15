@@ -90,3 +90,10 @@ export class AppModule {}
 // host : "db-mysql-nyc1-93583-do-user-11130883-0.b.db.ondigitalocean.com",
 // port:25060,
 // database:"flyfarladies" ,
+
+
+// username: "root",
+// password: "",
+// host : "127.0.0.1",
+// port:3306,
+// database:"flyfar-ladies" ,
