@@ -39,9 +39,9 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
     TypeOrmModule.forRoot({
       type:'mysql',
       username: "flyfarladies",
-      password: "AVNS_QLR4Y0JJtHk78Qibmst",
-      host : "db-mysql-nyc1-93583-do-user-11130883-0.b.db.ondigitalocean.com",
-      port:25060,
+      password: "F3r2r28AsiFzW8Ke",
+      host : "192.241.145.76",
+      port:3306,
       database:"flyfarladies" ,
 // local database
 
