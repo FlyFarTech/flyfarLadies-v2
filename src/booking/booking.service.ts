@@ -34,7 +34,7 @@ export class BookingService {
       const arrayoftravlers =[]
       let TotalPrice:number =tourPackage.Price
       for(const traveler of travelers){
-      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality,Price} = traveler;
+      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality} = traveler;
         const newTraveler = new Traveller();
         newTraveler.FirstName = FirstName;
         newTraveler.LastName = LastName;
@@ -44,7 +44,7 @@ export class BookingService {
         newTraveler.PassportExpireDate =PassportExpireDate
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
-        TotalPrice+=Price
+        TotalPrice+=traveler.Price
    }
       const booking = await this.bookingRepository.create({
          tourPackage,

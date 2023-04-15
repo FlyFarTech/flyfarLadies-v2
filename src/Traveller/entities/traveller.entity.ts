@@ -1,7 +1,5 @@
-import { JoinTable, ManyToMany, OneToMany } from 'typeorm';
+
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Booking } from 'src/booking/entity/booking.entity';
-import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 
 @Entity()
 export class Traveller {

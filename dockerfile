@@ -17,4 +17,4 @@ RUN npm run build
 EXPOSE 5000
 
 # Start the application with pm2
-CMD npm run start:prod 
+CMD npm run start:prod

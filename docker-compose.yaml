@@ -3,8 +3,8 @@ services:
   api_flyfarladies:
     build: .
     image: api_flyfarladies:latest
-    environment:
-      - NODE_OPTIONS=--max-old-space-size=4096
+    # environment:
+    #   - NODE_OPTIONS=--max-old-space-size=4096
     ports:
       - "5000:5000"
     networks:
