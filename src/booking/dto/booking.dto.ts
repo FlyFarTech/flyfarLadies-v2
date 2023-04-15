@@ -17,4 +17,5 @@ export class CreateBookingDto {
   @IsString()
   @Type(()=>CreateTravellerDto)
   travelers: CreateTravellerDto[];
+  Price:number
 }
