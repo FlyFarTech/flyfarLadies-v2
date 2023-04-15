@@ -44,6 +44,7 @@
     "ormconfig.json": "^1.0.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
+    "pdfkit": "^0.13.0",
     "reflect-metadata": "^0.1.13",
     "runtime-config-loader": "^5.0.2",
     "rxjs": "^7.2.0",
