@@ -7,8 +7,9 @@ import { Repository } from 'typeorm';
 import { Booking } from './entity/booking.entity';
 import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
-import { User } from 'src/Auth/entities/user.entity';
-import { log } from 'console';
+import * as PDFDocument from 'pdfkit';
+
+
 
 
 @Injectable()
@@ -66,7 +67,6 @@ export class BookingService {
 
    async sendBookingDetailsToUser(booking: Booking ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
-  
       // Get tour package details
       const { MainTitle, TripType, Price } = tourPackage as Tourpackage;
   
@@ -80,15 +80,67 @@ export class BookingService {
           pass: '123Next2$', // Replace with your email password
         },
       });
+
+      const pdfDoc = new PDFDocument({font: 'Courier'});
+      // Add a 50 point margin on all sides
+      
+// Set default font
+pdfDoc.font('Helvetica');
+
+
+// Add a bulleted list
+
+
+
+
+
+   
+   // Add different margins on each side
+      // Add content to the PDF document, e.g., text, images, etc.
+      pdfDoc.text(`Booking ID: ${Bookingid}`);
+      pdfDoc.text(`Tour Package: ${MainTitle}`);
+      pdfDoc.text(`Trip Type: ${TripType}`);
+      pdfDoc.text(`Total Price: ${TotalPrice}`);
+      pdfDoc.text('Travelers:');
+  for (const traveler of travelers) {
+   pdfDoc.text(`- ${traveler.FirstName} ${traveler.LastName}`);
+  }
+      // ...
+    
+      // Finalize the PDF document
+      pdfDoc.end();
+    
+      // Convert the PDF document to a buffer
+      const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        pdfDoc.on('data', chunk => chunks.push(chunk));
+        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+        pdfDoc.on('error', reject);
+      });
+    
   
       // Compose the email message
       const mailOptions = {
         from: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
-        to: 'faisal@flyfar.tech', // Recipient's email address
+        to: 'afridi@flyfarint.com', // Recipient's email address
         subject: 'Booking Details',
-        text:'Booking Confirmation'
+        text: 'Please find the attached PDF file.',
+        attachments: [
+         {
+           filename: 'booking_details.pdf',
+           content: pdfBuffer,
+           contentType: 'application/pdf',
+         },
+       ],
       }
-      await transporter.sendMail(mailOptions);
+
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
    }
    async getBooking(Bookingid:string):Promise<Booking[]>{
       const bookedpackage = await this.bookingRepository.find({ where: { Bookingid }, relations:['tourPackage','travelers']})
