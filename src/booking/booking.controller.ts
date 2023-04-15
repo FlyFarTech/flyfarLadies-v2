@@ -22,7 +22,7 @@ export class BookingController {
   }
   @Get(':Bookingid')
   async getBooking(
-    @Param('Bookingid') Bookingid: string,) {
+    @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
 
