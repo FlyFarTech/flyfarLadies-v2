@@ -15,10 +15,10 @@ export class BookingController {
 
     @Body() bookingDto: CreateBookingDto,
     @Param('Id') Id:number,
-    Email:User,    @Req() req: Request,
+    @Req() req: Request,
     @Res() res: Response) { 
 
-    const booking = await this.bookingService.BookTravelpackage(Id,bookingDto,Email)
+    const booking = await this.bookingService.BookTravelpackage(Id,bookingDto)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
   @Get(':Bookingid')
