@@ -6,6 +6,8 @@ import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { Repository } from 'typeorm';
 import { Booking } from './entity/booking.entity';
 import { CreateBookingDto } from './dto/booking.dto';
+import * as nodemailer from 'nodemailer';
+import { User } from 'src/Auth/entities/user.entity';
 
 
 @Injectable()
@@ -21,7 +23,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto) {
+   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto, Email:User) {
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -49,17 +51,43 @@ export class BookingService {
         
        
    }
-      const booking = await this.bookingRepository.create({
+      const newbooking = await this.bookingRepository.create({
          tourPackage,
          travelers: arrayoftravlers,
          TotalPrice:TotalPrice
       })
-      await this.bookingRepository.save(booking)
-      return booking;
+      const savebooking= await this.bookingRepository.save(newbooking)
+      await this.sendBookingDetailsToUser(savebooking, Email);
+      return savebooking;
    
    }
 
-
+   async sendBookingDetailsToUser(booking: Booking,Email: User ) {
+      const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
+  
+      // Get tour package details
+      const { MainTitle, TripType, Price } = tourPackage as Tourpackage;
+  
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+  
+      // Compose the email message
+      const mailOptions = {
+        from: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
+        to: Email, // Recipient's email address
+        subject: 'Booking Details',
+        Text:'Booking Confirmation'
+      }
+      // await transporter.sendMail(mailOptions);
+   }
    async getBooking(Bookingid:string):Promise<Booking[]>{
       const bookedpackage = await this.bookingRepository.find({ where: { Bookingid }, relations:['tourPackage','travelers']})
       return bookedpackage;

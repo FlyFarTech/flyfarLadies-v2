@@ -4,6 +4,7 @@ import { BookingService } from './booking.service';
 import { Express } from 'express';
 import { Request, Response } from 'express';
 import { CreateBookingDto } from './dto/booking.dto';
+import { User } from 'src/Auth/entities/user.entity';
 
 @Controller('booking')
 export class BookingController {
@@ -14,10 +15,10 @@ export class BookingController {
 
     @Body() bookingDto: CreateBookingDto,
     @Param('Id') Id:number,
-    @Req() req: Request,
+    Email:User,    @Req() req: Request,
     @Res() res: Response) { 
 
-    const booking = await this.bookingService.BookTravelpackage(Id,bookingDto)
+    const booking = await this.bookingService.BookTravelpackage(Id,bookingDto,Email)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
   @Get(':Bookingid')

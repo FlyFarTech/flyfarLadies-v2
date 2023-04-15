@@ -44,7 +44,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
       port:3306,
       database:"flyfarladies" ,
 
-
+      
 // local database
       // username: "root",
       // password: "",
@@ -74,7 +74,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
