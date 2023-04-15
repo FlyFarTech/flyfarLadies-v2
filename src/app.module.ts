@@ -38,11 +38,19 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username: "root",
-      password: "",
-      host : "127.0.0.1",
-      port:3306,
-      database:"flyfar-ladies" ,
+      username: "flyfarladies",
+      password: "AVNS_QLR4Y0JJtHk78Qibmst",
+      host : "db-mysql-nyc1-93583-do-user-11130883-0.b.db.ondigitalocean.com",
+      port:25060,
+      database:"flyfarladies" ,
+// local database
+
+      // username: "root",enti
+      // password: "",
+      // host : "127.0.0.1",
+      // port:3306,
+      // database:"flyfar-ladies" ,
+      
       entities: [User,
         Cheque,
         Cash,
@@ -65,7 +73,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
