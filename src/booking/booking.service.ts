@@ -32,9 +32,9 @@ export class BookingService {
       }
 
       const arrayoftravlers =[]
-      let TotalPrice:number =tourPackage.Price
+      let TotalPrice:number = 0
       for(const traveler of travelers){
-      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality} = traveler;
+      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality, Price} = traveler;
         const newTraveler = new Traveller();
         newTraveler.FirstName = FirstName;
         newTraveler.LastName = LastName;
@@ -42,14 +42,17 @@ export class BookingService {
         newTraveler.DOB =DOB
         newTraveler.PassportNumber =PassportNumber
         newTraveler.PassportExpireDate =PassportExpireDate
+        newTraveler.Price = Price ? Price : tourPackage.Price;
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
-        TotalPrice+=traveler.Price
+        TotalPrice +=newTraveler.Price
+        
+       
    }
       const booking = await this.bookingRepository.create({
          tourPackage,
          travelers: arrayoftravlers,
-         TotalPrice
+         TotalPrice:TotalPrice
       })
       await this.bookingRepository.save(booking)
       return booking;
@@ -57,7 +60,7 @@ export class BookingService {
    }
 
 
-   async getBooking(Bookingid:string){
+   async getBooking(Bookingid:string):Promise<Booking[]>{
       const bookedpackage = await this.bookingRepository.find({ where: { Bookingid }, relations:['tourPackage','travelers']})
       return bookedpackage;
    }
