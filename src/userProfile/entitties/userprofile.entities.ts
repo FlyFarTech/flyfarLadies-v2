@@ -47,7 +47,7 @@ export class Userprofile {
    @IsNotEmpty()
    @Column()
    PassportsizephotoUrl: string
-   @IsNotEmpty()
+   @IsNotEmpty() 
    @Column()
    FaceBookId:string
    @IsNotEmpty()

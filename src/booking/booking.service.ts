@@ -8,6 +8,7 @@ import { Booking } from './entity/booking.entity';
 import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
 import * as PDFDocument from 'pdfkit';
+import { User } from 'src/Auth/entities/user.entity';
 
 
 
@@ -20,6 +21,8 @@ export class BookingService {
       private travelerRepository: Repository<Traveller>,
       @InjectRepository(Booking)
       private bookingRepository: Repository<Booking>,
+      @InjectRepository(User)
+      private userRepository: Repository<User>,
       
 
    ) {}
@@ -87,13 +90,7 @@ export class BookingService {
 // Set default font
 pdfDoc.font('Helvetica');
 
-
 // Add a bulleted list
-
-
-
-
-
    
    // Add different margins on each side
       // Add content to the PDF document, e.g., text, images, etc.
@@ -133,7 +130,6 @@ pdfDoc.font('Helvetica');
          },
        ],
       }
-
       await transporter.sendMail(mailOptions,(error, info) => {
          if (error) {
            console.error(error);
@@ -142,6 +138,7 @@ pdfDoc.font('Helvetica');
          }
        });
    }
+
    async getBooking(Bookingid:string):Promise<Booking[]>{
       const bookedpackage = await this.bookingRepository.find({ where: { Bookingid }, relations:['tourPackage','travelers']})
       return bookedpackage;

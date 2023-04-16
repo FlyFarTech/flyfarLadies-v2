@@ -219,7 +219,7 @@ async update(
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|gif)$/,
+          fileType: 'webp',
         })
         .addMaxSizeValidator({
           maxSize: 1024 * 1024 * 6,
@@ -577,13 +577,13 @@ async update(
 
   @Post(':Id/AddalbumImage')
   @UseInterceptors(
-    FilesInterceptor('albumImageUrl', 20,),
+    FilesInterceptor('albumImageUrl',20)
   )
   async AddalbumImages(
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|gif)$/,
+          fileType: 'webp',
         })
         .addMaxSizeValidator({
           maxSize: 1024 * 1024 * 6,
@@ -622,13 +622,13 @@ async update(
 
   @Post(':Id/AddvistitedImages')
   @UseInterceptors(
-    FilesInterceptor('VisitedImagePath', 20)
+    FilesInterceptor('VisitedImagePath',20)
   )
   async AddvistitedImages(
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: /(jpg|jpeg|png|gif)$/,
+          fileType: 'webp',
         })
         .addMaxSizeValidator({
           maxSize: 1024 * 1024 * 6,

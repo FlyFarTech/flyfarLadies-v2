@@ -1,16 +1,14 @@
-import { UserServices } from './../Auth/user.service';
-
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileFieldsInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FileFieldsInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { diskStorage } from "multer";
 import { Repository } from "typeorm";
-import { CreateUserProfileDto } from "./Dto/create-userprofile.dto";
 import { updateUserProfileDto } from "./Dto/update-userprofile.dto";
 import { Userprofile } from "./entitties/userprofile.entities";
 import { UserProfileServices } from "./userprofile.services";
 import { S3Service } from "src/s3/s3.service";
+import { CreateUserDto } from "./Dto/user-login.dto";
+import { User } from "./entitties/user-login.entity";
 
 
 
@@ -21,6 +19,36 @@ export class userProfileController {
       private s3service: S3Service
       ) {}
 
+
+      @Post('Register')
+      async Register(
+         @Body() userDto:CreateUserDto,
+         @Req() req: Request,
+         @Res() res: Response){
+            const ExistUser = await this.UserProfileServices.getUserByEmail(userDto.Email)
+            if(ExistUser){
+               throw new HttpException("User Already Exist,please try again with another email", HttpStatus.BAD_REQUEST,);
+            }
+         await this.UserProfileServices.Register(userDto)
+         return res.status(HttpStatus.CREATED).json({ status:"success", message:'user register successfully'});
+      }
+      // User Login
+      @Post('login')
+      async login(@Body('Email') Email: string, @Body('Password') Password: string,  @Req() req: Request,
+      @Res() res: Response){
+         
+        const token = await this.UserProfileServices.login(Email,Password);
+        return res.status(HttpStatus.CREATED).json({ status:"success", message:'user login successfully',JwtToken:token}); ;
+      }
+   
+      // verify token
+      @Post('verify')
+      async verify(@Body('jwtToken') jwtToken: string): Promise<User> {
+        const user = await this.UserProfileServices.verifyToken(jwtToken);
+        return user;
+      }
+   
+   
    // Add Traveller
    @Post('addProfile')
    @UseInterceptors(FileFieldsInterceptor([
