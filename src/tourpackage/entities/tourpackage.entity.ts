@@ -36,8 +36,8 @@ export class Tourpackage {
     EndDate: string;
     @Column({ nullable: true })
     TripType: string;
-    @Column({ nullable: true, type: 'text' })
-    Code: string
+    @Column({ nullable: true })
+    Country: string;
     @Column({ nullable: true })
     TotalDuration: string
     @Column('text', { nullable: true })

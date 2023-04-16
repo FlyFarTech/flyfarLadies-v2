@@ -1,7 +1,7 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CreateBookingPolicyDto } from './dto/creat-bookingpolicy.dto';
 import { CreatepackageExclsuionsDto } from './dto/create-packageexclusions.dto';
 import { CreatePackageHighlightDto } from './dto/create-packagehighlights.dto';
@@ -68,7 +68,7 @@ async  findOne(Id: number) {
     return packages;
    }
 
-  async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string):Promise<Tourpackage[]>{
+  async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string,Country:string):Promise<Tourpackage[]>{
     const [month, year] = StartDate.split(" ")
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
@@ -84,7 +84,10 @@ async  findOne(Id: number) {
     queryBuilder.leftJoinAndSelect('tourPackage.installments', 'installments')
     queryBuilder.leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
     queryBuilder.where('tourPackage.TripType = :TripType', { TripType });
-    queryBuilder.andWhere('tourPackage.City = :City', { City });
+    queryBuilder.andWhere(new Brackets(qb => {
+      qb.where('tourPackage.City = :City', { City })
+        .orWhere('tourPackage.Country = :Country', { Country });
+  }));
     queryBuilder.andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth });
     queryBuilder.andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
     const tourPackages = await queryBuilder.getMany();

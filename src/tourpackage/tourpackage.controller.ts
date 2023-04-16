@@ -45,7 +45,7 @@ export class TourpackageController {
     @Body() body,
     @Res() res: Response) {
     const { MainTitle, SubTitle, Price, City, Discount, Location, Availability, StartDate, EndDate,
-        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Code } = req.body;
+        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Country } = req.body;
     const coverimageurl = await this.s3service.Addimage(file)
     const tourpackage = new Tourpackage();
     tourpackage.coverimageurl = coverimageurl
@@ -66,7 +66,7 @@ export class TourpackageController {
     tourpackage.Transport = Transport
     tourpackage.Food = Food
     tourpackage.Hotel = Hotel
-    tourpackage.Code = Code
+    tourpackage.Country = Country
     await this.TourpackageRepo.save(tourpackage)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully", })
 }
@@ -101,8 +101,9 @@ async getTourPackages(
     @Query('TripType') TripType: string,
     @Query('City') City: string,
     @Query('StartDate') StartDate: string,
+    @Query('Country') Country: string,
 ): Promise<Tourpackage[]> {
-    return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate); // Use camelCase for variable names
+    return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate, Country); // Use camelCase for variable names
 }
 
 @Patch(':id')
