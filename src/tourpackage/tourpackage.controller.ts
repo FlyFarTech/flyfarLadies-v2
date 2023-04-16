@@ -94,8 +94,10 @@ async findOne(@Param('id') id: string) {
 @Get('/location/:TripType')
 async findOneByTripType(
   @Param('TripType') TripType: string,
-  @Query('Country') Country:string): Promise<{ name: string, Country:string }[]> {
-    return this.tourpackageService.getCityByTripType(TripType,Country); // Use camelCase for variable names
+  @Query('Country') Country:string,
+  @Query('City') City:string,
+  ): Promise<{ Country:string,City:string}[]> {
+    return this.tourpackageService.getCityByTripType(TripType,Country,City); // Use camelCase for variable names
 }
 
 @Get('/')
