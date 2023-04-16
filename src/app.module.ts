@@ -49,9 +49,6 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
       // database:process.env.LOCAL_DATABASE,
       // port:3306,
 
-     
-
-
       
       entities: [User,
         Cheque,
@@ -75,8 +72,9 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Installment,
         Booking
       ],
-      synchronize:
-    true
+      synchronize:false
+    
+
     }),
     UserModule,
     TourpackageModule,

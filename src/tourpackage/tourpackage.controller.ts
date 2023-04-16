@@ -98,11 +98,11 @@ async findOneByTripType(@Param('tripType') tripType: string): Promise<{ name: st
 
 @Get('/')
 async getTourPackages(
-    @Query('tripType') tripType: string,
-    @Query('city') city: string,
-    @Query('startDate') startDate: string,
+    @Query('TripType') TripType: string,
+    @Query('City') City: string,
+    @Query('StartDate') StartDate: string,
 ): Promise<Tourpackage[]> {
-    return this.tourpackageService.GetTourpackageByDiffirentfield(tripType, city, startDate); // Use camelCase for variable names
+    return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate); // Use camelCase for variable names
 }
 
 @Patch(':id')

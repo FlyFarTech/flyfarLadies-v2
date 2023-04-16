@@ -69,7 +69,7 @@ async  findOne(Id: number) {
    }
 
   async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string):Promise<Tourpackage[]>{
-    const [month, year] = StartDate.split(" ");
+    const [month, year] = StartDate.split(" ")
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
     const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage');
