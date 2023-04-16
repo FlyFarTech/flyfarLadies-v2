@@ -12,7 +12,7 @@ import { User } from "./entitties/user-login.entity";
 
 
 
-@Controller('userProfile')
+@Controller('user')
 export class userProfileController {
    constructor(@InjectRepository(Userprofile) private profileRepository: Repository<Userprofile>,
       private readonly UserProfileServices: UserProfileServices,

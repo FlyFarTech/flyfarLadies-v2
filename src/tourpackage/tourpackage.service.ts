@@ -86,7 +86,7 @@ async  findOne(Id: number) {
     queryBuilder.where('tourPackage.TripType = :TripType', { TripType });
     queryBuilder.andWhere(new Brackets(qb => {
       qb.where('tourPackage.City = :City', { City })
-        .orWhere('tourPackage.Country = :Country', { Country });
+        .andWhere('tourPackage.Country = :Country', { Country });
   }));
     queryBuilder.andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth });
     queryBuilder.andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
@@ -98,14 +98,17 @@ async  findOne(Id: number) {
   
   }
 
-  async getCityByTripType(TripType: string): Promise<{name:string}[]> {
-    const city = await this.TourpackageRepo
+  async getCityByTripType(TripType: string,Country:string): Promise<{name:string, Country:string}[]> {
+    const cities = await this.TourpackageRepo
       .createQueryBuilder('tourpackage')
-      .select('DISTINCT tourpackage.City')
-      .where('tourpackage.Triptype = :TripType',{ TripType })
+      .select('tourpackage.City')
+      .addSelect('tourpackage.Country', 'Country')
+      .where('tourpackage.TripType = :TripType',{ TripType })
+      .andWhere('tourpackage.Country = :Country', { Country })
+      .groupBy('tourpackage.City')
       .getRawMany();
 
-    return city.map((City) => ({name:City.City}));
+    return cities.map(City => ({name:City.City, Country: City.Country }));
   }
 
 async  updatePackage(Id: number, updateTourpackageDto: UpdateTourpackageDto) {

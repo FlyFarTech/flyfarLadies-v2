@@ -91,9 +91,11 @@ async findOne(@Param('id') id: string) {
     return getTourPackage;
 }
 
-@Get('/location/:tripType')
-async findOneByTripType(@Param('tripType') tripType: string): Promise<{ name: string }[]> {
-    return this.tourpackageService.getCityByTripType(tripType); // Use camelCase for variable names
+@Get('/location/:TripType')
+async findOneByTripType(
+  @Param('TripType') TripType: string,
+  @Query('Country') Country:string): Promise<{ name: string, Country:string }[]> {
+    return this.tourpackageService.getCityByTripType(TripType,Country); // Use camelCase for variable names
 }
 
 @Get('/')

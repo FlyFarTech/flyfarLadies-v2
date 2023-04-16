@@ -47,9 +47,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,
       // database:process.env.LOCAL_DATABASE,
-      // port:3306,
-
-      
+      port:3306,
       entities: [User,
         Cheque,
         Cash,
@@ -73,8 +71,6 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Booking
       ],
       synchronize:false
-    
-
     }),
     UserModule,
     TourpackageModule,
