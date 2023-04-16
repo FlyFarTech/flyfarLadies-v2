@@ -91,6 +91,9 @@ async  findOne(Id: number) {
     queryBuilder.andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth });
     queryBuilder.andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
     const tourPackages = await queryBuilder.getMany();
+    if (tourPackages.length === 0) {
+      throw new HttpException('No tour packages found for the specified criteria',HttpStatus.BAD_REQUEST,); // Custom error message for no tour packages found
+  }
     return tourPackages;
   
   }

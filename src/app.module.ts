@@ -72,7 +72,7 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize:false
     
 
     }),
