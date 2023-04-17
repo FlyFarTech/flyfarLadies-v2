@@ -98,12 +98,17 @@ async  findOne(Id: number) {
   
   }
 
-  async getCityByTripType(TripType: string): Promise<{City:string, Country:string}[]> {
+  async getCityByTripType(TripType: string, StartDate:string): Promise<{City:string, Country:string}[]> {
+    const [month, year] = StartDate.split(" ")
+    const startOfMonth = new Date(`${month} 1, ${year}`);
+    const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
     const city = await this.TourpackageRepo
       .createQueryBuilder('tourpackage')
       .addSelect('tourpackage.City')
       .addSelect('tourpackage.Country', 'Country')
       .where('tourpackage.Triptype = :TripType',{ TripType })
+      .andWhere('tourpackage.StartDate >= :startOfMonth', { startOfMonth })
+      .andWhere('tourpackage.StartDate <= :endOfMonth', { endOfMonth })
       .groupBy('tourpackage.City')
       .groupBy('tourpackage.Country')    
       .getRawMany();
