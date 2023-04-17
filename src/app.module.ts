@@ -39,10 +39,10 @@ import { User } from './userProfile/entitties/user-login.entity';
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarin_fflv2",
-      password: "123Next2$",
-      host: "flyfarint.com",
-      database:"flyfarin_fflv2",
+      username:"flyfarladies",
+      password: "F3r2r28AsiFzW8Ke",
+      host: "192.241.145.76",
+      database:"flyfarladies",
 
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,

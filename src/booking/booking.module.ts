@@ -10,7 +10,7 @@ import { User } from 'src/userProfile/entitties/user-login.entity';
 
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,User]), S3Module],
+  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,User]),S3Module],
   controllers: [BookingController],
   providers: [BookingService]
 })

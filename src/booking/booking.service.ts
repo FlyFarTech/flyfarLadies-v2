@@ -9,7 +9,6 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
 import * as PDFDocument from 'pdfkit';
 import { User } from 'src/userProfile/entitties/user-login.entity';
-import { IsEmail } from 'class-validator';
 
 
 
