@@ -86,7 +86,7 @@ async  findOne(Id: number) {
     queryBuilder.where('tourPackage.TripType = :TripType', { TripType });
     queryBuilder.andWhere(new Brackets(qb => {
       qb.where('tourPackage.City = :City', { City })
-        .orWhere('tourPackage.City = :Country', { Country });
+        .orWhere('tourPackage.Country = :Country', { Country });
   }));
     queryBuilder.andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth });
     queryBuilder.andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
@@ -105,7 +105,7 @@ async  findOne(Id: number) {
       .addSelect('tourpackage.Country', 'Country')
       .where('tourpackage.Triptype = :TripType',{ TripType })
       .groupBy('tourpackage.City')
-      .groupBy('tourpackage.Country')
+      .groupBy('tourpackage.Country')    
       .getRawMany();
       return city.map(({ City, Country }) => ({ City, Country }));
   }

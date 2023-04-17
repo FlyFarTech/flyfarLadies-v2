@@ -19,7 +19,6 @@ export class userProfileController {
       private s3service: S3Service
       ) {}
 
-
       @Post('Register')
       async Register(
          @Body() userDto:CreateUserDto,

@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, Generated, PrimaryColumn, UpdateDateC
 
 
 @Entity()
-export class User{
+export class Admin{
    @PrimaryColumn({type:"uuid"})
    @Generated("uuid")
    Id:string

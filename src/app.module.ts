@@ -15,7 +15,7 @@ import { packagehighlight } from './tourpackage/entities/packagehighlight.entity
 import { bookingpolicy } from './tourpackage/entities/bookingpolicy.entity';
 import { VisitedPlace } from './tourpackage/entities/visitedplace.entity';
 import { Traveller } from './Traveller/entities/traveller.entity';
-import { User } from './Auth/entities/user.entity';
+import { Admin } from './Auth/entities/user.entity';
 import { UserModule } from './Auth/user.module';
 import { TravellerModule } from './Traveller/traveller.module';
 import { UsderProfileModule } from './userProfile/userprofile.module';
@@ -32,6 +32,7 @@ import { BankTransfer } from './deposit_request/Entity/BankTransfer.entity';
 import { CardPayment } from './deposit_request/Entity/Cardpayment.entity';
 import { Bkash } from './deposit_request/Entity/Bkash.entity';
 import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
+import { User } from './userProfile/entitties/user-login.entity';
 
 @Module({
   imports: [
@@ -48,7 +49,8 @@ import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
       // host : process.env.LOCAL_HOST,
       // database:process.env.LOCAL_DATABASE,
       port:3306,
-      entities: [User,
+      entities: [Admin,
+        User,
         Cheque,
         Cash,
         BankTransfer,

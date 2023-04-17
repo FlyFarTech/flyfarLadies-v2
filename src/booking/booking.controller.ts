@@ -1,10 +1,10 @@
+
 import { Body, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Controller, Get, Param } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Express } from 'express';
 import { Request, Response } from 'express';
 import { CreateBookingDto } from './dto/booking.dto';
-import { User } from 'src/Auth/entities/user.entity';
 
 @Controller('booking')
 export class BookingController {

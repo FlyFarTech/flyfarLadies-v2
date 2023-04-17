@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm/repository/Repository';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { Admin } from './entities/user.entity';
 import { CreateUserDto } from './Dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 
@@ -12,7 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserServices{
-   constructor(@InjectRepository(User) private userRepo:Repository<User>,
+   constructor(@InjectRepository(Admin) private userRepo:Repository<Admin>,
    private readonly jwtService:JwtService){}
 
    // Register user
@@ -49,7 +49,7 @@ export class UserServices{
 }
 
    // verified token
-   async verifyToken(jwtToken?: string): Promise<User> {
+   async verifyToken(jwtToken?: string): Promise<Admin> {
       if (!jwtToken) {
          throw new HttpException('JWT token is required', HttpStatus.BAD_REQUEST);
        }
@@ -62,7 +62,7 @@ export class UserServices{
 
 
       // validate email
-      async getUserByEmail(Email: string): Promise<User> {
+      async getUserByEmail(Email: string): Promise<Admin> {
          return this.userRepo.findOne({ where:{Email} });
        }
    
@@ -78,7 +78,7 @@ export class UserServices{
       }
 
    // find user by Id
-   async findUserById(Id: string): Promise<User> {
+   async findUserById(Id: string): Promise<Admin> {
       const user = await this.userRepo.findOne({ where:{Id} });
       if (!user) {
          throw new HttpException("User not found", HttpStatus.BAD_REQUEST);

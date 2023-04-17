@@ -4,13 +4,13 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch,
 import { CreateUserDto } from './Dto/create-user.dto';
 import { UserServices } from './user.service';
 import { Request, Response } from 'express';
-import { User } from './entities/user.entity';
+import { Admin } from './entities/user.entity';
 import { updateUserDto } from './Dto/update-user.dto';
 import { JwtAuthGuard } from './auth.guard';
 
 
 
-@Controller('Users')
+@Controller('Admin')
 export class UserController{
    constructor(private userServices:UserServices){}
    // User Registration
@@ -37,7 +37,7 @@ export class UserController{
 
    // verify token
    @Post('verify')
-   async verify(@Body('jwtToken') jwtToken: string): Promise<User> {
+   async verify(@Body('jwtToken') jwtToken: string): Promise<Admin> {
      const user = await this.userServices.verifyToken(jwtToken);
      return user;
    }

@@ -8,7 +8,8 @@ import { Booking } from './entity/booking.entity';
 import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
 import * as PDFDocument from 'pdfkit';
-import { User } from 'src/Auth/entities/user.entity';
+import { User } from 'src/userProfile/entitties/user-login.entity';
+
 
 
 
