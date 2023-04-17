@@ -59,12 +59,39 @@ private visitedImageRepo: Repository<VisitedPlace>
 ){}
 
 async  findOne(Id: number) {
-    const gettourpackage =  this.TourpackageRepo.findOne({where:{Id}});
+    const gettourpackage =  this.TourpackageRepo.findOne({where:{Id},relations:{
+      albumImages:true,
+      vistitedImages:true,
+      mainimage:true,
+      exclusions:true,
+      installments:true,
+      PackageInclusions:true,
+      BookingPolicys:true,
+      highlights:true,
+      tourpackageplans:true,
+      refundpolicys:true
+
+
+      
+  
+    }});
     return gettourpackage;
   }
 
   async FindAllPackages(){
-    const packages= await this.TourpackageRepo.find()
+    const packages= await this.TourpackageRepo.find( {relations:{
+      albumImages:true,
+      vistitedImages:true,
+      mainimage:true,
+      exclusions:true,
+      installments:true,
+      PackageInclusions:true,
+      BookingPolicys:true,
+      highlights:true,
+      tourpackageplans:true,
+      refundpolicys:true
+    }
+  })
     return packages;
    }
 

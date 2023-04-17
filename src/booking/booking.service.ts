@@ -145,7 +145,7 @@ pdfDoc.font('Helvetica');
       return bookedpackage;
    }
 
-   async FindAll():Promise<Booking[]>{
+   async FindAll(){
      const bookings= await this.bookingRepository.find({relations:[ 'tourPackage',
       'travelers']})
      return bookings;

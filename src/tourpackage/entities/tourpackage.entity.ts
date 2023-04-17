@@ -57,52 +57,32 @@ export class Tourpackage {
     @Column({ nullable: true })
     coverimageurl: string
 
-    @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage, )
     mainimage: MainImage;
 
-    @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,)
     albumImages: AlbumImage;
 
-    @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage, )
     vistitedImages: VisitedPlace;
-    @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, )
     exclusions: packageexcluions;
-    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage, )
     PackageInclusions: Packageinclusion;
 
-    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage, {
-        eager: true, cascade: false
-    })
+    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,)
     BookingPolicys: bookingpolicy;
 
-    @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage, )
     highlights: packagehighlight;
 
-    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage)
     refundpolicys: refundpolicy;
 
-    @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage, {
-        eager: true,cascade: false
-    })
+    @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage)
     tourpackageplans: tourpackageplan;
 
-    @OneToMany(() => Installment, (installment) => installment.tourpackage, {
-        eager: true, cascade: false,
-    })
+    @OneToMany(() => Installment, (installment) => installment.tourpackage, )
     installments: Installment;
 
     @OneToMany(() => Booking, (booking) => booking.tourPackage)
