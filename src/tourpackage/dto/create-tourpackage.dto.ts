@@ -9,7 +9,7 @@ export class CreateTourpackageDto {
     Location: string
     StartDate: string
     EndDate: string
-    Code:string
+    Country:string
     TripType: string
     Availability:boolean
     Showpackage: boolean

@@ -9,6 +9,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
 import * as PDFDocument from 'pdfkit';
 import { User } from 'src/userProfile/entitties/user-login.entity';
+import { IsEmail } from 'class-validator';
 
 
 
@@ -29,7 +30,8 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto) {
+   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto){
+      // const userEmail = request.user.email;
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -63,13 +65,13 @@ export class BookingService {
          TotalPrice:TotalPrice
       })
       const savebooking= await this.bookingRepository.save(newbooking)
-     const x= await this.sendBookingDetailsToUser(savebooking);
+     const x= await this.sendBookingDetailsToUser(savebooking,);
      console.log(x)
       return savebooking;
    
    }
 
-   async sendBookingDetailsToUser(booking: Booking ) {
+   async sendBookingDetailsToUser(booking: Booking, ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
       const { MainTitle, TripType, Price } = tourPackage as Tourpackage;
@@ -120,7 +122,7 @@ pdfDoc.font('Helvetica');
       // Compose the email message
       const mailOptions = {
         from: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
-        to: 'afridi@flyfarint.com', // Recipient's email address
+        to: "faisal@flyfar.tech", // Recipient's email address
         subject: 'Booking Details',
         text: 'Please find the attached PDF file.',
         attachments: [

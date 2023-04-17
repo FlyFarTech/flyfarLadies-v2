@@ -37,7 +37,7 @@ export class userProfileController {
       @Res() res: Response){
          
         const token = await this.UserProfileServices.login(Email,Password);
-        return res.status(HttpStatus.CREATED).json({ status:"success", message:'user login successfully',JwtToken:token}); ;
+        return res.status(HttpStatus.CREATED).json({ status:"success", message:'user login successfully',jwtToken:token}); ;
       }
    
       // verify token
@@ -81,7 +81,6 @@ export class userProfileController {
       userprofile.LinkedIn = req.body.LinkedIn
       userprofile.WhatsApp = req.body.whatsApp
       await this.profileRepository.save({ ...userprofile })
-
       return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
    }
 
