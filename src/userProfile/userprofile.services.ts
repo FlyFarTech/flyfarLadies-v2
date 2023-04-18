@@ -49,7 +49,7 @@ export class UserProfileServices {
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
           pass: '123Next2$', // Replace with your email password
         },
       });
@@ -57,7 +57,7 @@ export class UserProfileServices {
   
       // Compose the email message
       const mailOptions = {
-        from: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
         to:userdto.Email, // Recipient's email address
         subject: 'Welcome To Fly Far Ladies',
       }

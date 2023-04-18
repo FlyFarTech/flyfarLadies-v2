@@ -15,11 +15,11 @@ export class BookingController {
   async addbooking(
 
     @Body() bookingDto: CreateBookingDto,
+    jwtToken:string,
     @Param('Id') Id:number,
     @Req() req: Request,
     @Res() res: Response) { 
-
-    await this.bookingService.BookTravelpackage(Id,bookingDto)
+    await this.bookingService.BookTravelpackage(Id,bookingDto,jwtToken)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
   @Get(':Bookingid')

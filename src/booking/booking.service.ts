@@ -9,6 +9,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer';
 import * as PDFDocument from 'pdfkit';
 import { User } from 'src/userProfile/entitties/user-login.entity';
+import { use } from 'passport';
 
 
 
@@ -29,8 +30,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto){
-      // const userEmail = request.user.email;
+   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto,jwtToken:string){
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -64,13 +64,18 @@ export class BookingService {
          TotalPrice:TotalPrice
       })
       const savebooking= await this.bookingRepository.save(newbooking)
-     const x= await this.sendBookingDetailsToUser(savebooking,);
+     const x= await this.sendBookingDetailsToUser(savebooking,jwtToken);
      console.log(x)
       return savebooking;
    
    }
 
-   async sendBookingDetailsToUser(booking: Booking, ) {
+   async sendBookingDetailsToUser(booking: Booking, jwtToken:string ) {
+      const user = await this.userRepository.findOne({ where:{jwtToken} });
+      if (!user) {
+         throw new HttpException("Invalid jwt token", HttpStatus.BAD_REQUEST);
+      }
+
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
       const { MainTitle, TripType, Price } = tourPackage as Tourpackage;
@@ -81,7 +86,7 @@ export class BookingService {
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
           pass: '123Next2$', // Replace with your email password
         },
       });
@@ -120,9 +125,9 @@ pdfDoc.font('Helvetica');
   
       // Compose the email message
       const mailOptions = {
-        from: 'booking@mailcenter.flyfarladies.com', // Replace with your email address
-        to: "faisal@flyfar.tech", // Recipient's email address
-        subject: 'Booking Details',
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Booking Confirmation',
         text: 'Please find the attached PDF file.',
         attachments: [
          {
