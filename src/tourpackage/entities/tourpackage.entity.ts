@@ -58,32 +58,32 @@ export class Tourpackage {
     coverimageurl: string
 
     @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage, )
-    mainimage: MainImage;
+    mainimage: MainImage[];
 
     @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,)
-    albumImages: AlbumImage;
+    albumImages: AlbumImage[];
 
     @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage, )
-    vistitedImages: VisitedPlace;
+    vistitedImages: VisitedPlace[];
     @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, )
-    exclusions: packageexcluions;
+    exclusions: packageexcluions[];
     @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage, )
-    PackageInclusions: Packageinclusion;
+    PackageInclusions: Packageinclusion[];
 
     @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,)
-    BookingPolicys: bookingpolicy;
+    BookingPolicys: bookingpolicy[];
 
     @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage, )
-    highlights: packagehighlight;
+    highlights: packagehighlight[];
 
     @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage)
-    refundpolicys: refundpolicy;
+    refundpolicys: refundpolicy[];
 
     @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage)
-    tourpackageplans: tourpackageplan;
+    tourpackageplans: tourpackageplan[];
 
     @OneToMany(() => Installment, (installment) => installment.tourpackage, )
-    installments: Installment;
+    installments: Installment[];
 
     @OneToMany(() => Booking, (booking) => booking.tourPackage)
     bookings: Booking[]

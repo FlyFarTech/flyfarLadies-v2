@@ -9,6 +9,7 @@ import { User } from './entitties/user-login.entity';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './Dto/user-login.dto';
 import * as bcrypt from 'bcrypt';
+import * as nodemailer from 'nodemailer';
 
 
 @Injectable()
@@ -26,6 +27,7 @@ export class UserProfileServices {
       const hashedPassword= await bcrypt.hash(userDto.Password, 10)
       const newuser= await this.userRepo.create({...userDto, Password: hashedPassword});
       await this.userRepo.save(newuser);
+      await this.sendRegisterSuccecess(userDto)
       return this.generateToken(newuser)
    }
     
@@ -38,6 +40,35 @@ export class UserProfileServices {
       await this.userRepo.save(userdto);
       return token;
     }
+
+
+    async sendRegisterSuccecess(userdto: CreateUserDto) {
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+    
+  
+      // Compose the email message
+      const mailOptions = {
+        from: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
+        to:userdto.Email, // Recipient's email address
+        subject: 'Welcome To Fly Far Ladies',
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
 
 
    // login user
