@@ -73,7 +73,7 @@ export class BookingService {
    async sendBookingDetailsToUser(booking: Booking, ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
-      const { MainTitle, TripType, Price } = tourPackage as Tourpackage;
+      const { MainTitle, TripType} = tourPackage as Tourpackage;
   
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({

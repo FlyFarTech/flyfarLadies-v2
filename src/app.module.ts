@@ -38,11 +38,10 @@ import { User } from './userProfile/entitties/user-login.entity';
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
-      
       type:'mysql',
       username:"flyfarladies",
       password: "F3r2r28AsiFzW8Ke",
-      host: "192.241.145.76",
+      host: "159.89.238.24",
       database:"flyfarladies",
 
       // username:process.env.LOCAL_USERNAME,
@@ -73,7 +72,7 @@ import { User } from './userProfile/entitties/user-login.entity';
         Installment,
         Booking
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
