@@ -38,6 +38,7 @@ import { User } from './userProfile/entitties/user-login.entity';
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
+      
       type:'mysql',
       username:"flyfarladies",
       password: "F3r2r28AsiFzW8Ke",
