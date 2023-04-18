@@ -59,7 +59,7 @@ private visitedImageRepo: Repository<VisitedPlace>
 ){}
 
 async  findOne(Id: number) {
-    const gettourpackage =  this.TourpackageRepo.findOne({where:{Id},relations:{
+    const gettourpackage = await this.TourpackageRepo.findOne({where:{Id},relations:{
       albumImages:true,
       vistitedImages:true,
       mainimage:true,
@@ -70,30 +70,45 @@ async  findOne(Id: number) {
       highlights:true,
       tourpackageplans:true,
       refundpolicys:true
-
-
-      
-  
     }});
     return gettourpackage;
   }
 
-  async FindAllPackages(){
-    const packages= await this.TourpackageRepo.find( {relations:{
-      albumImages:true,
-      vistitedImages:true,
-      mainimage:true,
-      exclusions:true,
-      installments:true,
-      PackageInclusions:true,
-      BookingPolicys:true,
-      highlights:true,
-      tourpackageplans:true,
-      refundpolicys:true
-    }
-  })
+
+  async  FindAllPackages() {
+     // replace with your repository
+    const packages = await this.TourpackageRepo
+      .createQueryBuilder("tourpackage") // replace with your entity alias
+      .leftJoinAndSelect("tourpackage.albumImages", "albumImages")
+      .leftJoinAndSelect("tourpackage.vistitedImages", "vistitedImages")
+      .leftJoinAndSelect("tourpackage.mainimage", "mainimage")
+      .leftJoinAndSelect("tourpackage.tourpackageplans", "tourpackageplans")
+      .leftJoinAndSelect("tourpackage.exclusions", "exclusions")
+      .leftJoinAndSelect("tourpackage.installments", "installments")
+      .leftJoinAndSelect("tourpackage.PackageInclusions", "PackageInclusions")
+      .leftJoinAndSelect("tourpackage.BookingPolicys", "BookingPolicys")
+      .leftJoinAndSelect("tourpackage.highlights", "highlights")
+      .leftJoinAndSelect("tourpackage.refundpolicys", "refundpolicys")
+      .getMany();
     return packages;
-   }
+  }
+
+  // async FindAllPackages(){
+  //   const packages= await this.TourpackageRepo.find({relations:{
+  //     albumImages:true,
+  //     vistitedImages:true,
+  //     mainimage:true,
+  //     exclusions:true,
+  //     installments:true,
+  //     PackageInclusions:true,
+  //     BookingPolicys:true,
+  //     highlights:true,
+  //     tourpackageplans:true,
+  //     refundpolicys:true
+  //   }
+  // })
+  // return packages;
+  //  }
 
   async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string,Country:string):Promise<Tourpackage[]>{
     const [month, year] = StartDate.split(" ")
