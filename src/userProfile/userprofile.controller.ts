@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileFieldsInterceptor} from "@nestjs/platform-express";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
 import { Repository } from "typeorm";
@@ -9,12 +9,22 @@ import { UserProfileServices } from "./userprofile.services";
 import { S3Service } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user-login.dto";
 import { User } from "./entitties/user-login.entity";
-
-
+import { Cheque } from "./entitties/cheq.entity";
+import { Cash } from "./entitties/cash.entity";
+import { BankTransfer } from "./entitties/BankTransfer.entity";
+import { CardPayment } from "./entitties/Cardpayment.entity";
+import { Bkash } from "./entitties/Bkash.entity";
+import { MobileBanking } from "./entitties/MobileBanking.enity";
 
 @Controller('user')
 export class userProfileController {
    constructor(@InjectRepository(Userprofile) private profileRepository: Repository<Userprofile>,
+   @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
+     @InjectRepository(Cash) private CashRepository:Repository<Cash>,
+     @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
+     @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
+     @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
+     @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
       private readonly UserProfileServices: UserProfileServices,
       private s3service: S3Service
       ) {}
@@ -24,10 +34,10 @@ export class userProfileController {
          @Body() userDto:CreateUserDto,
          @Req() req: Request,
          @Res() res: Response){
-            const ExistUser = await this.UserProfileServices.getUserByEmail(userDto.Email)
-            if(ExistUser){
-               throw new HttpException("User Already Exist,please try again with another email", HttpStatus.BAD_REQUEST,);
-            }
+         const ExistUser = await this.UserProfileServices.getUserByEmail(userDto.Email)
+         if(ExistUser){
+            throw new HttpException("User Already Exist,please try again with another email", HttpStatus.BAD_REQUEST,);
+         }
          await this.UserProfileServices.Register(userDto)
          return res.status(HttpStatus.CREATED).json({ status:"success", message:'user register successfully'});
       }
@@ -60,7 +70,6 @@ export class userProfileController {
       @Body() body,
       @Req() req: Request,
       @Res() res: Response) {
-
       const PassportsizephotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0])
       const passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0])
       const userprofile = new Userprofile();
@@ -124,8 +133,6 @@ export class userProfileController {
       return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
    }
 
-
-
    @Post(':Uid/:Id')
    async addToWishlist(
       @Param('Uid', new ParseUUIDPipe) Uid: string,
@@ -151,5 +158,90 @@ export class userProfileController {
    async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
       return this.UserProfileServices.getWishlist(Uid);
    }
+
+   @Post(":uuid/Addcheque/deposit")
+   @UseInterceptors(
+     FileInterceptor('chequeattachmenturl')
+   )
+   async AddCheque(
+   @Param('uuid', ParseUUIDPipe) uuid: string,
+   @UploadedFile()
+   file: Express.Multer.File,
+   @Req() req: Request,
+   @Res() res: Response,
+   @Body() body,)  {
+      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      if (!Profile) {
+         throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
+      }
+      const chequeattachmenturl = await this.s3service.Addimage(file)
+      const cheque = new Cheque();
+      cheque.chequeattachmenturl =chequeattachmenturl
+      cheque.ChequeNumber =req.body.ChequeNumber
+      cheque.BankName =req.body.BankName
+      cheque.ChequeDate =req.body.ChequeDate
+      cheque.Reference =req.body.Reference
+      cheque.Amount=req.body.Amount
+      await this.chequeRepository.save({...cheque,Profile})
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
+   }
+
+
+   @Post(':uuid/mobilebankingdeposit')
+   @UseInterceptors(
+     FileInterceptor('MobBankattachmenturl'),
+   )
+   async addmobilebankinbg( @UploadedFile()
+   file: Express.Multer.File,
+   @Param('uuid') uuid: string,
+   @Req() req: Request,
+   @Res() res: Response) {
+      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      if (!Profile) {
+         throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
+      }
+      const MobBankattachmenturl = await this.s3service.Addimage(file)
+      const MobileBank = new MobileBanking();
+      MobileBank.MobBankattachmenturl =MobBankattachmenturl
+      MobileBank.AgentType =req.body.AgentType
+      MobileBank.AccountNumber =req.body.AccountNumber
+      MobileBank.Reference =req.body.Reference
+      MobileBank.TransactionId =req.body.TransactionId
+      MobileBank.Amount =req.body.Amount
+      const amount = MobileBank.Amount
+      MobileBank.Amount =amount
+      const fee = amount*1.5/100
+      MobileBank.GatewayFee =fee
+      const depositedAmount=amount-fee
+      MobileBank.DepositedAmount =depositedAmount
+      await this.MobileBankingRepository.save({...MobileBank})
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
+   }
+
+   @Post(':uuid/bankdeposit')
+   @UseInterceptors(
+      FileInterceptor('Bankattachmenturl'),
+   )
+   async addBankDeposit( @UploadedFile()
+   file: Express.Multer.File,
+   @Param('uuid') uuid: string,
+   @Req() req: Request,
+   @Res() res: Response) {
+      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      if (!Profile) {
+         throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
+      }
+      const Bankattachmenturl = await this.s3service.Addimage(file)
+      const Banktransfer = new BankTransfer();
+      Banktransfer.Bankattachmenturl =Bankattachmenturl
+      Banktransfer.DepositFrom = req.body.DepositFrom
+      Banktransfer.DepositTo = req.body.DepositTo
+      Banktransfer.ChequeDate =req.body.ChequeDate
+      Banktransfer.TransactionId =req.body.TransactionId
+      Banktransfer.Amount =req.body.Amount
+      await this.BankTransferRepository.save({...Banktransfer,Profile})
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
+}
+
 
 }

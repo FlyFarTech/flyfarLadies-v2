@@ -61,7 +61,7 @@ export class Tourpackage {
     mainimage:Promise<MainImage[]> ;
     @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,{lazy:true})
     albumImages: Promise<AlbumImage[]> ;
-
+    
     @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage,{lazy:true} )
     vistitedImages:Promise<VisitedPlace[]>;
     @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, {lazy:true})
@@ -88,7 +88,7 @@ export class Tourpackage {
     bookings:Promise<Booking[]>   
 
     @ManyToOne(() => Userprofile, userprofile => userprofile.wishlist,{lazy:true})
-    usersWishlist: Userprofile[];
+    usersWishlist:Promise<Userprofile[]>;
 
 
 }

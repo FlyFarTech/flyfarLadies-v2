@@ -10,6 +10,12 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './Dto/user-login.dto';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
+import { Cheque } from './entitties/cheq.entity';
+import { Cash } from './entitties/cash.entity';
+import { BankTransfer } from './entitties/BankTransfer.entity';
+import { CardPayment } from './entitties/Cardpayment.entity';
+import { Bkash } from './entitties/Bkash.entity';
+import { MobileBanking } from './entitties/MobileBanking.enity';
 
 
 @Injectable()
@@ -19,7 +25,13 @@ export class UserProfileServices {
       @InjectRepository(Tourpackage)
       private readonly tourPackageRepository: Repository<Tourpackage>,
      @InjectRepository(User) private userRepo:Repository<User>,
-   private readonly jwtService:JwtService) {}
+     @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
+     @InjectRepository(Cash) private CashRepository:Repository<Cash>,
+     @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
+     @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
+     @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
+     @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
+     private readonly jwtService:JwtService) {}
 
 
    // Register user
@@ -105,9 +117,9 @@ export class UserProfileServices {
    
 
 
-   async addToWishlist(Uid: string, Id: number): Promise<Userprofile> {
+   async addToWishlist(uuid: string, Id: number): Promise<Userprofile> {
       const user = await this.userRepository.findOne({
-         where: { Uid }, relations: {
+         where: { uuid }, relations: {
             wishlist: true
          }
       });
@@ -120,8 +132,8 @@ export class UserProfileServices {
      return await this.userRepository.save(user);
    }
 
-   async removeFromWishlist(Uid: string, Id: number): Promise<Userprofile> {
-      const user = await this.userRepository.findOne({ where: { Uid }, relations: { wishlist: true } });
+   async removeFromWishlist(uuid: string, Id: number): Promise<Userprofile> {
+      const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
       if (!user) {
          // Handle error, user or tourpackage not found
          throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
@@ -130,8 +142,8 @@ export class UserProfileServices {
       return this.userRepository.save(user);
    }
 
-   async getWishlist(Uid: string): Promise<Userprofile> {
-      return await this.userRepository.findOne({ where: { Uid } });
+   async getWishlist(uuid: string): Promise<Userprofile> {
+      return await this.userRepository.findOne({ where: { uuid } });
    }
 
    // get All User
@@ -144,8 +156,8 @@ export class UserProfileServices {
    }
 
    // find user by Id
-   async FindProfile(Uid: string): Promise<Userprofile> {
-      const Profile = await this.userRepository.findOne({ where: { Uid } });
+   async FindProfile(uuid: string): Promise<Userprofile> {
+      const Profile = await this.userRepository.findOne({ where: { uuid } });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
@@ -153,12 +165,12 @@ export class UserProfileServices {
    }
 
    // update user
-   async UpdateProfile(Uid: string, updtetProfilrDto: updateUserProfileDto) {
-      const updtetProfileDto = await this.userRepository.update({ Uid }, { ...updtetProfilrDto })
+   async UpdateProfile(uuid: string, updtetProfilrDto: updateUserProfileDto) {
+      const updtetProfileDto = await this.userRepository.update({ uuid }, { ...updtetProfilrDto })
       return updtetProfileDto;
    }
 
-   // Delte User
+   // Delete User
    async DeleteProfile(Id: string) {
       const Profile = await this.userRepository.delete(Id)
       return Profile;

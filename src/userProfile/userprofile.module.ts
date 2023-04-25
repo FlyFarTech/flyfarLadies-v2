@@ -11,9 +11,15 @@ import { User } from "./entitties/user-login.entity";
 import { jwtConstants } from "./constant";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.strategy";
+import { Cash } from "./entitties/cash.entity";
+import { Cheque } from "./entitties/cheq.entity";
+import { BankTransfer } from "./entitties/BankTransfer.entity";
+import { CardPayment } from "./entitties/Cardpayment.entity";
+import { Bkash } from "./entitties/Bkash.entity";
+import { MobileBanking } from "./entitties/MobileBanking.enity";
 
 @Module({
-   imports: [TypeOrmModule.forFeature([Userprofile,Tourpackage,User]),   
+   imports: [TypeOrmModule.forFeature([Userprofile,Tourpackage,User,Cheque,Cash, BankTransfer, CardPayment, Bkash, MobileBanking]),   
    JwtModule.register({
       secret: jwtConstants.secret,
       signOptions:{expiresIn:'1d'},

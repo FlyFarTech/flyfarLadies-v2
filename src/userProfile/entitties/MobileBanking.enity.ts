@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Userprofile } from "./userprofile.entities"
 
 
 @Entity()
@@ -21,4 +22,7 @@ export class MobileBanking{
    DepositedAmount:number
    @Column()
    MobBankattachmenturl:string
+   @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.mobilebankDeposit)
+   @JoinColumn({name:'bank_Id',})
+   userprofile:Userprofile
 }

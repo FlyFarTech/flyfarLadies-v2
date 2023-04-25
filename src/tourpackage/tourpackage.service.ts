@@ -136,7 +136,7 @@ async  findOne(Id: number) {
     const [month, year] = StartDate.split(" ")
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
-    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage');
+    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage',);
     queryBuilder.leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
     queryBuilder.leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
     queryBuilder.leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
@@ -158,8 +158,23 @@ async  findOne(Id: number) {
     if (tourPackages.length === 0) {
       throw new HttpException('No tour packages found for the specified criteria',HttpStatus.BAD_REQUEST,); // Custom error message for no tour packages found
   }
-    return tourPackages;
-  
+
+  await Promise.all(tourPackages.map(async tourPackage => {
+    await Promise.all([
+        tourPackage.mainimage,
+        tourPackage.albumImages,
+        tourPackage.vistitedImages,
+        tourPackage.tourpackageplans,
+        tourPackage.exclusions,
+        tourPackage.installments,
+        tourPackage.PackageInclusions,
+        tourPackage.BookingPolicys,
+        tourPackage.highlights,
+        tourPackage.refundpolicys
+    ]);
+}));
+return tourPackages;
+
   }
 
   async getCityByTripType(TripType: string, StartDate:string): Promise<{City:string, Country:string}[]> {

@@ -1,12 +1,17 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { Column, CreateDateColumn, Entity, Generated, JoinTable, ManyToMany, OneToMany, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Cheque } from './cheq.entity';
+import { Cash } from './cash.entity';
+import { MobileBanking } from './MobileBanking.enity';
+import { BankTransfer } from './BankTransfer.entity';
 
 @Entity()
 export class Userprofile {
-   @PrimaryColumn({type:"uuid"})
-   @Generated("uuid")
-   Uid:string
+   @PrimaryGeneratedColumn('uuid')
+   @IsString()
+   uuid:string
    @Column({nullable:true})
    NameTitle:string
    @Column()   
@@ -60,6 +65,15 @@ export class Userprofile {
    CreatedAt:Date
    @UpdateDateColumn()
    UpdatedAt:Date
-   @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {eager:true})
+
+   @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
    wishlist: Tourpackage[];
+   @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
+   chequeDeposit:Promise<Cheque[]>
+   @OneToMany(() => Cash, (cash) => cash.userprofile,{lazy:true})
+   cashDeposit:Promise<Cash[]>
+   @OneToMany(() => MobileBanking, (mobilebank) => mobilebank.userprofile,{lazy:true})
+   mobilebankDeposit:Promise<MobileBanking[]> 
+   @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
+   bankDeposit:Promise<BankTransfer[]> 
 }

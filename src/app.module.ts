@@ -25,15 +25,13 @@ import { S3Module } from './s3/s3.module';
 import { Installment } from './tourpackage/entities/installment.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entity/booking.entity';
-import { DepositModule } from './deposit_request/deposit.module';
-import { Cheque } from './deposit_request/Entity/cheq.entity';
-import { Cash } from './deposit_request/Entity/cash.entity';
-import { BankTransfer } from './deposit_request/Entity/BankTransfer.entity';
-import { CardPayment } from './deposit_request/Entity/Cardpayment.entity';
-import { Bkash } from './deposit_request/Entity/Bkash.entity';
-import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
 import { User } from './userProfile/entitties/user-login.entity';
-
+import { Cheque } from './userProfile/entitties/cheq.entity';
+import { Cash } from './userProfile/entitties/cash.entity';
+import { BankTransfer } from './userProfile/entitties/BankTransfer.entity';
+import { CardPayment } from './userProfile/entitties/Cardpayment.entity';
+import { Bkash } from './userProfile/entitties/Bkash.entity';
+import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -72,7 +70,7 @@ import { User } from './userProfile/entitties/user-login.entity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
@@ -81,7 +79,6 @@ import { User } from './userProfile/entitties/user-login.entity';
     S3Module,
     ConfigModule,
     BookingModule,
-    DepositModule,
   ],
   controllers: [AppController],
   providers: [AppService],

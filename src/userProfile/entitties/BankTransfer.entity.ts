@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Userprofile } from "./userprofile.entities"
 
 
 @Entity()
@@ -17,4 +18,7 @@ export class BankTransfer{
    Amount:number
    @Column({nullable:true})
    Bankattachmenturl:string
+   @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.bankDeposit)
+   @JoinColumn({name:'deposit_Id',})
+   userprofile:Userprofile
 }
