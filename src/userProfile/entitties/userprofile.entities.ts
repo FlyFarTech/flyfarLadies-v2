@@ -19,7 +19,7 @@ export class Userprofile {
    @Column()
    DOB:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:false})
    Gender:string
    @IsNotEmpty()
    @Column()

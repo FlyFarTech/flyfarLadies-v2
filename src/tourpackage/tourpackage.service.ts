@@ -75,7 +75,7 @@ async  findOne(Id: number) {
   }
 
 
-  async  FindAllPackages() {
+  async  FindAllPackages(page=1,pageSize=10) {
      // replace with your repository
     const packages = await this.TourpackageRepo
       .createQueryBuilder("tourpackage") // replace with your entity alias
@@ -89,6 +89,8 @@ async  findOne(Id: number) {
       .leftJoinAndSelect("tourpackage.BookingPolicys", "BookingPolicys")
       .leftJoinAndSelect("tourpackage.highlights", "highlights")
       .leftJoinAndSelect("tourpackage.refundpolicys", "refundpolicys")
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
       .getMany();
     return packages;
   }

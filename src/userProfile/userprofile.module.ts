@@ -16,7 +16,7 @@ import { JwtStrategy } from "./jwt.strategy";
    imports: [TypeOrmModule.forFeature([Userprofile,Tourpackage,User]),   
    JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions:{expiresIn:'30d'},
+      signOptions:{expiresIn:'1d'},
    }), S3Module,TourpackageModule,],
 
    controllers:[userProfileController],
