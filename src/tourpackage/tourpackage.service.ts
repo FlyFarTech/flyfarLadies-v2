@@ -75,25 +75,25 @@ async  findOne(Id: number) {
   }
 
 
-  async  FindAllPackages(page=1,pageSize=10) {
-     // replace with your repository
-    const packages = await this.TourpackageRepo
-      .createQueryBuilder("tourpackage") // replace with your entity alias
-      .leftJoinAndSelect("tourpackage.albumImages", "albumImages")
-      .leftJoinAndSelect("tourpackage.vistitedImages", "vistitedImages")
-      .leftJoinAndSelect("tourpackage.mainimage", "mainimage")
-      .leftJoinAndSelect("tourpackage.tourpackageplans", "tourpackageplans")
-      .leftJoinAndSelect("tourpackage.exclusions", "exclusions")
-      .leftJoinAndSelect("tourpackage.installments", "installments")
-      .leftJoinAndSelect("tourpackage.PackageInclusions", "PackageInclusions")
-      .leftJoinAndSelect("tourpackage.BookingPolicys", "BookingPolicys")
-      .leftJoinAndSelect("tourpackage.highlights", "highlights")
-      .leftJoinAndSelect("tourpackage.refundpolicys", "refundpolicys")
-      .skip((page - 1) * pageSize)
-      .take(pageSize)
-      .getMany();
-    return packages;
-  }
+  // async  FindAllPackages(page=1,pageSize=10) {
+  //    // replace with your repository
+  //   const packages = await this.TourpackageRepo
+  //     .createQueryBuilder("tourpackage") // replace with your entity alias
+  //     .leftJoinAndSelect("tourpackage.albumImages", "albumImages")
+  //     .leftJoinAndSelect("tourpackage.vistitedImages", "vistitedImages")
+  //     .leftJoinAndSelect("tourpackage.mainimage", "mainimage")
+  //     .leftJoinAndSelect("tourpackage.tourpackageplans", "tourpackageplans")
+  //     .leftJoinAndSelect("tourpackage.exclusions", "exclusions")
+  //     .leftJoinAndSelect("tourpackage.installments", "installments")
+  //     .leftJoinAndSelect("tourpackage.PackageInclusions", "PackageInclusions")
+  //     .leftJoinAndSelect("tourpackage.BookingPolicys", "BookingPolicys")
+  //     .leftJoinAndSelect("tourpackage.highlights", "highlights")
+  //     .leftJoinAndSelect("tourpackage.refundpolicys", "refundpolicys")
+  //     .skip((page - 1) * pageSize)
+  //     .take(pageSize)
+  //     .getMany();
+  //   return packages;
+  // }
 
   // async FindAllPackages():Promise<Tourpackage[]>{
   //   const packages= await this.TourpackageRepo.find({relations:{
@@ -111,6 +111,26 @@ async  findOne(Id: number) {
   // })
   // return packages;
   //  }
+
+  async FindAllPackages() {
+    const packages = await this.TourpackageRepo.find({
+      relations: ['mainimage'],
+    });
+    
+    for (const pack of packages) {
+      await pack.albumImages;
+      await pack.vistitedImages;
+      await pack.tourpackageplans;
+      await pack.exclusions;
+      await pack.installments;
+      await pack.PackageInclusions;
+      await pack.BookingPolicys;
+      await pack.highlights;
+      await pack.refundpolicys;
+    }
+    return packages;
+  }
+  
 
   async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string,Country:string):Promise<Tourpackage[]>{
     const [month, year] = StartDate.split(" ")
