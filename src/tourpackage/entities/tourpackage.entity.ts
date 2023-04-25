@@ -58,7 +58,7 @@ export class Tourpackage {
     coverimageurl: string
 
     @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage, )
-    mainimage:Promise<MainImage[]> ;
+    mainimage:MainImage[] ;
     @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,)
     albumImages: AlbumImage[];
 
