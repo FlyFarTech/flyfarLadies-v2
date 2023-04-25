@@ -57,36 +57,37 @@ export class Tourpackage {
     @Column({ nullable: true })
     coverimageurl: string
 
-    @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage,{lazy:true} )
+    @OneToMany(() => MainImage, (mainimage) => mainimage.tourpackage, )
     mainimage:Promise<MainImage[]> ;
-    @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,{lazy:true})
-    albumImages: Promise<AlbumImage[]>;
+    @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,)
+    albumImages: AlbumImage[];
 
-    @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage,{lazy:true} )
-    vistitedImages: Promise<VisitedPlace[]> ;
+    @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage, )
+    vistitedImages: VisitedPlace[];
     @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, )
-    exclusions: Promise<packageexcluions[]> ;
-    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage,{lazy:true} )
-    PackageInclusions: Promise<Packageinclusion[]> ;
+    exclusions: packageexcluions[];
+    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage, )
+    PackageInclusions: Packageinclusion[];
 
-    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage, {lazy:true})
-    BookingPolicys:Promise<bookingpolicy[]> ;
+    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,)
+    BookingPolicys: bookingpolicy[];
 
-    @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage,{lazy:true} )
-    highlights: Promise<packagehighlight[]> ;
+    @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage, )
+    highlights: packagehighlight[];
 
-    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage,{lazy:true})
-    refundpolicys:Promise<refundpolicy[]> ;
+    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage)
+    refundpolicys: refundpolicy[];
 
-    @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage,{lazy:true})
-    tourpackageplans: Promise<tourpackageplan[]> ;
+    @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage)
+    tourpackageplans: tourpackageplan[];
 
-    @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )
-    installments:Promise<Installment[]>;
+    @OneToMany(() => Installment, (installment) => installment.tourpackage, )
+    installments: Installment[];
 
-    @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
-    bookings:Promise<Booking[]>;
-    @ManyToOne(() => Userprofile, userprofile => userprofile.wishlist,{lazy:true})
+    @OneToMany(() => Booking, (booking) => booking.tourPackage)
+    bookings: Booking[]
+
+    @ManyToOne(() => Userprofile, userprofile => userprofile.wishlist)
     usersWishlist: Userprofile[];
 
 
