@@ -19,7 +19,7 @@ export class Userprofile {
    @Column()
    LastName:string
    @IsEmail()
-   @Column()
+   @Column({default:null})
    Email:string
    @Column()
    DOB:string
@@ -65,7 +65,6 @@ export class Userprofile {
    CreatedAt:Date
    @UpdateDateColumn()
    UpdatedAt:Date
-
    @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
    wishlist: Tourpackage[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})

@@ -158,8 +158,7 @@ async  findOne(Id: number) {
     if (tourPackages.length === 0) {
       throw new HttpException('No tour packages found for the specified criteria',HttpStatus.BAD_REQUEST,); // Custom error message for no tour packages found
   }
-
-return tourPackages;
+ return tourPackages;
 
   }
 
