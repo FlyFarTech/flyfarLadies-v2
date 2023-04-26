@@ -5,25 +5,25 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 export class Traveller {
    @PrimaryGeneratedColumn('uuid')
    TravellerId:string
-   @Column()   
+   @Column({default:null})   
    FirstName:string
-   @Column()
+   @Column({default:null})
    LastName:string
-   @Column()
+   @Column({default:null})
    DOB:string
    @Column({nullable:true})
    Email: string
-   @Column()
+   @Column({default:null})
    Gender:string
-   @Column()
+   @Column({default:null})
    Price:number
-   @Column()
+   @Column({default:null})
    Nationality:string
-   @Column()
+   @Column({default:null})
    PassportNumber:string
-   @Column()
+   @Column({default:null})
    PassportExpireDate:string
-   @Column()
+   @Column({default:null})
    PassportCopyURL:string
    @CreateDateColumn()
    CreatedAt:Date

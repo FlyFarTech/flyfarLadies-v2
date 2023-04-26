@@ -182,11 +182,16 @@ export class userProfileController {
       cheque.ChequeDate =req.body.ChequeDate;
       cheque.Reference =req.body.Reference;
       cheque.Amount=parseFloat(req.body.Amount)
-      Profile.Wallet += cheque.Amount
       cheque.userprofile =Profile;
       await this.chequeRepository.save(cheque);
+      Profile.Wallet += cheque.Amount
       await this.profileRepository.save(Profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
+   }
+
+   @Get('cheques/pending')
+   async PendingChequeDeposit(): Promise<Cheque[]> {
+   return await this.chequeRepository.find({});
    }
 
 

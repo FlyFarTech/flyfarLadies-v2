@@ -43,7 +43,7 @@ export class Userprofile {
    @IsNotEmpty()
    @Column({default:null})
    PassportNumber:string
-   @Column()
+   @Column({default:null})
    Wallet:number
    @IsNotEmpty()
    @Column({default:null})
