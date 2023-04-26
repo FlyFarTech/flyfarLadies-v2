@@ -19,6 +19,6 @@ export class Cheque{
    @Column()
    chequeattachmenturl:string
    @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.chequeDeposit)
-   @JoinColumn({name:'cheque_Id'})
+   @JoinColumn({name:'deposit_Id'})
    userprofile:Userprofile
 }

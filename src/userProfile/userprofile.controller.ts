@@ -1,10 +1,10 @@
+import { Userprofile } from 'src/userProfile/entitties/userprofile.entities';
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
 import { Repository } from "typeorm";
 import { updateUserProfileDto } from "./Dto/update-userprofile.dto";
-import { Userprofile } from "./entitties/userprofile.entities";
 import { UserProfileServices } from "./userprofile.services";
 import { S3Service } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user-login.dto";
@@ -15,6 +15,7 @@ import { BankTransfer } from "./entitties/BankTransfer.entity";
 import { CardPayment } from "./entitties/Cardpayment.entity";
 import { Bkash } from "./entitties/Bkash.entity";
 import { MobileBanking } from "./entitties/MobileBanking.enity";
+import { profile } from "console";
 
 @Controller('user')
 export class userProfileController {
@@ -106,12 +107,12 @@ export class userProfileController {
 
    // // get user dashbboard
    @Get(':id')
-   async TravellerDashboard(
+   async UserDashboard(
       @Param('id') id: string,
       @Req() req: Request,
       @Res() res: Response) {
-      const traveller = await this.UserProfileServices.FindProfile(id);
-      return res.status(HttpStatus.OK).json({ traveller });
+      const dashboard = await this.UserProfileServices.FindProfile(id);
+      return res.status(HttpStatus.OK).json({ dashboard });
    }
 
    @Patch(':id')
@@ -168,26 +169,28 @@ export class userProfileController {
    @UploadedFile()
    file: Express.Multer.File,
    @Req() req: Request,
-   @Res() res: Response,
-   @Body() body,)  {
+   @Res() res: Response)  {
       const Profile = await this.profileRepository.findOne({ where: { uuid } });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
       const chequeattachmenturl = await this.s3service.Addimage(file)
       const cheque = new Cheque();
-      cheque.chequeattachmenturl =chequeattachmenturl
-      cheque.ChequeNumber =req.body.ChequeNumber
-      cheque.BankName =req.body.BankName
-      cheque.ChequeDate =req.body.ChequeDate
-      cheque.Reference =req.body.Reference
-      cheque.Amount=req.body.Amount
-      await this.chequeRepository.save({...cheque,Profile})
+      cheque.chequeattachmenturl =chequeattachmenturl;
+      cheque.ChequeNumber =req.body.ChequeNumber;
+      cheque.BankName =req.body.BankName;
+      cheque.ChequeDate =req.body.ChequeDate;
+      cheque.Reference =req.body.Reference;
+      cheque.Amount=parseFloat(req.body.Amount)
+      Profile.Wallet += cheque.Amount
+      cheque.userprofile =Profile;
+      await this.chequeRepository.save(cheque);
+      await this.profileRepository.save(Profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
    }
 
 
-   @Post(':uuid/mobilebankingdeposit')
+   @Post(':uuid/mobilebanking/deposit')
    @UseInterceptors(
      FileInterceptor('MobBankattachmenturl'),
    )
@@ -207,18 +210,21 @@ export class userProfileController {
       MobileBank.AccountNumber =req.body.AccountNumber
       MobileBank.Reference =req.body.Reference
       MobileBank.TransactionId =req.body.TransactionId
-      MobileBank.Amount =req.body.Amount
+      MobileBank.Amount =parseFloat(req.body.Amount)
       const amount = MobileBank.Amount
       MobileBank.Amount =amount
       const fee = amount*1.5/100
       MobileBank.GatewayFee =fee
       const depositedAmount=amount-fee
       MobileBank.DepositedAmount =depositedAmount
-      await this.MobileBankingRepository.save({...MobileBank})
+      Profile.Wallet += depositedAmount
+      MobileBank.userprofile =Profile;
+      await this.MobileBankingRepository.save(MobileBank)
+      await this.profileRepository.save(Profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
 
-   @Post(':uuid/bankdeposit')
+   @Post(':uuid/bank/deposit')
    @UseInterceptors(
       FileInterceptor('Bankattachmenturl'),
    )
@@ -238,8 +244,11 @@ export class userProfileController {
       Banktransfer.DepositTo = req.body.DepositTo
       Banktransfer.ChequeDate =req.body.ChequeDate
       Banktransfer.TransactionId =req.body.TransactionId
-      Banktransfer.Amount =req.body.Amount
-      await this.BankTransferRepository.save({...Banktransfer,Profile})
+      Banktransfer.Amount =parseFloat(req.body.Amount)
+      Profile.Wallet += Banktransfer.Amount
+      Banktransfer.userprofile =Profile;
+      await this.BankTransferRepository.save({...Banktransfer})
+      await this.profileRepository.save(Profile)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
 }
 

@@ -14,57 +14,55 @@ export class Userprofile {
    uuid:string
    @Column({nullable:true})
    NameTitle:string
-   @Column()   
+   @Column({default:null})   
    FirstName:string
-   @Column()
+   @Column({default:null})
    LastName:string
    @IsEmail()
    @Column({default:null})
    Email:string
-   @Column()
+   @Column({default:null})
    DOB:string
    @IsNotEmpty()
    @Column({default:false})
    Gender:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    Profession:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    Nationality:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    NID:string
-   @Column()
+   @Column({default:null})
    Address:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    Mobile:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    PassportNumber:string
-   @IsNotEmpty()
    @Column()
+   Wallet:number
+   @IsNotEmpty()
+   @Column({default:null})
    PassportExpireDate:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    PassportCopy:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    PassportsizephotoUrl: string
    @IsNotEmpty() 
-   @Column()
+   @Column({default:null})
    FaceBookId:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    WhatsApp:string
    @IsNotEmpty()
-   @Column()
+   @Column({default:null})
    LinkedIn:string
-   @CreateDateColumn()
-   CreatedAt:Date
-   @UpdateDateColumn()
-   UpdatedAt:Date
    @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
    wishlist: Tourpackage[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})

@@ -24,15 +24,14 @@ export class UserProfileServices {
       @InjectRepository(Userprofile) private userRepository: Repository<Userprofile>,
       @InjectRepository(Tourpackage)
       private readonly tourPackageRepository: Repository<Tourpackage>,
-     @InjectRepository(User) private userRepo:Repository<User>,
-     @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
-     @InjectRepository(Cash) private CashRepository:Repository<Cash>,
-     @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
-     @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
-     @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
-     @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
-     private readonly jwtService:JwtService) {}
-
+      @InjectRepository(User) private userRepo:Repository<User>,
+      @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
+      @InjectRepository(Cash) private CashRepository:Repository<Cash>,
+      @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
+      @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
+      @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
+      @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
+      private readonly jwtService:JwtService) {}
 
    // Register user
    async Register(userDto:CreateUserDto){
@@ -43,7 +42,6 @@ export class UserProfileServices {
       return this.generateToken(newuser)
    }
     
-
    // generate token 
    async generateToken(userdto: CreateUserDto): Promise<string> {
       const payload = { email: userdto.Email };
@@ -52,7 +50,6 @@ export class UserProfileServices {
       await this.userRepo.save(userdto);
       return token;
     }
-
 
     async sendRegisterSuccecess(userdto: CreateUserDto) {
       // Create a transporter with SMTP configuration
@@ -114,21 +111,17 @@ export class UserProfileServices {
       async getUserByEmail(Email: string): Promise<User> {
          return this.userRepo.findOne({ where:{Email} });
        }
-   
-
 
    async addToWishlist(uuid: string, Id: number): Promise<Userprofile> {
       const user = await this.userRepository.findOne({
-         where: { uuid }, relations: {
-            wishlist: true
-         }
+         where: { uuid }  
       });
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
       if (!user || !tourPackage) {
          // Handle error, user or tourpackage not found
          throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
       }
-      user.wishlist.push(tourPackage);
+      user.wishlist.push(tourPackage)
      return await this.userRepository.save(user);
    }
 
@@ -157,7 +150,7 @@ export class UserProfileServices {
 
    // find user by Id
    async FindProfile(uuid: string): Promise<Userprofile> {
-      const Profile = await this.userRepository.findOne({ where: { uuid } });
+      const Profile = await this.userRepository.findOne({ where: { uuid }, relations:['chequeDeposit','wishlist','mobilebankDeposit','bankDeposit'] });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
