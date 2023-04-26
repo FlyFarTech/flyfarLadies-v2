@@ -159,20 +159,6 @@ async  findOne(Id: number) {
       throw new HttpException('No tour packages found for the specified criteria',HttpStatus.BAD_REQUEST,); // Custom error message for no tour packages found
   }
 
-  await Promise.all(tourPackages.map(async tourPackage => {
-    await Promise.all([
-        tourPackage.mainimage,
-        tourPackage.albumImages,
-        tourPackage.vistitedImages,
-        tourPackage.tourpackageplans,
-        tourPackage.exclusions,
-        tourPackage.installments,
-        tourPackage.PackageInclusions,
-        tourPackage.BookingPolicys,
-        tourPackage.highlights,
-        tourPackage.refundpolicys
-    ]);
-}));
 return tourPackages;
 
   }
