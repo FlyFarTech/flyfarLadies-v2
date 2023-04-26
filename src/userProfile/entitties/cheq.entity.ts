@@ -11,7 +11,7 @@ export enum PaymentStatus {
 @Entity()
 export class Cheque{
    @PrimaryGeneratedColumn('uuid')
-   id:string
+   cheqdepoid:string
    @Column()
    ChequeNumber:string
    @Column()
@@ -24,6 +24,8 @@ export class Cheque{
    Amount:number
    @Column()
    chequeattachmenturl:string
+   @Column()
+   rejectionReason:string
 
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;

@@ -1,15 +1,15 @@
 import { Userprofile } from 'src/userProfile/entitties/userprofile.entities';
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { Repository } from "typeorm";
+import { Equal, FindOperator, Repository } from "typeorm";
 import { updateUserProfileDto } from "./Dto/update-userprofile.dto";
 import { UserProfileServices } from "./userprofile.services";
 import { S3Service } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user-login.dto";
 import { User } from "./entitties/user-login.entity";
-import { Cheque } from "./entitties/cheq.entity";
+import { Cheque, PaymentStatus } from "./entitties/cheq.entity";
 import { Cash } from "./entitties/cash.entity";
 import { BankTransfer } from "./entitties/BankTransfer.entity";
 import { CardPayment } from "./entitties/Cardpayment.entity";
@@ -184,14 +184,62 @@ export class userProfileController {
       cheque.Amount=parseFloat(req.body.Amount)
       cheque.userprofile =Profile;
       await this.chequeRepository.save(cheque);
-      Profile.Wallet += cheque.Amount
-      await this.profileRepository.save(Profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
    }
 
    @Get('cheques/pending')
    async PendingChequeDeposit(): Promise<Cheque[]> {
-   return await this.chequeRepository.find({});
+      const status: PaymentStatus = PaymentStatus.PENDING;
+   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
+   }
+
+   @Patch('cheques/:cheqdepoid/approve')
+   async approveCheque(
+   @Param('cheqdepoid') cheqdepoid: string,
+   @Body('uuid') uuid:string,
+   @Req() req: Request,
+   @Res() res: Response
+
+   ) {
+   const cheque = await this.chequeRepository.findOne({where:{cheqdepoid}})
+   if (!cheque) {
+      throw new NotFoundException('Cheque not found');
+   }
+   if(cheque.status !== PaymentStatus.PENDING)
+   {
+       throw new NotFoundException('Deposit request already approved or Rejected');
+   }
+   cheque.status =  PaymentStatus.APPROVED
+   await this.chequeRepository.save(cheque);
+   const profile = await this.profileRepository.findOne({ where: {uuid} });
+   if (!profile) {
+      throw new NotFoundException('user not found');
+   }
+   profile.Wallet += cheque.Amount;
+   await this.profileRepository.save(profile);
+   return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
+   }
+
+   
+   @Patch('cheques/:cheqdepoid/reject')
+   async rejectCheque(
+   @Param('cheqdepoid') cheqdepoid: string,
+   @Body() body: { reason: string },
+   @Req() req: Request,
+   @Res() res: Response
+   ){
+   const cheque = await this.chequeRepository.findOne({where:{cheqdepoid}})
+   if (!cheque) {
+      throw new NotFoundException('Cheque not found');
+   }
+   if(cheque.status !== PaymentStatus.PENDING)
+   {
+      throw new NotFoundException('Deposit request already rejected or approved');
+   }
+   cheque.status =  PaymentStatus.REJECTED
+   cheque.rejectionReason = `Rejected due to ${body.reason}`;
+   await this.chequeRepository.save(cheque);
+   return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
    }
 
 
