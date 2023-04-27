@@ -37,10 +37,10 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarladies",
-      password: "F3r2r28AsiFzW8Ke",
-      host: "159.89.238.24",
-      database:"flyfarladies",
+      username:"flyfarin_fflv2",
+      password: "123Next2$",
+      host: "flyfarint.com",
+      database:"flyfarin_fflv2",
 
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,
