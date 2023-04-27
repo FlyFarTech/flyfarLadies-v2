@@ -160,6 +160,8 @@ export class userProfileController {
       return this.UserProfileServices.getWishlist(Uid);
    }
 
+
+   //cheque details
    @Post(":uuid/Addcheque/deposit")
    @UseInterceptors(
      FileInterceptor('chequeattachmenturl')
@@ -185,12 +187,6 @@ export class userProfileController {
       cheque.userprofile =Profile;
       await this.chequeRepository.save(cheque);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
-   }
-
-   @Get('cheques/pending')
-   async PendingChequeDeposit(): Promise<Cheque[]> {
-      const status: PaymentStatus = PaymentStatus.PENDING;
-   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
    }
 
    @Patch('cheques/:cheqdepoid/approve')
@@ -220,7 +216,6 @@ export class userProfileController {
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
    }
 
-   
    @Patch('cheques/:cheqdepoid/reject')
    async rejectCheque(
    @Param('cheqdepoid') cheqdepoid: string,
@@ -238,10 +233,33 @@ export class userProfileController {
    }
    cheque.status =  PaymentStatus.REJECTED
    cheque.rejectionReason = `Rejected due to ${body.reason}`;
+   if(!body.reason){
+      throw new NotFoundException('please add reason');
+   }
    await this.chequeRepository.save(cheque);
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
    }
 
+   @Get('cheques/pending')
+   async PendingChequeDeposit(): Promise<Cheque[]> {
+      const status: PaymentStatus = PaymentStatus.PENDING;
+   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
+   }
+
+
+   @Get('cheques/approved')
+   async ApprovedChequeDeposit(): Promise<Cheque[]> {
+      const status: PaymentStatus = PaymentStatus.APPROVED;
+   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.APPROVED)}});
+   }
+
+   @Get('cheques/reject')
+   async rejectChequeDeposit(): Promise<Cheque[]> {
+      const status: PaymentStatus = PaymentStatus.REJECTED;
+   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.REJECTED)}});
+   }
+
+   //mobileBank details
 
    @Post(':uuid/mobilebanking/deposit')
    @UseInterceptors(
@@ -270,12 +288,84 @@ export class userProfileController {
       MobileBank.GatewayFee =fee
       const depositedAmount=amount-fee
       MobileBank.DepositedAmount =depositedAmount
-      Profile.Wallet += depositedAmount
       MobileBank.userprofile =Profile;
       await this.MobileBankingRepository.save(MobileBank)
-      await this.profileRepository.save(Profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
+      @Patch('mobilebank/:mobbankid/approve')
+      async ApproveMobile(
+      @Param('mobbankid') mobbankid: string,
+      @Body('uuid') uuid:string,
+      @Req() req: Request,
+      @Res() res: Response
+
+      ) {
+      const mobnank = await this.MobileBankingRepository.findOne({where:{mobbankid}})
+      if (!mobnank) {
+         throw new NotFoundException('Deposit not found');
+      }
+      if(mobnank.status !== PaymentStatus.PENDING)
+      {
+            throw new NotFoundException('Deposit request already approved or Rejected');
+      }
+      mobnank.status =  PaymentStatus.APPROVED
+      await this.MobileBankingRepository.save(mobnank);
+      const profile = await this.profileRepository.findOne({ where: {uuid} });
+      if (!profile) {
+         throw new NotFoundException('user not found');
+      }
+      profile.Wallet += mobnank.Amount;
+      await this.profileRepository.save(profile);
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
+      }
+
+
+      @Patch('mobilebank/:mobbankid/reject')
+      async RejectMobilebankDeposit (
+      @Param('mobbankid') mobbankid: string,
+      @Body() body: { reason: string },
+      @Req() req: Request,
+      @Res() res: Response
+      ){
+      const mobilebank = await this.MobileBankingRepository.findOne({where:{mobbankid}})
+      if (!mobilebank) {
+         throw new NotFoundException('Deposit not found');
+      }
+      if(mobilebank.status !== PaymentStatus.PENDING)
+      {
+         throw new NotFoundException('Deposit request already rejected or approved');
+      }
+      mobilebank.status =  PaymentStatus.REJECTED
+
+      mobilebank.rejectionReason = `Rejected due to ${body.reason}`;
+      if(!body.reason){
+         throw new NotFoundException(' please add reason');
+      }
+      await this.MobileBankingRepository.save(mobilebank);
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
+      }
+
+      
+   @Get('mobilebank/pending')
+   async PendingMobileBankDeposit(): Promise<MobileBanking[]> {
+      const status: PaymentStatus = PaymentStatus.PENDING;
+   return await this.MobileBankingRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
+   }
+
+
+   @Get('mobilebank/approved')
+   async ApprovedmobilebankDeposit(): Promise<MobileBanking[]> {
+      const status: PaymentStatus = PaymentStatus.APPROVED;
+   return await this.MobileBankingRepository.find({where:{status:  Equal(PaymentStatus.APPROVED)}});
+   }
+
+   @Get('mobilebank/reject')
+   async rejectmobilebankDeposit(): Promise<MobileBanking[]> {
+      const status: PaymentStatus = PaymentStatus.REJECTED;
+   return await this.MobileBankingRepository.find({where:{status:  Equal(PaymentStatus.REJECTED)}});
+   }
+
+
 
    @Post(':uuid/bank/deposit')
    @UseInterceptors(
@@ -303,7 +393,77 @@ export class userProfileController {
       await this.BankTransferRepository.save({...Banktransfer})
       await this.profileRepository.save(Profile)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
-}
+   }
 
+      @Patch('bank/:bankdepoid/approve')
+      async ApproveBankDepo(
+      @Param('	bankdepoid') 	bankdepoid: string,
+      @Body('uuid') uuid:string,
+      @Req() req: Request,
+      @Res() res: Response
+      ) {
+      const bank = await this.BankTransferRepository.findOne({where:{bankdepoid}})
+      if (!bank) {
+         throw new NotFoundException('Deposit not found');
+      }
+      if(bank.status !== PaymentStatus.PENDING)
+      {
+         throw new NotFoundException('Deposit request already approved or Rejected');
+      }
+      bank.status =  PaymentStatus.APPROVED
+      await this.BankTransferRepository.save(bank);
+      const profile = await this.profileRepository.findOne({ where: {uuid} });
+      if (!profile) {
+         throw new NotFoundException('user not found');
+      }
+      profile.Wallet += bank.Amount;
+      await this.profileRepository.save(profile);
+      return res.status(HttpStatus.OK).send({ status: "success", message:" Deposit Request approved"})
+      }
+
+
+      @Patch('bank/:bankdepoid/reject')
+      async RejectbankDeposit (
+      @Param('bankdepoid') bankdepoid: string,
+      @Body() body: { reason: string },
+      @Req() req: Request,
+      @Res() res: Response
+      ){
+      const bank = await this.BankTransferRepository.findOne({where:{bankdepoid}})
+      if (!bank) {
+         throw new NotFoundException('Deposit not found');
+      }
+      if(bank.status !== PaymentStatus.PENDING)
+      {
+         throw new NotFoundException('Deposit request already rejected or approved');
+      }
+      bank.status =  PaymentStatus.REJECTED
+   
+      bank.rejectionReason = `Rejected due to ${body.reason}`;
+      if(!body.reason){
+         throw new NotFoundException(' please add reason');
+      }
+      await this.BankTransferRepository.save(bank);
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
+      }
+
+      @Get('bank/pending')
+      async PendingBankDeposit(): Promise<BankTransfer[]> {
+         const status: PaymentStatus = PaymentStatus.PENDING;
+      return await this.BankTransferRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
+      }
+   
+   
+      @Get('bank/approved')
+      async ApprovebankDeposit(): Promise<BankTransfer[]> {
+         const status: PaymentStatus = PaymentStatus.APPROVED;
+      return await this.BankTransferRepository.find({where:{status:  Equal(PaymentStatus.APPROVED)}});
+      }
+   
+      @Get('bank/reject')
+      async rejectbankDeposit(): Promise<BankTransfer[]> {
+         const status: PaymentStatus = PaymentStatus.REJECTED;
+      return await this.BankTransferRepository.find({where:{status:  Equal(PaymentStatus.REJECTED)}});
+      }
 
 }

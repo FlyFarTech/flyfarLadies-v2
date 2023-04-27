@@ -2,10 +2,16 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "t
 import { Userprofile } from "./userprofile.entities"
 
 
+export enum PaymentStatus {
+   PENDING = 'pending',
+   APPROVED = 'approved',
+   REJECTED = 'rejected',
+ }
+
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
-   id:string
+   bankdepoid:string
    @Column({nullable:true})
    DepositFrom:string
    @Column({nullable:true})
@@ -18,6 +24,10 @@ export class BankTransfer{
    Amount:number
    @Column({nullable:true})
    Bankattachmenturl:string
+   @Column()
+   rejectionReason:string
+   @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
+   status: PaymentStatus;
    @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.bankDeposit)
    @JoinColumn({name:'deposit_Id',})
    userprofile:Userprofile
