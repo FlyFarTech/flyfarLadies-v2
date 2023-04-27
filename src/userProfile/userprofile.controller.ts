@@ -205,12 +205,12 @@ export class userProfileController {
    {
        throw new NotFoundException('Deposit request already approved or Rejected');
    }
-   cheque.status =  PaymentStatus.APPROVED
-   await this.chequeRepository.save(cheque);
    const profile = await this.profileRepository.findOne({ where: {uuid} });
    if (!profile) {
       throw new NotFoundException('user not found');
    }
+   cheque.status =  PaymentStatus.APPROVED
+   await this.chequeRepository.save(cheque);
    profile.Wallet += cheque.Amount;
    await this.profileRepository.save(profile);
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
@@ -308,12 +308,12 @@ export class userProfileController {
       {
             throw new NotFoundException('Deposit request already approved or Rejected');
       }
-      mobnank.status =  PaymentStatus.APPROVED
-      await this.MobileBankingRepository.save(mobnank);
       const profile = await this.profileRepository.findOne({ where: {uuid} });
       if (!profile) {
          throw new NotFoundException('user not found');
       }
+      mobnank.status =  PaymentStatus.APPROVED
+      await this.MobileBankingRepository.save(mobnank);
       profile.Wallet += mobnank.Amount;
       await this.profileRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
@@ -336,7 +336,6 @@ export class userProfileController {
          throw new NotFoundException('Deposit request already rejected or approved');
       }
       mobilebank.status =  PaymentStatus.REJECTED
-
       mobilebank.rejectionReason = `Rejected due to ${body.reason}`;
       if(!body.reason){
          throw new NotFoundException(' please add reason');
@@ -410,12 +409,12 @@ export class userProfileController {
       {
          throw new NotFoundException('Deposit request already approved or Rejected');
       }
-      bank.status =  PaymentStatus.APPROVED
-      await this.BankTransferRepository.save(bank);
       const profile = await this.profileRepository.findOne({ where: {uuid} });
       if (!profile) {
          throw new NotFoundException('user not found');
       }
+      bank.status =  PaymentStatus.APPROVED
+      await this.BankTransferRepository.save(bank);
       profile.Wallet += bank.Amount;
       await this.profileRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message:" Deposit Request approved"})
