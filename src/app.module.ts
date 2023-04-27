@@ -37,15 +37,15 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarin_fflv2",
-      password: "123Next2$",
-      host: "flyfarint.com",
-      database:"flyfarin_fflv2",
+      username:"flyfarladies",
+      password: "F3r2r28AsiFzW8Ke",
+      host: "159.89.238.24",
+      database:"flyfarladies",
 
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,
-      // database:process.env.LOCAL_DATABASE,  
+      // database:process.env.LOCAL_DATABASE,
       port:3306,
       entities: [Admin,
         User,
@@ -70,7 +70,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
         Installment,
         Booking
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
