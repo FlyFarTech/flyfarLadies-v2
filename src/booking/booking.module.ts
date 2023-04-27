@@ -6,11 +6,11 @@ import { Module } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingController } from './booking.controller';
 import { Booking } from './entity/booking.entity';
-import { User } from 'src/userProfile/entitties/user-login.entity';
+import { Userprofile } from 'src/userProfile/entitties/userprofile.entities';
 
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,User]),S3Module],
+  imports:[TypeOrmModule.forFeature([Tourpackage, Traveller, Booking,Userprofile]),S3Module],
   controllers: [BookingController],
   providers: [BookingService]
 })

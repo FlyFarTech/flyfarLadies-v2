@@ -1,5 +1,5 @@
 
-import { Body, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, HttpStatus, Post, Req, Res, Patch } from '@nestjs/common';
 import { Controller, Get, Param } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Express } from 'express';
@@ -18,10 +18,20 @@ export class BookingController {
     @Param('Id') Id:number,
     @Req() req: Request,
     @Res() res: Response) { 
-
     await this.bookingService.BookTravelpackage(Id,bookingDto)
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
+  }
+
+  @Patch(':Bookingid/approved')
+  async Approvedbooking(
+    @Param('Bookingid') Bookingid:string,
+    @Body('uuid') uuid:string,
+    @Req() req: Request,
+    @Res() res: Response) { 
+    await this.bookingService.approveBooking(Bookingid, uuid)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
+
   @Get(':Bookingid')
   async getBooking(
     @Param('Bookingid') Bookingid: string) {
