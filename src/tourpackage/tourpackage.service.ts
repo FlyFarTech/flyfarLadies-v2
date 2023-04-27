@@ -58,59 +58,31 @@ private AlbumImageRepo: Repository<AlbumImage>,
 private visitedImageRepo: Repository<VisitedPlace>
 ){}
 
-async  findOne(Id: number) {
-    const gettourpackage = await this.TourpackageRepo.findOne({where:{Id},relations:{
-      albumImages:true,
-      vistitedImages:true,
-      mainimage:true,
-      exclusions:true,
-      installments:true,
-      PackageInclusions:true,
-      BookingPolicys:true,
-      highlights:true,
-      tourpackageplans:true,
-      refundpolicys:true
-    }});
-    return gettourpackage;
-  }
+async findOne(Id: number) {
+  const gettourpackage = await this.TourpackageRepo.findOne(
+    { 
+      where: { Id },
+      relations: [] // remove all relations from initial query
+    }
+  );
+  // lazy load all desired relations
+  await Promise.all([
+    gettourpackage.mainimage,
+    gettourpackage.vistitedImages,
+    gettourpackage.albumImages,
+    gettourpackage.exclusions,
+    gettourpackage.installments,
+    gettourpackage.PackageInclusions,
+    gettourpackage.BookingPolicys,
+    gettourpackage.highlights,
+    gettourpackage.tourpackageplans,
+    gettourpackage.refundpolicys
+  ]);
+
+  return gettourpackage;
+}
 
 
-  // async  FindAllPackages(page=1,pageSize=10) {
-  //    // replace with your repository
-  //   const packages = await this.TourpackageRepo
-  //     .createQueryBuilder("tourpackage") // replace with your entity alias
-  //     .leftJoinAndSelect("tourpackage.albumImages", "albumImages")
-  //     .leftJoinAndSelect("tourpackage.vistitedImages", "vistitedImages")
-  //     .leftJoinAndSelect("tourpackage.mainimage", "mainimage")
-  //     .leftJoinAndSelect("tourpackage.tourpackageplans", "tourpackageplans")
-  //     .leftJoinAndSelect("tourpackage.exclusions", "exclusions")
-  //     .leftJoinAndSelect("tourpackage.installments", "installments")
-  //     .leftJoinAndSelect("tourpackage.PackageInclusions", "PackageInclusions")
-  //     .leftJoinAndSelect("tourpackage.BookingPolicys", "BookingPolicys")
-  //     .leftJoinAndSelect("tourpackage.highlights", "highlights")
-  //     .leftJoinAndSelect("tourpackage.refundpolicys", "refundpolicys")
-  //     .skip((page - 1) * pageSize)
-  //     .take(pageSize)
-  //     .getMany();
-  //   return packages;
-  // }
-
-  // async FindAllPackages():Promise<Tourpackage[]>{
-  //   const packages= await this.TourpackageRepo.find({relations:{
-  //     albumImages:true,
-  //     vistitedImages:true,
-  //     mainimage:true,
-  //     exclusions:true,
-  //     installments:true,
-  //     PackageInclusions:true,
-  //     BookingPolicys:true,
-  //     highlights:true,
-  //     tourpackageplans:true,
-  //     refundpolicys:true
-  //   }
-  // })
-  // return packages;
-  //  }
 
   async FindAllPackages() {
     const packages = await this.TourpackageRepo.find({

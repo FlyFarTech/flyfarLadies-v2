@@ -46,6 +46,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,
       // database:process.env.LOCAL_DATABASE,
+
       port:3306,
       entities: [Admin,
         User,
@@ -70,7 +71,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize: false
     }),
     UserModule,
     TourpackageModule,

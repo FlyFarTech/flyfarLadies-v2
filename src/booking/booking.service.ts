@@ -55,7 +55,6 @@ export class BookingService {
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
         TotalPrice +=newTraveler.Price
-        
        
    }
       const newbooking = await this.bookingRepository.create({
@@ -71,18 +70,7 @@ export class BookingService {
    }
 
    async sendBookingDetailsToUser(booking: Booking, ) {
-      // const token = req.headers.authorization;
-      // if (!token) {
-      //    throw new HttpException( 'Authorization token not provided.', HttpStatus.BAD_REQUEST,);
-      //  }
-      // const decodedToken = jwt.verify(token, 'YOUR_SECRET_KEY');
-      // const userEmail = (decodedToken as { Email: string }).Email;
-      // if (!userEmail) {
-      //    throw new HttpException(
-      //      " User email not found in the decoded token",
-      //       HttpStatus.BAD_REQUEST,
-      //    );
-      //  }
+ 
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
       const { MainTitle, TripType} = tourPackage as Tourpackage;
