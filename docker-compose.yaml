@@ -2,9 +2,6 @@ version: '3'
 services:
   api_flyfarladies:
     build: .
-    image: api_flyfarladies:latest
-    # environment:
-    #   - NODE_OPTIONS=--max-old-space-size=4096 #memeory heap
     ports:
       - "5000:5000"
     networks:
