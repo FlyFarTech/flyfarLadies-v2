@@ -1,6 +1,6 @@
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column } from 'typeorm';
+import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum BookingStatus {
@@ -20,7 +20,6 @@ export class Booking{
    //   const id = parseInt(this.Bookingid.replace(/-/g, '').substr(0, 8), 16);
    //   return prefix + id.toString().padStart(5, '0');
    // }
-
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
    tourPackage: Tourpackage;
    @ManyToMany(() => Traveller,)
