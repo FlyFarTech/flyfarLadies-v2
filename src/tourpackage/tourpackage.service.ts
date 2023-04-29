@@ -109,9 +109,9 @@ async findOne(Id: number) {
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
     const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage',);
-    queryBuilder.loadRelationCountAndMap('tourPackage.mainimage', 'mainimage')
-    queryBuilder.loadRelationCountAndMap('tourPackage.albumImages', 'albumImages')
-    queryBuilder.loadRelationCountAndMap('tourPackage.vistitedImages', 'vistitedImages')
+    queryBuilder.leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
+    queryBuilder.leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
+    queryBuilder.leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
     queryBuilder.leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions')
     queryBuilder.leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys')
     queryBuilder.leftJoinAndSelect('tourPackage.highlights', 'highlights')
