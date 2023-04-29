@@ -31,9 +31,9 @@ export class Tourpackage {
     @Column({ nullable: true })
     Discount: number
     @Column({ nullable: true })
-    StartDate: string;
+    StartDate: Date;
     @Column({ nullable: true })
-    EndDate: string;
+    EndDate: Date;
     @Column({ nullable: true })
     TripType: string;
     @Column({ nullable: true })

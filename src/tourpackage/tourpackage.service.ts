@@ -117,10 +117,14 @@ async findOne(Id: number) {
         "tourPackage.Price",
         "tourPackage.Location",
         "tourPackage.City",
-        "tourPackage.endDate",
+        "tourPackage.EndDate",
         "tourPackage.TripType",
         "tourPackage.City",
         "tourPackage.Country",
+        "tourPackage.StartDate",
+        "tourPackage.EndDate",
+        "tourPackage.TotalDuration",
+        
       ])
       .where("tourPackage.TripType = :TripType", { TripType })
       .andWhere(
