@@ -16,5 +16,5 @@ RUN npm run build
 # Expose any necessary ports
 EXPOSE 5000
 
-# Start the application with pm2
+# Start the application
 CMD node  --max-old-space-size=8192 dist/main.js
