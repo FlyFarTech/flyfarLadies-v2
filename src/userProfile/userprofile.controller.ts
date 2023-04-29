@@ -84,6 +84,8 @@ export class userProfileController {
       userprofile.Profession = req.body.Profession
       userprofile.Nationality = req.body.Nationality
       userprofile.Mobile = req.body.Mobile
+      userprofile.Email = req.body.Email
+      userprofile.Address = req.body.Address
       userprofile.NID = req.body.NID
       userprofile.PassportExpireDate = req.body.PassportExpireDate
       userprofile.PassportNumber = req.body.PassportNumber

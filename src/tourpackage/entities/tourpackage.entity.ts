@@ -64,18 +64,18 @@ export class Tourpackage {
     
     @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage,{lazy:true} )
     vistitedImages:Promise<VisitedPlace[]>;
-    @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, {lazy:true})
+    @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, {lazy:true, eager:true})
     exclusions:Promise<packageexcluions[]>;
-    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage,{lazy:true} )
+    @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage,{lazy:true, eager:true} )
     PackageInclusions:Promise<Packageinclusion[]> ;
 
-    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,{lazy:true})
+    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,{lazy:true, eager:true})
     BookingPolicys:Promise<bookingpolicy[]> ;
 
     @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage,{lazy:true} )
     highlights:Promise<packagehighlight[]>;
 
-    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage,{lazy:true})
+    @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage,{lazy:true, eager:true})
     refundpolicys:Promise<refundpolicy[]>;
 
     @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage,{lazy:true})

@@ -1,3 +1,4 @@
+import { profile } from 'console';
 
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,7 +25,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto,uuid:string ){
+   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto,Email:string ){
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -33,7 +34,7 @@ export class BookingService {
             HttpStatus.BAD_REQUEST,
          );
       }
-
+      const userprofile = await this.profileRepository.findOne({ where: {Email}})
       
       const arrayoftravlers =[]
       let TotalPrice:number = 0
@@ -52,18 +53,22 @@ export class BookingService {
         arrayoftravlers.push(newTraveler)
         TotalPrice +=newTraveler.Price
       }
+  
       const newbooking = await this.bookingRepository.create({
          tourPackage,
          travelers: arrayoftravlers,
          TotalPrice:TotalPrice
+      
       })
+      newbooking.Email =userprofile.Email
+      newbooking.FirstName = userprofile.FirstName
       const savebooking= await this.bookingRepository.save(newbooking)
-      await this.sendBookingDetailsToUser(savebooking,uuid);
+      await this.sendBookingDetailsToUser(savebooking,Email);
       return savebooking;
    
    }
 
-   async sendBookingDetailsToUser(booking: Booking,uuid:string ) {
+   async sendBookingDetailsToUser(booking: Booking,Email:string ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
       const { MainTitle, TripType} = tourPackage as Tourpackage;
@@ -105,7 +110,7 @@ export class BookingService {
         pdfDoc.on('error', reject);
       });
 
-      const useremail = await this.profileRepository.findOne({where:{uuid}})
+      const useremail = await this.profileRepository.findOne({where:{Email}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
@@ -134,7 +139,8 @@ export class BookingService {
       return bookedpackage;
    }
 
-   async approveBooking(Bookingid: string, uuid:string,): Promise<void> {
+   async approveBooking(Bookingid: string, uuid:string,
+    Email:string,): Promise<void> {
       // Find the booking object with the provided ID
       const booking = await this.bookingRepository.findOne({where:{Bookingid}});
       if(booking.status !== BookingStatus.PENDING)
@@ -154,7 +160,7 @@ export class BookingService {
          booking.status = BookingStatus.APPROVED;
          booking.UpdatedAt = new Date()
          const updatedBooking = await this.bookingRepository.save(booking);
-         await this.sendBookingApprovalToUser(updatedBooking,uuid);
+         await this.sendBookingApprovalToUser(updatedBooking, Email);
       }
       else{
          throw new BadRequestException('Insufficient balance! please deposit to your wallet');
@@ -163,7 +169,7 @@ export class BookingService {
     }
 
 
-    async sendBookingApprovalToUser(booking: Booking,uuid:string) {
+    async sendBookingApprovalToUser(booking: Booking,Email:string) {
       const { Bookingid,TotalPrice } = booking;
       // Get tour package details
    
@@ -199,12 +205,14 @@ export class BookingService {
         pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
         pdfDoc.on('error', reject);
       });
-      const useremail = await this.profileRepository.findOne({where:{uuid}})
+      const bookedemail = await this.bookingRepository.findOne({ where: {Email} });
+
+      
   
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: useremail.Email, // Recipient's email address
+        to: bookedemail.Email, // Recipient's email address
         subject: 'Booking Confirmation',
         text: `congrates! your booking has been confrimed`,
         attachments: [

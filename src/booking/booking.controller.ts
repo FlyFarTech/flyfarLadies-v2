@@ -27,9 +27,10 @@ export class BookingController {
   async Approvedbooking(
     @Param('Bookingid') Bookingid:string,
     @Body('uuid') uuid:string,
+    Email:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.approveBooking(Bookingid, uuid)
+    await this.bookingService.approveBooking(Bookingid, uuid, Email)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
 

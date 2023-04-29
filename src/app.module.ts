@@ -41,7 +41,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
       password: "123Next2$",
       host: "flyfarint.com",
       database:"flyfarin_fflv2",
-
+      
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,
