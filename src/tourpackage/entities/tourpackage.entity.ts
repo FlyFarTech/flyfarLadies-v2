@@ -1,6 +1,6 @@
 
 import { Booking } from "src/booking/entity/booking.entity";
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { AlbumImage } from "./albumimage.entity";
 import { bookingpolicy } from "./bookingpolicy.entity";
 import { Installment } from "./installment.entity";
@@ -30,9 +30,9 @@ export class Tourpackage {
     City: string
     @Column({ nullable: true })
     Discount: number
-    @Column({ nullable: true })
+    @Column({default:null,type:'date' })
     StartDate: Date;
-    @Column({ nullable: true })
+    @Column({default:null,type:'date' })
     EndDate: Date;
     @Column({ nullable: true })
     TripType: string;

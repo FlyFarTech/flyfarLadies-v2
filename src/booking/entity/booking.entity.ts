@@ -14,12 +14,6 @@ export enum BookingStatus {
 export class Booking{
    @PrimaryGeneratedColumn('uuid')
    Bookingid:string
-   // @Column()
-   // get customBookingId(): string {
-   //   const prefix = 'FFLBKID:';
-   //   const id = parseInt(this.Bookingid.replace(/-/g, '').substr(0, 8), 16);
-   //   return prefix + id.toString().padStart(5, '0');
-   // }
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
    tourPackage: Tourpackage;
    @ManyToMany(() => Traveller,)
