@@ -104,35 +104,35 @@ async findOne(Id: number) {
   }
   
 
-  async GetTourpackageByDiffirentfield(TripType:string, City:string,StartDate:string,Country:string):Promise<Tourpackage[]>{
-    const [month, year] = StartDate.split(" ")
+  async GetTourpackageByDiffirentfield(TripType:string, City:string, StartDate:string, Country:string): Promise<Tourpackage[]> {
+    const [month, year] = StartDate.split(" ");
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
-    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage',);
-    queryBuilder.leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
-    queryBuilder.leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-    queryBuilder.leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
-    queryBuilder.leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions')
-    queryBuilder.leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys')
-    queryBuilder.leftJoinAndSelect('tourPackage.highlights', 'highlights')
-    queryBuilder.leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans')
-    queryBuilder.leftJoinAndSelect('tourPackage.refundpolicys', 'refundpolicys')
-    queryBuilder.leftJoinAndSelect('tourPackage.installments', 'installments')
-    queryBuilder.leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
+    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage');
+    queryBuilder.loadRelationCountAndMap('tourPackage.imageCount', 'tourPackage.albumImages');
+    queryBuilder.loadRelationCountAndMap('tourPackage.visitedImagesCount', 'tourPackage.visitedImages');
+    queryBuilder.leftJoinAndSelect('tourPackage.mainimage', 'mainimage');
+    queryBuilder.leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions');
+    queryBuilder.leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys');
+    queryBuilder.leftJoinAndSelect('tourPackage.highlights', 'highlights');
+    queryBuilder.leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans');
+    queryBuilder.leftJoinAndSelect('tourPackage.refundpolicys', 'refundpolicys');
+    queryBuilder.leftJoinAndSelect('tourPackage.installments', 'installments');
+    queryBuilder.leftJoinAndSelect('tourPackage.exclusions', 'exclusions');
     queryBuilder.where('tourPackage.TripType = :TripType', { TripType });
     queryBuilder.andWhere(new Brackets(qb => {
-      qb.where('tourPackage.City = :City', { City })
-        .orWhere('tourPackage.Country = :Country', { Country });
-  }));
+        qb.where('tourPackage.City = :City', { City })
+            .orWhere('tourPackage.Country = :Country', { Country });
+    }));
     queryBuilder.andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth });
     queryBuilder.andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
     const tourPackages = await queryBuilder.getMany();
     if (tourPackages.length === 0) {
-      throw new HttpException('No tour packages found for the specified criteria',HttpStatus.BAD_REQUEST,); // Custom error message for no tour packages found
-  }
- return tourPackages;
+        throw new HttpException('No tour packages found for the specified criteria', HttpStatus.BAD_REQUEST);
+    }
+    return tourPackages;
+}
 
-  }
 
   async getCityByTripType(TripType: string, StartDate:string): Promise<{City:string, Country:string}[]> {
     const [month, year] = StartDate.split(" ")
