@@ -16,9 +16,10 @@ export class BookingController {
 
     @Body() bookingDto: CreateBookingDto,
     @Param('Id') Id:number,
+    uuid:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.BookTravelpackage(Id,bookingDto)
+    await this.bookingService.BookTravelpackage(Id,bookingDto,uuid)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
 

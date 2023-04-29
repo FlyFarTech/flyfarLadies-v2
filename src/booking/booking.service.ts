@@ -24,7 +24,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto ){
+   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto,uuid:string ){
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -33,6 +33,8 @@ export class BookingService {
             HttpStatus.BAD_REQUEST,
          );
       }
+
+      
       const arrayoftravlers =[]
       let TotalPrice:number = 0
       for(const traveler of travelers){
@@ -56,12 +58,12 @@ export class BookingService {
          TotalPrice:TotalPrice
       })
       const savebooking= await this.bookingRepository.save(newbooking)
-      await this.sendBookingDetailsToUser(savebooking,);
+      await this.sendBookingDetailsToUser(savebooking,uuid);
       return savebooking;
    
    }
 
-   async sendBookingDetailsToUser(booking: Booking, ) {
+   async sendBookingDetailsToUser(booking: Booking,uuid:string ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
       const { MainTitle, TripType} = tourPackage as Tourpackage;
@@ -102,12 +104,12 @@ export class BookingService {
         pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
         pdfDoc.on('error', reject);
       });
-    
-  
+
+      const useremail = await this.profileRepository.findOne({where:{uuid}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: "khademul@flyfarint.com", // Recipient's email address
+        to: useremail.Email, // Recipient's email address
         subject: 'Booking Details',
         text: 'Please find the attached PDF file.',
         attachments: [
@@ -152,7 +154,7 @@ export class BookingService {
          booking.status = BookingStatus.APPROVED;
          booking.UpdatedAt = new Date()
          const updatedBooking = await this.bookingRepository.save(booking);
-         await this.sendBookingApprovalToUser(updatedBooking);
+         await this.sendBookingApprovalToUser(updatedBooking,uuid);
       }
       else{
          throw new BadRequestException('Insufficient balance! please deposit to your wallet');
@@ -161,7 +163,7 @@ export class BookingService {
     }
 
 
-    async sendBookingApprovalToUser(booking: Booking,) {
+    async sendBookingApprovalToUser(booking: Booking,uuid:string) {
       const { Bookingid,TotalPrice } = booking;
       // Get tour package details
    
@@ -197,12 +199,12 @@ export class BookingService {
         pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
         pdfDoc.on('error', reject);
       });
-    
+      const useremail = await this.profileRepository.findOne({where:{uuid}})
   
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: "khademul@flyfarint.com", // Recipient's email address
+        to: useremail.Email, // Recipient's email address
         subject: 'Booking Confirmation',
         text: `congrates! your booking has been confrimed`,
         attachments: [
