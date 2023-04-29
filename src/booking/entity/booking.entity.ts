@@ -10,6 +10,23 @@ export enum BookingStatus {
  }
 
 
+
+
+// export class CustomUuidGenerator implements ValueGenerator<string> {
+//   private static lastNumber = 0;
+//   private prefix: string;
+
+//   constructor(prefix: string) {
+//     this.prefix = prefix;
+//   }
+
+//   public async generate(): Promise<string> {
+//     CustomUuidGenerator.lastNumber += 1;
+//     return `${this.prefix}${CustomUuidGenerator.lastNumber.toString().padStart(4, '0')}`;
+//   }
+// }
+
+
 @Entity()
 export class Booking{
    @PrimaryGeneratedColumn('uuid')

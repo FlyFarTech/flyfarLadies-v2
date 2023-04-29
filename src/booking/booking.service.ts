@@ -36,11 +36,12 @@ export class BookingService {
       const arrayoftravlers =[]
       let TotalPrice:number = 0
       for(const traveler of travelers){
-      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality, Price} = traveler;
+      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality, Price, Gender} = traveler;
         const newTraveler = new Traveller();
         newTraveler.FirstName = FirstName;
         newTraveler.LastName = LastName;
         newTraveler.Nationality =Nationality
+        newTraveler.Gender =Gender
         newTraveler.DOB =DOB
         newTraveler.PassportNumber =PassportNumber
         newTraveler.PassportExpireDate =PassportExpireDate
