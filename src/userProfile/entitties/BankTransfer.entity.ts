@@ -20,6 +20,8 @@ export class BankTransfer{
    ChequeDate:string
    @Column({nullable:true})
    TransactionId:string
+   @Column({default:null, nullable:true})
+   DepositType:string
    @Column({nullable:true})
    Amount:number
    @Column({nullable:true})

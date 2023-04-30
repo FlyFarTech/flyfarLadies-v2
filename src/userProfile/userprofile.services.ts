@@ -97,7 +97,7 @@ export class UserServices {
       if (!jwtToken) {
          throw new HttpException('JWT token is required', HttpStatus.BAD_REQUEST);
        }
-      const user = await this.userRepo.findOne({ where:{jwtToken} });
+      const user = await this.userRepo.findOne({ where:{jwtToken} ,relations:['chequeDeposit','wishlist','mobilebankDeposit','bankDeposit']});
       if (!user) {
          throw new HttpException("Invalid jwt token", HttpStatus.BAD_REQUEST);
       }
@@ -161,7 +161,6 @@ export class UserServices {
       const Profile = await this.userRepository.delete(Id)
       return Profile;
    }
-
 
    
   async GetCheqDepo(uuid: string, cheqdepoid: string) {

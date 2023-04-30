@@ -196,14 +196,13 @@ export class userProfileController {
       cheque.Amount=parseFloat(req.body.Amount)
       cheque.userprofile =Profile;
       await this.chequeRepository.save(cheque);
-      return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull", })     
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
    }
 
    @Patch('cheques/:cheqdepoid/approve')
    async approveCheque(
    @Param('cheqdepoid') cheqdepoid: string,
    @Body('uuid') uuid:string,
-   @Req() req: Request,
    @Res() res: Response
 
    ) {
@@ -249,7 +248,7 @@ export class userProfileController {
    await this.chequeRepository.save(cheque);
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
    }
-
+  
    @Get('cheques/pending')
    async PendingChequeDeposit(): Promise<Cheque[]> {
       const status: PaymentStatus = PaymentStatus.PENDING;

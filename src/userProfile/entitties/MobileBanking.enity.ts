@@ -29,7 +29,8 @@ export class MobileBanking{
    DepositedAmount:number
    @Column()
    MobBankattachmenturl:string
-
+   @Column({default:null, nullable:true})
+   DepositType:string
    @Column()
    rejectionReason:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })

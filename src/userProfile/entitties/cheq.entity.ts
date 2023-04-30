@@ -2,7 +2,6 @@ import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne,
 import { User } from "./user.entity";
 
 
-
 export enum PaymentStatus {
    PENDING = 'pending',
    APPROVED = 'approved',
@@ -21,6 +20,8 @@ export class Cheque{
    ChequeDate:string
    @Column()
    Reference:string
+   @Column()
+   DepositType:string
    @Column()
    Amount:number
    @Column()

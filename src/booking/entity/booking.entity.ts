@@ -1,8 +1,9 @@
 
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository, Repository } from 'typeorm';
+import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository, Repository, getConnection } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 export enum BookingStatus {
    PENDING = 'pending',
@@ -10,25 +11,13 @@ export enum BookingStatus {
    REJECTED = 'rejected',
  }
 
-
-// export class CustomUuidGenerator implements ValueGenerator<string> {
-//   private static lastNumber = 0;
-//   private prefix: string;
-
-//   constructor(prefix: string) {
-//     this.prefix = prefix;
-//   }
-
-//   public async generate(): Promise<string> {
-//     CustomUuidGenerator.lastNumber += 1;
-//     return `${this.prefix}${CustomUuidGenerator.lastNumber.toString().padStart(4, '0')}`;
-//   }
-// }
-
+let userCount = 0;
 
 @Entity()
 export class Booking{
    @PrimaryGeneratedColumn('uuid')
+   uuid:string
+   @Column()
    Bookingid:string
    @CreateDateColumn()
    CreatedAt:Date
@@ -40,7 +29,7 @@ export class Booking{
    Name:string
    @Column()
    TotalPrice:number
-   @Column()
+   @Column({default:null, nullable:true})
    Wallet:number
    @Column({default:null})
    FaceBookId:string
@@ -52,6 +41,11 @@ export class Booking{
    Mobile:string
    @Column()
    rejectionReason:string
+   @BeforeInsert()
+   generateUserId() {
+      userCount++;
+      this.Bookingid = `FFLB${100 + userCount}`;
+   }
    @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDING })
    status: BookingStatus;
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)

@@ -16,6 +16,8 @@ export class Cash{
    @Column()
    Amount:number
    @Column()
+   DepositType:string
+   @Column()
    cashattachmenturl:string
    @ManyToOne(()=>User, (userprofile)=>userprofile.cashDeposit)
    @JoinColumn({name:'cash_Id'})
