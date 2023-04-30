@@ -256,6 +256,17 @@ export class userProfileController {
    return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
    }
 
+     // get refund policy
+  @Get(':uuid/getcheque/:cheqdepoid')
+  async getchequeDeporequest(
+    @Param('uuid') uuid: string,
+    @Param('cheqdepoid') cheqdepoid: string,
+    @Req() req: Request,
+    @Res() res: Response) {
+    const chequeDeposit= await this.UserServices.GetCheqDepo(uuid, cheqdepoid)
+    return res.status(HttpStatus.OK).json({ chequeDeposit });
+  }
+
 
    @Get('cheques/approved')
    async ApprovedChequeDeposit(): Promise<Cheque[]> {

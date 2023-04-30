@@ -161,4 +161,32 @@ export class UserServices {
       const Profile = await this.userRepository.delete(Id)
       return Profile;
    }
+
+
+   
+  async GetCheqDepo(uuid: string, cheqdepoid: string) {
+   const user = await this.userRepository.findOne({
+     where: {
+      uuid
+     }
+   })
+   if (!user) {
+     throw new HttpException(
+       `User not found with this id=${uuid}`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+   const cheque = await this.chequeRepository.findOne({ where: { cheqdepoid } })
+   if (!cheque) {
+     throw new HttpException(
+       `cheque deposit request does not exist with this id=${cheqdepoid}`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+   return cheque;
+ }
+
+
+
+
 }
