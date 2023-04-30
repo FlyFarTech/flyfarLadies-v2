@@ -1,6 +1,5 @@
 
 import { ConfigModule } from '@nestjs/config';
-import { Userprofile } from './userProfile/entitties/userprofile.entities';
 import { Tourpackage } from './tourpackage/entities/tourpackage.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,7 +24,7 @@ import { S3Module } from './s3/s3.module';
 import { Installment } from './tourpackage/entities/installment.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entity/booking.entity';
-import { User } from './userProfile/entitties/user-login.entity';
+import { User } from './userProfile/entitties/user.entity';
 import { Cheque } from './userProfile/entitties/cheq.entity';
 import { Cash } from './userProfile/entitties/cash.entity';
 import { BankTransfer } from './userProfile/entitties/BankTransfer.entity';
@@ -41,7 +40,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
       password: "123Next2$",
       host: "flyfarint.com",
       database:"flyfarin_fflv2",
-      
+
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,
@@ -65,7 +64,6 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
         packagehighlight,
         bookingpolicy,
         VisitedPlace,
-        Userprofile,
         Traveller,
         refundpolicy,
         Installment,

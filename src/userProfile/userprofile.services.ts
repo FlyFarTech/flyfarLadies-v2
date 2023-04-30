@@ -2,12 +2,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { updateUserProfileDto } from './Dto/update-userprofile.dto';
-import { Userprofile } from './entitties/userprofile.entities';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { User } from './entitties/user-login.entity';
+import { User } from './entitties/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from './Dto/user-login.dto';
+import { CreateUserDto } from './Dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import * as nodemailer from 'nodemailer';
 import { Cheque } from './entitties/cheq.entity';
@@ -19,9 +17,9 @@ import { MobileBanking } from './entitties/MobileBanking.enity';
 
 
 @Injectable()
-export class UserProfileServices {
+export class UserServices {
    constructor(
-      @InjectRepository(Userprofile) private userRepository: Repository<Userprofile>,
+      @InjectRepository(User) private userRepository: Repository<User>,
       @InjectRepository(Tourpackage)
       private readonly tourPackageRepository: Repository<Tourpackage>,
       @InjectRepository(User) private userRepo:Repository<User>,
@@ -112,7 +110,7 @@ export class UserProfileServices {
          return this.userRepo.findOne({ where:{Email} });
        }
 
-   async addToWishlist(uuid: string, Id: number): Promise<Userprofile> {
+   async addToWishlist(uuid: string, Id: number): Promise<User> {
       const user = await this.userRepository.findOne({
          where: { uuid }  
       });
@@ -125,7 +123,7 @@ export class UserProfileServices {
      return await this.userRepository.save(user);
    }
 
-   async removeFromWishlist(uuid: string, Id: number): Promise<Userprofile> {
+   async removeFromWishlist(uuid: string, Id: number): Promise<User> {
       const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
       if (!user) {
          // Handle error, user or tourpackage not found
@@ -135,7 +133,7 @@ export class UserProfileServices {
       return this.userRepository.save(user);
    }
 
-   async getWishlist(uuid: string): Promise<Userprofile> {
+   async getWishlist(uuid: string): Promise<User> {
       return await this.userRepository.findOne({ where: { uuid } });
    }
 
@@ -149,7 +147,7 @@ export class UserProfileServices {
    }
 
    // find user by Id
-   async FindProfile(uuid: string): Promise<Userprofile> {
+   async FindProfile(uuid: string): Promise<User> {
       const Profile = await this.userRepository.findOne({ where: { uuid }, relations:['chequeDeposit','wishlist','mobilebankDeposit','bankDeposit'] });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
@@ -158,11 +156,6 @@ export class UserProfileServices {
    }
 
    // update user
-   async UpdateProfile(uuid: string, updtetProfilrDto: updateUserProfileDto) {
-      const updtetProfileDto = await this.userRepository.update({ uuid }, { ...updtetProfilrDto })
-      return updtetProfileDto;
-   }
-
    // Delete User
    async DeleteProfile(Id: string) {
       const Profile = await this.userRepository.delete(Id)

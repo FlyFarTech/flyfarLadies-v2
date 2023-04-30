@@ -1,17 +1,32 @@
-
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
-import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Cheque } from './cheq.entity';
-import { Cash } from './cash.entity';
-import { MobileBanking } from './MobileBanking.enity';
-import { BankTransfer } from './BankTransfer.entity';
+import { IsEmail } from "@nestjs/class-validator"
+import { IsNotEmpty } from "class-validator"
+import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity"
+import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { Cheque } from "./cheq.entity"
+import { Cash } from "./cash.entity"
+import { MobileBanking } from "./MobileBanking.enity"
+import { BankTransfer } from "./BankTransfer.entity"
 
 @Entity()
-export class Userprofile {
-   @PrimaryGeneratedColumn('uuid')
-   @IsString()
+export class User{
+   @PrimaryColumn({type:"uuid"})
+   @Generated("uuid")
    uuid:string
+   @IsNotEmpty()
+   @Column()
+   Name:string
+   @IsNotEmpty()
+   @Column()
+   Mobile:string
+   @IsEmail()
+   @IsNotEmpty()
+   @Column()
+   Email:string
+   @IsNotEmpty()
+   @Column()
+   Password:string
+   @Column({nullable:true})
+   jwtToken:string
    @Column({nullable:true})
    NameTitle:string
    @Column({default:null})   
@@ -19,8 +34,6 @@ export class Userprofile {
    @Column({default:null})
    LastName:string
    @IsEmail()
-   @Column({default:null})
-   Email:string
    @Column({default:null})
    DOB:string
    @IsNotEmpty()
@@ -37,9 +50,6 @@ export class Userprofile {
    NID:string
    @Column({default:null})
    Address:string
-   @IsNotEmpty()
-   @Column({default:null})
-   Mobile:string
    @IsNotEmpty()
    @Column({default:null})
    PassportNumber:string
@@ -73,4 +83,8 @@ export class Userprofile {
    mobilebankDeposit:Promise<MobileBanking[]> 
    @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
    bankDeposit:Promise<BankTransfer[]> 
+   @CreateDateColumn()
+   CreatedAt:Date
+   @UpdateDateColumn()
+   UpdatedAt:Date
 }

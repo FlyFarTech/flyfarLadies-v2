@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
-import { Userprofile } from "./userprofile.entities"
+import { User } from "./user.entity"
+
 
 
 export enum PaymentStatus {
@@ -33,7 +34,7 @@ export class MobileBanking{
    rejectionReason:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
-   @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.mobilebankDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.mobilebankDeposit)
    @JoinColumn({name:'bank_Id',})
-   userprofile:Userprofile
+   userprofile:User
 }

@@ -1,14 +1,12 @@
-import { Userprofile } from 'src/userProfile/entitties/userprofile.entities';
+
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { Equal, FindOperator, Repository } from "typeorm";
-import { updateUserProfileDto } from "./Dto/update-userprofile.dto";
-import { UserProfileServices } from "./userprofile.services";
+import { Equal, FindOperator, Repository } from "typeorm";;
 import { S3Service } from "src/s3/s3.service";
-import { CreateUserDto } from "./Dto/user-login.dto";
-import { User } from "./entitties/user-login.entity";
+import { CreateUserDto } from "./Dto/user.dto";
+import { User } from "./entitties/user.entity";
 import { Cheque, PaymentStatus } from "./entitties/cheq.entity";
 import { Cash } from "./entitties/cash.entity";
 import { BankTransfer } from "./entitties/BankTransfer.entity";
@@ -16,17 +14,18 @@ import { CardPayment } from "./entitties/Cardpayment.entity";
 import { Bkash } from "./entitties/Bkash.entity";
 import { MobileBanking } from "./entitties/MobileBanking.enity";
 import { profile } from "console";
+import { UserServices } from "./userprofile.services";
 
 @Controller('user')
 export class userProfileController {
-   constructor(@InjectRepository(Userprofile) private profileRepository: Repository<Userprofile>,
+   constructor(@InjectRepository(User) private UserRepository: Repository<User>,
    @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
      @InjectRepository(Cash) private CashRepository:Repository<Cash>,
      @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
      @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
      @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
      @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
-      private readonly UserProfileServices: UserProfileServices,
+      private readonly UserServices: UserServices,
       private s3service: S3Service
       ) {}
 
@@ -35,11 +34,11 @@ export class userProfileController {
          @Body() userDto:CreateUserDto,
          @Req() req: Request,
          @Res() res: Response){
-         const ExistUser = await this.UserProfileServices.getUserByEmail(userDto.Email)
+         const ExistUser = await this.UserServices.getUserByEmail(userDto.Email)
          if(ExistUser){
             throw new HttpException("User Already Exist,please try again with another email", HttpStatus.BAD_REQUEST,);
          }
-         await this.UserProfileServices.Register(userDto)
+         await this.UserServices.Register(userDto)
          return res.status(HttpStatus.CREATED).json({ status:"success", message:'user register successfully'});
       }
       // User Login
@@ -47,33 +46,51 @@ export class userProfileController {
       async login(@Body('Email') Email: string, @Body('Password') Password: string,  @Req() req: Request,
       @Res() res: Response){
          
-        const token = await this.UserProfileServices.login(Email,Password);
+        const token = await this.UserServices.login(Email,Password);
         return res.status(HttpStatus.CREATED).json({ status:"success", message:'user login successfully',jwtToken:token}); ;
       }
    
       // verify token
       @Post('verify')
       async verify(@Body('jwtToken') jwtToken: string): Promise<User> {
-        const user = await this.UserProfileServices.verifyToken(jwtToken);
+        const user = await this.UserServices.verifyToken(jwtToken);
         return user;
       }
    
    
    // Add Traveller
-   @Post('addProfile')
+   @Patch('update/:uuid')
    @UseInterceptors(FileFieldsInterceptor([
       { name: 'PassportsizephotoUrl', maxCount: 2 },
       { name: 'passportphotoUrl', maxCount: 2 },
    ]))
-   async addProfile(
+   async updateProfile(
       @UploadedFiles()
       file: { PassportsizephotoUrl?: Express.Multer.File[], passportphotoUrl?: Express.Multer.File[] },
       @Body() body,
+      @Param('uuid') uuid:string,
       @Req() req: Request,
       @Res() res: Response) {
       const PassportsizephotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0])
       const passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0])
-      const userprofile = new Userprofile();
+      const userprofile =  await this.UserRepository.findOne({where:{uuid}})
+      if (!userprofile) {
+         throw new HttpException(
+           `User profile not found`,
+           HttpStatus.BAD_REQUEST,
+         );
+       }
+
+       if (file.PassportsizephotoUrl && file.PassportsizephotoUrl.length > 0) {
+         const passportSizePhotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0]);
+         userprofile.PassportsizephotoUrl = passportSizePhotoUrl;
+       }
+     
+       if (file.passportphotoUrl && file.passportphotoUrl.length > 0) {
+         const passportPhotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0]);
+         userprofile.PassportCopy = passportPhotoUrl;
+       }
+       
       userprofile.PassportCopy = passportphotoUrl
       userprofile.PassportsizephotoUrl = PassportsizephotoUrl
       userprofile.NameTitle = req.body.NameTitle
@@ -92,7 +109,7 @@ export class userProfileController {
       userprofile.FaceBookId = req.body.FaceBookId
       userprofile.LinkedIn = req.body.LinkedIn
       userprofile.WhatsApp = req.body.whatsApp
-      await this.profileRepository.save({ ...userprofile })
+      await this.UserRepository.save({ ...userprofile })
       return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
    }
 
@@ -103,7 +120,7 @@ export class userProfileController {
    async FindAll(
       @Req() req: Request,
       @Res() res: Response) {
-      const Profile = await this.UserProfileServices.FindAllProfile();
+      const Profile = await this.UserServices.FindAllProfile();
       return res.status(HttpStatus.OK).json({ Profile });
    }
 
@@ -113,26 +130,17 @@ export class userProfileController {
       @Param('id') id: string,
       @Req() req: Request,
       @Res() res: Response) {
-      const dashboard = await this.UserProfileServices.FindProfile(id);
+      const dashboard = await this.UserServices.FindProfile(id);
       return res.status(HttpStatus.OK).json({ dashboard });
    }
 
-   @Patch(':id')
-   async updateTraveller(
-      @Param('id') id: string,
-      @Req() req: Request,
-      @Res() res: Response,
-      @Body() Userprofileupdatedto: updateUserProfileDto) {
-      await this.UserProfileServices.UpdateProfile(id, Userprofileupdatedto)
-      return res.status(HttpStatus.OK).json({ message: 'traveller updated successfully' });
-   }
 
    @Delete(':id')
    async DeleteTraveller(
       @Param('id') id: string,
       @Req() req: Request,
       @Res() res: Response) {
-      await this.UserProfileServices.DeleteProfile(id)
+      await this.UserServices.DeleteProfile(id)
       return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
    }
 
@@ -141,7 +149,7 @@ export class userProfileController {
       @Param('Uid', new ParseUUIDPipe) Uid: string,
       @Param('Id', ParseIntPipe) Id: number,
    ) {
-      return this.UserProfileServices.addToWishlist(Uid, Id);
+      return this.UserServices.addToWishlist(Uid, Id);
    }
 
    @Delete(':Uid/:Id')
@@ -150,7 +158,7 @@ export class userProfileController {
       @Param('Id', ParseIntPipe) Id: number,
       @Res() res: Response,
    ) {
-      await this.UserProfileServices.removeFromWishlist(Uid, Id);
+      await this.UserServices.removeFromWishlist(Uid, Id);
       return res.status(HttpStatus.OK).json({
          status: "success",
          message: `Wishlist has removed`,
@@ -159,7 +167,7 @@ export class userProfileController {
 
    @Get(':Uid')
    async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
-      return this.UserProfileServices.getWishlist(Uid);
+      return this.UserServices.getWishlist(Uid);
    }
 
 
@@ -174,7 +182,7 @@ export class userProfileController {
    file: Express.Multer.File,
    @Req() req: Request,
    @Res() res: Response)  {
-      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      const Profile = await this.UserRepository.findOne({ where: { uuid } });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
@@ -207,14 +215,14 @@ export class userProfileController {
    {
        throw new NotFoundException('Deposit request already approved or Rejected');
    }
-   const profile = await this.profileRepository.findOne({ where: {uuid} });
+   const profile = await this.UserRepository.findOne({ where: {uuid} });
    if (!profile) {
       throw new NotFoundException('user not found');
    }
    cheque.status =  PaymentStatus.APPROVED
    await this.chequeRepository.save(cheque);
    profile.Wallet += cheque.Amount;
-   await this.profileRepository.save(profile);
+   await this.UserRepository.save(profile);
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
    }
 
@@ -272,7 +280,7 @@ export class userProfileController {
    @Param('uuid') uuid: string,
    @Req() req: Request,
    @Res() res: Response) {
-      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      const Profile = await this.UserRepository.findOne({ where: { uuid } });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
@@ -310,14 +318,14 @@ export class userProfileController {
       {
             throw new NotFoundException('Deposit request already approved or Rejected');
       }
-      const profile = await this.profileRepository.findOne({ where: {uuid} });
+      const profile = await this.UserRepository.findOne({ where: {uuid} });
       if (!profile) {
          throw new NotFoundException('user not found');
       }
       mobnank.status =  PaymentStatus.APPROVED
       await this.MobileBankingRepository.save(mobnank);
       profile.Wallet += mobnank.Amount;
-      await this.profileRepository.save(profile);
+      await this.UserRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
       }
 
@@ -377,7 +385,7 @@ export class userProfileController {
    @Param('uuid') uuid: string,
    @Req() req: Request,
    @Res() res: Response) {
-      const Profile = await this.profileRepository.findOne({ where: { uuid } });
+      const Profile = await this.UserRepository.findOne({ where: { uuid } });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
@@ -392,7 +400,7 @@ export class userProfileController {
       Profile.Wallet += Banktransfer.Amount
       Banktransfer.userprofile =Profile;
       await this.BankTransferRepository.save({...Banktransfer})
-      await this.profileRepository.save(Profile)
+      await this.UserRepository.save(Profile)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
    }
 
@@ -411,14 +419,14 @@ export class userProfileController {
       {
          throw new NotFoundException('Deposit request already approved or Rejected');
       }
-      const profile = await this.profileRepository.findOne({ where: {uuid} });
+      const profile = await this.UserRepository.findOne({ where: {uuid} });
       if (!profile) {
          throw new NotFoundException('user not found');
       }
       bank.status =  PaymentStatus.APPROVED
       await this.BankTransferRepository.save(bank);
       profile.Wallet += bank.Amount;
-      await this.profileRepository.save(profile);
+      await this.UserRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message:" Deposit Request approved"})
       }
 

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Userprofile } from "./userprofile.entities";
+import { User } from "./user.entity";
 
 
 
@@ -17,8 +17,8 @@ export class Cash{
    Amount:number
    @Column()
    cashattachmenturl:string
-   @ManyToOne(()=>Userprofile, (userprofile)=>userprofile.cashDeposit)
+   @ManyToOne(()=>User, (userprofile)=>userprofile.cashDeposit)
    @JoinColumn({name:'cash_Id'})
-   userprofile:Userprofile
+   userprofile:User
 
 }

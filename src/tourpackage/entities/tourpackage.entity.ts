@@ -11,7 +11,7 @@ import { Packageinclusion } from "./packageInclusion.entitry";
 import { refundpolicy } from "./refundpolicy.entity";
 import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
-import { Userprofile } from "src/userProfile/entitties/userprofile.entities";
+import { User } from "src/userProfile/entitties/user.entity";
 
 
 @Entity()
@@ -80,15 +80,13 @@ export class Tourpackage {
 
     @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage,{lazy:true})
     tourpackageplans:Promise<tourpackageplan[]> ;
-
-    @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )
+    @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true, eager:true} )
     installments:Promise <Installment[]>;
 
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
     bookings:Promise<Booking[]>   
-
-    @ManyToOne(() => Userprofile, userprofile => userprofile.wishlist,{lazy:true})
-    usersWishlist:Promise<Userprofile[]>;
+    @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
+    usersWishlist:Promise<User[]>;
 
 
 }
