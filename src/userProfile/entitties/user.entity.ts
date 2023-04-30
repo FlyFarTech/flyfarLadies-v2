@@ -11,7 +11,7 @@ import { BankTransfer } from "./BankTransfer.entity"
 export class User{
    @PrimaryColumn({type:"uuid"})
    @Generated("uuid")
-   uuid:string
+   uuid:string    
    @IsNotEmpty()
    @Column()
    Name:string
