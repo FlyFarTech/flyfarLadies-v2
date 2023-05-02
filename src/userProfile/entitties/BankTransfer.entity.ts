@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity"
 
 
@@ -16,11 +16,15 @@ export class BankTransfer{
    DepositFrom:string
    @Column({nullable:true})
    DepositTo:string
+   @Column()
+   ChequeNumber:string
    @Column({type:'date'})
    ChequeDate:string
+   @CreateDateColumn()
+   CreatedAt:Date
    @Column({nullable:true})
    TransactionId:string
-   @Column({default:null, nullable:true})
+   @Column({nullable:true})
    DepositType:string
    @Column({nullable:true})
    Amount:number

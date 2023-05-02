@@ -276,6 +276,16 @@ export class userProfileController {
     return res.status(HttpStatus.OK).json({ AllChequeDeposit });
   }
 
+  @Get(':uuid/allDeposit')
+  async AllDeposit(
+    @Param('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response) {
+    const AllDeposit= await this.UserServices.AllDeposit(uuid)
+    return res.status(HttpStatus.OK).json({ AllDeposit });
+  }
+
+
 
    @Get('cheques/approved')
    async ApprovedChequeDeposit(): Promise<Cheque[]> {
@@ -310,6 +320,7 @@ export class userProfileController {
       MobileBank.AgentType =req.body.AgentType
       MobileBank.AccountNumber =req.body.AccountNumber
       MobileBank.Reference =req.body.Reference
+      MobileBank.DepositType =req.body.DepositType;
       MobileBank.TransactionId =req.body.TransactionId
       MobileBank.Amount =parseFloat(req.body.Amount)
       const amount = MobileBank.Amount
@@ -409,10 +420,11 @@ export class userProfileController {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
       const Bankattachmenturl = await this.s3service.Addimage(file)
-      const Banktransfer = new BankTransfer();
+      const Banktransfer = new BankTransfer()
       Banktransfer.Bankattachmenturl =Bankattachmenturl
       Banktransfer.DepositFrom = req.body.DepositFrom
       Banktransfer.DepositTo = req.body.DepositTo
+      Banktransfer.DepositType = req.body.DepositType
       Banktransfer.ChequeDate =req.body.ChequeDate
       Banktransfer.TransactionId =req.body.TransactionId
       Banktransfer.Amount =parseFloat(req.body.Amount)

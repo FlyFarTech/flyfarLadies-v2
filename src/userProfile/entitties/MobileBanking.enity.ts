@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity"
 
 
@@ -16,6 +16,8 @@ export class MobileBanking{
    @Column({nullable:true})
    AgentType:string
    @Column({nullable:true})
+   @CreateDateColumn()
+   CreatedAt:Date
    AccountNumber:string
    @Column({nullable:true})
    TransactionId:string

@@ -185,6 +185,63 @@ export class UserServices {
    return cheque;
  }
 
+ async AllDeposit(uuid: string) {
+   const user = await this.userRepository.findOne({
+     where: {
+       uuid,
+     },
+   });
+   if (!user) {
+     throw new HttpException(
+       `User not found with this id=${uuid}`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+ 
+   const chequeDeposits = await this.chequeRepository.find({
+     where: {
+       DepositType: 'Cheque', // retrieve cheque deposit requests
+     },
+     order: {
+       CreatedAt: 'DESC',
+     },
+   });
+ 
+   const mobileBankings = await this.MobileBankingRepository.find({
+     where: {
+       DepositType: 'MobileBank', // retrieve mobile banking deposit requests
+     },
+     order: {
+      CreatedAt: 'DESC',
+     },
+   });
+ 
+   const bankTransfers = await this.BankTransferRepository.find({
+     where: {
+
+       DepositType: 'Bank', // retrieve bank transfer deposit requests
+     },
+     order: {
+       CreatedAt: 'DESC',
+     },
+   });
+ 
+   const allDeposits = [
+     ...chequeDeposits,
+     ...mobileBankings,
+     ...bankTransfers,
+   ].sort((a, b) => b.CreatedAt.getTime() - a.CreatedAt.getTime());
+ 
+   if (!allDeposits || allDeposits.length === 0) {
+     throw new HttpException(
+       `No deposit requests found`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+ 
+   return allDeposits;
+ }
+ 
 
  async AllCheqDepo(uuid: string) {
    const user = await this.userRepository.findOne({

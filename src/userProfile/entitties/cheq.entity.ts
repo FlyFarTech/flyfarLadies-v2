@@ -25,7 +25,7 @@ export class Cheque{
    @Column()
    Amount:number
    @CreateDateColumn()
-   CreatedAt:number
+   CreatedAt:Date
    @Column()
    chequeattachmenturl:string
    @Column()
