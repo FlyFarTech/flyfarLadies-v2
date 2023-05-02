@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 
@@ -24,14 +24,14 @@ export class Cheque{
    DepositType:string
    @Column()
    Amount:number
+   @CreateDateColumn()
+   CreatedAt:number
    @Column()
    chequeattachmenturl:string
    @Column()
    rejectionReason:string
-
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
-
    @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit)
    @JoinColumn({name:'deposit_Id'})
    userprofile:User

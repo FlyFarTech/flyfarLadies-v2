@@ -191,6 +191,7 @@ export class userProfileController {
       cheque.chequeattachmenturl =chequeattachmenturl;
       cheque.ChequeNumber =req.body.ChequeNumber;
       cheque.BankName =req.body.BankName;
+      cheque.DepositType =req.body.DepositType;
       cheque.ChequeDate =req.body.ChequeDate;
       cheque.Reference =req.body.Reference;
       cheque.Amount=parseFloat(req.body.Amount)
@@ -266,6 +267,15 @@ export class userProfileController {
     return res.status(HttpStatus.OK).json({ chequeDeposit });
   }
 
+  @Get(':uuid/allchequeDeposit')
+  async AllChequeDeposit(
+    @Param('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response) {
+    const chequeDeposit= await this.UserServices.AllCheqDepo(uuid)
+    return res.status(HttpStatus.OK).json({ chequeDeposit });
+  }
+
 
    @Get('cheques/approved')
    async ApprovedChequeDeposit(): Promise<Cheque[]> {
@@ -338,7 +348,6 @@ export class userProfileController {
       await this.UserRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
       }
-
 
       @Patch('mobilebank/:mobbankid/reject')
       async RejectMobilebankDeposit (

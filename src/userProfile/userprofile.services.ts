@@ -186,6 +186,33 @@ export class UserServices {
  }
 
 
+ async AllCheqDepo(uuid: string) {
+   const user = await this.userRepository.findOne({
+     where: {
+      uuid
+     }
+   })
+   if (!user) {
+     throw new HttpException(
+       `User not found with this id=${uuid}`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+   const cheque = await this.chequeRepository.findOne({
+      order:{
+         CreatedAt:'DESC'
+      }
+   })
+   if (!cheque) {
+     throw new HttpException(
+       `cheque deposit request does not exist`,
+       HttpStatus.BAD_REQUEST,
+     );
+   }
+   return cheque;
+ }
+
+
 
 
 }

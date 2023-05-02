@@ -1,4 +1,3 @@
-
 import { ConfigModule } from '@nestjs/config';
 import { Tourpackage } from './tourpackage/entities/tourpackage.entity';
 import { Module } from '@nestjs/common';
