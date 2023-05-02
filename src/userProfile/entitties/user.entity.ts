@@ -1,17 +1,24 @@
 import { IsEmail } from "@nestjs/class-validator"
 import { IsNotEmpty } from "class-validator"
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity"
-import { Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm"
 import { Cheque } from "./cheq.entity"
 import { Cash } from "./cash.entity"
 import { MobileBanking } from "./MobileBanking.enity"
 import { BankTransfer } from "./BankTransfer.entity"
+
+let userCount =0;
 
 @Entity()
 export class User{
    @PrimaryColumn({type:"uuid"})
    @Generated("uuid")
    uuid:string    
+   @BeforeInsert()
+   generateUserId() {
+      userCount++;
+      this.uuid = `FFLU${100 + userCount}`;
+   }
    @IsNotEmpty()
    @Column()
    Name:string
