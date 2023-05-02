@@ -93,8 +93,8 @@ export class Tourpackage {
 
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
     bookings:Promise<Booking[]>   
-    // @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
-    // usersWishlist:Promise<User[]>;
+    @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
+    usersWishlist:Promise<User[]>;
 
 
 }

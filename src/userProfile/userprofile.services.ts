@@ -110,32 +110,32 @@ export class UserServices {
          return this.userRepo.findOne({ where:{Email} });
        }
 
-  //  async addToWishlist(uuid: string, Id: string): Promise<User> {
-  //     const user = await this.userRepository.findOne({
-  //        where: { uuid }  
-  //     });
-  //     const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
-  //     if (!user || !tourPackage) {
-  //        // Handle error, user or tourpackage not found
-  //        throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
-  //     }
-  //     user.wishlist.push(tourPackage)
-  //    return await this.userRepository.save(user);
-  //  }
+   async addToWishlist(uuid: string, Id: string): Promise<User> {
+      const user = await this.userRepository.findOne({
+         where: { uuid }  
+      });
+      const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
+      if (!user || !tourPackage) {
+         // Handle error, user or tourpackage not found
+         throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
+      }
+      user.wishlist.push(tourPackage)
+     return await this.userRepository.save(user);
+   }
 
-  //  async removeFromWishlist(uuid: string, Id: string): Promise<User> {
-  //     const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
-  //     if (!user) {
-  //        // Handle error, user or tourpackage not found
-  //        throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
-  //     }
-  //     user.wishlist = user.wishlist.filter((tourPackage) => tourPackage.Id !== Id);
-  //     return this.userRepository.save(user);
-  //  }
+   async removeFromWishlist(uuid: string, Id: string): Promise<User> {
+      const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
+      if (!user) {
+         // Handle error, user or tourpackage not found
+         throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+      }
+      user.wishlist = user.wishlist.filter((tourPackage) => tourPackage.Id !== Id);
+      return this.userRepository.save(user);
+   }
 
-  //  async getWishlist(uuid: string): Promise<User> {
-  //     return await this.userRepository.findOne({ where: { uuid } });
-  //  }
+   async getWishlist(uuid: string): Promise<User> {
+      return await this.userRepository.findOne({ where: { uuid } });
+   }
 
    // get All User
    async FindAllProfile() {
