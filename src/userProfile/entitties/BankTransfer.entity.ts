@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity"
 
 
@@ -8,10 +8,19 @@ export enum PaymentStatus {
    REJECTED = 'rejected',
  }
 
+
+ let userCount =0
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
    bankdepoid:string
+   @BeforeInsert()
+   generateUserId() {
+      userCount++;
+      this.bankdepoid = `BANK${100 + userCount}`;
+   }
+   @Column()
+   uuid:string
    @Column({nullable:true})
    DepositFrom:string
    @Column({nullable:true})

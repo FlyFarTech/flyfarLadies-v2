@@ -172,12 +172,12 @@ export class userProfileController {
 
 
    //cheque details
-   @Post(":uuid/Addcheque/deposit")
+   @Post(":uuid/Add/cheque/deposit")
    @UseInterceptors(
      FileInterceptor('chequeattachmenturl')
    )
    async AddCheque(
-   @Param('uuid', ParseUUIDPipe) uuid: string,
+   @Param('uuid') uuid: string,
    @UploadedFile()
    file: Express.Multer.File,
    @Req() req: Request,
@@ -196,6 +196,7 @@ export class userProfileController {
       cheque.Reference =req.body.Reference;
       cheque.Amount=parseFloat(req.body.Amount)
       cheque.userprofile =Profile;
+      cheque.uuid =Profile.uuid
       await this.chequeRepository.save(cheque);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
    }
@@ -339,6 +340,7 @@ export class userProfileController {
       const depositedAmount=amount-fee
       MobileBank.DepositedAmount =depositedAmount
       MobileBank.userprofile =Profile;
+      MobileBank.uuid =Profile.uuid
       await this.MobileBankingRepository.save(MobileBank)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
@@ -439,6 +441,7 @@ export class userProfileController {
       Banktransfer.Amount =parseFloat(req.body.Amount)
       Profile.Wallet += Banktransfer.Amount
       Banktransfer.userprofile =Profile;
+      Banktransfer.uuid =Profile.uuid
       await this.BankTransferRepository.save({...Banktransfer})
       await this.UserRepository.save(Profile)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })

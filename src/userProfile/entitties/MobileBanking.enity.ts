@@ -9,15 +9,25 @@ export enum PaymentStatus {
    REJECTED = 'rejected',
  }
 
+
+ let userCount =0
 @Entity()
 export class MobileBanking{
    @PrimaryGeneratedColumn('uuid')
    mobbankid:string
+
+   generateUserId() {
+      userCount++;
+      this.mobbankid = `BANK${100 + userCount}`;
+   }
+   @Column()
+   uuid:string
    @Column({nullable:true})
    AgentType:string
    @Column({nullable:true})
    @CreateDateColumn()
    CreatedAt:Date
+   @Column()
    AccountNumber:string
    @Column({nullable:true})
    TransactionId:string

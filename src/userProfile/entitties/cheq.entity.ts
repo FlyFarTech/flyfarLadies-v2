@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 
 
@@ -8,16 +8,25 @@ export enum PaymentStatus {
    REJECTED = 'rejected',
  }
 
+
+ let userCount=0
 @Entity()
 export class Cheque{
    @PrimaryGeneratedColumn('uuid')
    cheqdepoid:string
+   @BeforeInsert()
+   generateUserId() {
+      userCount++;
+      this.cheqdepoid = `CHQ${100 + userCount}`;
+   }
    @Column()
    ChequeNumber:string
    @Column()
+   uuid:string
+   @Column()
    BankName:string
    @Column({type:'date'})
-   ChequeDate:string
+   ChequeDate:Date
    @Column()
    Reference:string
    @Column()

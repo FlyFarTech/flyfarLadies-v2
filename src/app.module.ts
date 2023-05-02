@@ -68,7 +68,7 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
         Installment,
         Booking
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
