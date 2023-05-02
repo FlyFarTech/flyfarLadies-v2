@@ -22,7 +22,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:number,bookingDto: CreateBookingDto,Email:string ){
+   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,Email:string ){
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {

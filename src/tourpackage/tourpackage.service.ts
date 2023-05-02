@@ -58,7 +58,7 @@ private AlbumImageRepo: Repository<AlbumImage>,
 private visitedImageRepo: Repository<VisitedPlace>
 ){}
 
-async findOne(Id: number) {
+async findOne(Id: string) {
   const gettourpackage = await this.TourpackageRepo.findOne(
     { 
       where: { Id },
@@ -192,15 +192,15 @@ async findOne(Id: number) {
       return city.map(({ City, Country }) => ({ City, Country }));
   }
 
-async  updatePackage(Id: number, updateTourpackageDto: UpdateTourpackageDto) {
-    return await this.TourpackageRepo.update({Id}, {...updateTourpackageDto});
-  }
+// async  updatePackage(Id: string, updateTourpackageDto: UpdateTourpackageDto) {
+//     return await this.TourpackageRepo.update({Id}, {...updateTourpackageDto});
+//   }
 
-async  remove(Id: number) {
+async  remove(Id: string) {
   const tourpackage=  this.TourpackageRepo.findOne({where:{Id}});
   if (!tourpackage) {
     throw new HttpException(
-      `TourPackage not found with this id=${Id}`,
+      `TourPackage not found with this Id=${Id}`,
       HttpStatus.BAD_REQUEST,
     );
   }
@@ -208,7 +208,7 @@ async  remove(Id: number) {
   }
 
   // get all Album image
-  async FindAlbum(Id: number, AlbumTitle:string) {
+  async FindAlbum(Id: string, AlbumTitle:string) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -216,7 +216,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -230,7 +230,7 @@ async  remove(Id: number) {
     return AlbumImage;
   }
 
-  async FindAllAlbum(Id: number) {
+  async FindAllAlbum(Id: string) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -238,7 +238,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -253,7 +253,7 @@ async  remove(Id: number) {
   }
   
 
-  async AllMainImage(Id: number) {
+  async AllMainImage(Id: string) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -261,7 +261,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -277,7 +277,7 @@ async  remove(Id: number) {
 
 
 //visited image
-  async FindAllvisitedImage(Id: number,) {
+  async FindAllvisitedImage(Id: string,) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -285,7 +285,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -304,7 +304,7 @@ async  remove(Id: number) {
   // booking policy start.........................
 
   //add booking policy
-  async createbookingPolicy(Id: number, CreateBookingPolicyDto:CreateBookingPolicyDto[]) {
+  async createbookingPolicy(Id: string, CreateBookingPolicyDto:CreateBookingPolicyDto[]) {
     const tourpackage = await this.TourpackageRepo.findOneBy({ Id });
     if (!tourpackage) {
       throw new HttpException(
@@ -323,7 +323,7 @@ async  remove(Id: number) {
 
   }
 
-  async AddInstallment(Id: number, CreateInstallmentDto:CreateInstallmentDto[]){
+  async AddInstallment(Id: string, CreateInstallmentDto:CreateInstallmentDto[]){
     const tourpackage = await this.TourpackageRepo.findOneBy({Id})
     if (!tourpackage) {
       throw new HttpException(
@@ -341,7 +341,7 @@ async  remove(Id: number) {
   
   }
 
-  async FindInstallment(Id: number, InstallmentId: number) {
+  async FindInstallment(Id: string, InstallmentId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -349,14 +349,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const installment = await this.InstallmentRepo.findOne({ where: { InstallmentId } })
     if (!installment) {
       throw new HttpException(
-        `installment not found with this id=${InstallmentId}`,
+        `installment not found with this Id=${InstallmentId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -364,7 +364,7 @@ async  remove(Id: number) {
   }
 
 
-  async updateInstallment(Id: number, InstallmentId: number, updateinstall: updateinstallmentdto) {
+  async updateInstallment(Id: string, InstallmentId: number, updateinstall: updateinstallmentdto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -372,14 +372,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const bookingpolicy = await this.InstallmentRepo.findOne({ where: { InstallmentId } })
     if (!bookingpolicy) {
       throw new HttpException(
-        `installment not found with this id=${InstallmentId}`,
+        `installment not found with this Id=${InstallmentId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -388,7 +388,7 @@ async  remove(Id: number) {
   }
 
 
-  async DeleteInstallment(Id: number, InstallmentId: number) {
+  async DeleteInstallment(Id: string, InstallmentId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -396,14 +396,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const bookingpolicy = await this.InstallmentRepo.findOne({ where: { InstallmentId } })
     if (!bookingpolicy) {
       throw new HttpException(
-        `Installment not found with this id=${InstallmentId}`,
+        `Installment not found with this Id=${InstallmentId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -411,7 +411,7 @@ async  remove(Id: number) {
   }
 
   // find booking policy
-  async FindbookingPolicy(Id: number, BkId: number) {
+  async FindbookingPolicy(Id: string, BkId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -419,14 +419,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
-    const bookingpolicy = await this.bookingPolicyRepo.findOne({ where: { BkId } })
+    const bookingpolicy = await this.bookingPolicyRepo.findOne({ where: { BkId} })
     if (!bookingpolicy) {
       throw new HttpException(
-        `booking policy not found with this id=${BkId}`,
+        `booking policy not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -434,7 +434,7 @@ async  remove(Id: number) {
   }
 
   //update booking policy
-  async updateBookingolicy(Id: number, BkId: number, updateBOokingPolicy: updateBookingPolicyDto) {
+  async updateBookingolicy(Id: string, BkId: number, updateBOokingPolicy: updateBookingPolicyDto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -442,14 +442,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const bookingpolicy = await this.bookingPolicyRepo.findOne({ where: { BkId } })
     if (!bookingpolicy) {
       throw new HttpException(
-        `booking policy not found with this id=${BkId}`,
+        `booking policy not found with this Id=${BkId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -463,7 +463,7 @@ async  remove(Id: number) {
 
 
   //Delete booking policy
-  async DeletebookingPolicy(Id: number, BkId: number) {
+  async DeletebookingPolicy(Id: string, BkId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -471,14 +471,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const bookingpolicy = await this.bookingPolicyRepo.findOne({ where: { BkId } })
     if (!bookingpolicy) {
       throw new HttpException(
-        `booking policy not found with this id=${BkId}`,
+        `booking policy not found with this Id=${BkId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -491,7 +491,7 @@ async  remove(Id: number) {
 
   // start refund policy
   async AddRefundPolicy(
-    Id: number,
+    Id: string,
     RefundpolicyDto: createRefundPolicyDto[],
   ) {
     const tourpackage = await this.TourpackageRepo.findOneBy({ Id });
@@ -513,7 +513,7 @@ async  remove(Id: number) {
 
 
   // get refund policy
-  async FindRefundPolicy(Id: number, RId: number) {
+  async FindRefundPolicy(Id: string, RId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -521,14 +521,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const refundpolicy = await this.refundPolicyRepo.findOne({ where: { RId } })
     if (!refundpolicy) {
       throw new HttpException(
-        `refund policy not found with this id=${RId}`,
+        `refund policy not found with this Id=${RId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -537,7 +537,7 @@ async  remove(Id: number) {
 
 
   // update Refund policy
-  async updateRefundolicy(Id: number, RId: number, updaterefundPolicy: UpdateRefundPolicy) {
+  async updateRefundolicy(Id: string, RId: number, updaterefundPolicy: UpdateRefundPolicy) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -545,14 +545,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const bookingpolicy = await this.refundPolicyRepo.findOne({ where: { RId } })
     if (!bookingpolicy) {
       throw new HttpException(
-        `Refund policy not found with this id=${RId}`,
+        `Refund policy not found with this Id=${RId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -562,7 +562,7 @@ async  remove(Id: number) {
 
 
   //Delete refund policy
-  async DeleterefundPolicy(Id: number, RId: number) {
+  async DeleterefundPolicy(Id: string, RId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -570,14 +570,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const Refundpolicy = await this.refundPolicyRepo.findOne({ where: { RId } })
     if (!Refundpolicy) {
       throw new HttpException(
-        `Refund policy not found with this id=${RId}`,
+        `Refund policy not found with this Id=${RId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -590,7 +590,7 @@ async  remove(Id: number) {
 
 
   async AddInclusions(
-    Id: number,
+    Id: string,
     inclusionsDto: createpackageincluionDto[],
   ) {
     const tourpackage = await this.TourpackageRepo.findOneBy({ Id });
@@ -610,7 +610,7 @@ async  remove(Id: number) {
   }
 
   // find inclusions
-  async FindInclsuions(Id: number, InId: number) {
+  async FindInclsuions(Id: string, InId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -618,7 +618,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this id=${InId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -635,7 +635,7 @@ async  remove(Id: number) {
 
 
   // update inclusions
-  async updateInclusions(Id: number, InId: number, updateInclusionsDto: updatepackageInclusionDto) {
+  async updateInclusions(Id: string, InId: number, updateInclusionsDto: updatepackageInclusionDto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -643,14 +643,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const inclsuions = await this.packageInclusionRepo.findOne({ where: { InId } })
     if (!inclsuions) {
       throw new HttpException(
-        `inclusions not found with this id=${InId}`,
+        `inclusions not found with this Id=${InId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -660,7 +660,7 @@ async  remove(Id: number) {
 
 
   // Delete Inclusions
-  async DeleteInclusion(Id: number, InId: number) {
+  async DeleteInclusion(Id: string, InId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -668,14 +668,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const inclusions = await this.packageInclusionRepo.findOne({ where: { InId } })
     if (!inclusions) {
       throw new HttpException(
-        `Inclsuions not found with this id=${InId}`,
+        `Inclsuions not found with this Id=${InId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -689,7 +689,7 @@ async  remove(Id: number) {
   //add exclsuions
 
   async AddpackageExclsuions(
-    Id: number,
+    Id: string,
     exclusionDto: CreatepackageExclsuionsDto[],
   ) {
 
@@ -713,7 +713,7 @@ async  remove(Id: number) {
   }
 
   // find Exclusions
-  async FindExclsuions(Id: number, ExId: number) {
+  async FindExclsuions(Id: string, ExId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -721,7 +721,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -737,7 +737,7 @@ async  remove(Id: number) {
   }
 
   // update inclusions
-  async updateExclusions(Id: number, ExId: number, updateExlusionsDto: updatepackageExclusionsDto) {
+  async updateExclusions(Id: string, ExId: number, updateExlusionsDto: updatepackageExclusionsDto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -745,14 +745,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const exclsuions = await this.packageexcluionsRepo.findOne({ where: { ExId } })
     if (!exclsuions) {
       throw new HttpException(
-        `exclsuions not found with this id=${ExId}`,
+        `exclsuions not found with this Id=${ExId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -762,7 +762,7 @@ async  remove(Id: number) {
 
 
   // Delete exclusions
-  async DeleteIExclusion(Id: number, ExId: number) {
+  async DeleteIExclusion(Id: string, ExId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -770,7 +770,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -791,7 +791,7 @@ async  remove(Id: number) {
 
 
   async AddTourpackagePlan(
-    Id: number,
+    Id: string,
     tourPackageplanDto: CreateTourPackagePlanDto[],
   ) {
     const tourpackage = await this.TourpackageRepo.findOneBy({ Id });
@@ -812,7 +812,7 @@ async  remove(Id: number) {
   }
   
   // find Exclusions
-  async Finddayplan(Id: number, dayId: number) {
+  async Finddayplan(Id: string, dayId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -820,7 +820,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -828,7 +828,7 @@ async  remove(Id: number) {
     const dayplan = await this.tourpackagePlanRepo.findOne({ where: { dayId } })
     if (!dayplan) {
       throw new HttpException(
-        `tour plan not found not found with this id=${dayId}`,
+        `tour plan not found not found with this Id=${dayId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -836,7 +836,7 @@ async  remove(Id: number) {
   }
 
   // update inclusions
-  async updatedayplan(Id: number, dayId: number, updatedayplanDto: updateTourPackagePlanDto) {
+  async updatedayplan(Id: string, dayId: number, updatedayplanDto: updateTourPackagePlanDto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -844,14 +844,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const dayplan = await this.tourpackagePlanRepo.findOne({ where: { dayId } })
     if (!dayplan) {
       throw new HttpException(
-        `day plan not found with this id=${dayId}`,
+        `day plan not found with this Id=${dayId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -861,7 +861,7 @@ async  remove(Id: number) {
 
 
   // Delete exclusions
-  async DeleteIdayplan(Id: number, dayId: number) {
+  async Deleteayplan(Id: string, dayId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -869,7 +869,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -893,7 +893,7 @@ async  remove(Id: number) {
 
 
   async AddPackageHighlight(
-    Id: number,
+    Id: string,
     packageHighlightDto: CreatePackageHighlightDto[],
   ) {
     const tourpackage = await this.TourpackageRepo.findOneBy({ Id });
@@ -915,7 +915,7 @@ async  remove(Id: number) {
 
 
   // find highlight
-  async FindHighlight(Id: number, HiId: number) {
+  async FindHighlight(Id: string, HiId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -923,7 +923,7 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -931,7 +931,7 @@ async  remove(Id: number) {
     const Highlight = await this.packageHighlightRepo.findOne({ where: { HiId } })
     if (!Highlight) {
       throw new HttpException(
-        `Package highlight not found with this id ${HiId}`,
+        `Package highlight not found with this Id ${HiId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -939,7 +939,7 @@ async  remove(Id: number) {
   }
 
   // update inclusions
-  async updateHighlight(Id: number, HiId: number, updateHighlightDto: UpdatepackageHighlightDto) {
+  async updateHighlight(Id: string, HiId: number, updateHighlightDto: UpdatepackageHighlightDto) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -947,14 +947,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const highlight = await this.packageHighlightRepo.findOne({ where: { HiId } })
     if (!highlight) {
       throw new HttpException(
-        `Package highlight found with this id=${HiId}`,
+        `Package highlight found with this Id=${HiId}`,
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -964,7 +964,7 @@ async  remove(Id: number) {
 
 
   // Delete exclusions
-  async DeleteHighlight(Id: number, HiId: number) {
+  async DeleteHighlight(Id: string, HiId: number) {
     const tourpackage = await this.TourpackageRepo.findOne({
       where: {
         Id
@@ -972,14 +972,14 @@ async  remove(Id: number) {
     })
     if (!tourpackage) {
       throw new HttpException(
-        `TourPackage not found with this id=${Id}`,
+        `TourPackage not found with this Id=${Id}`,
         HttpStatus.BAD_REQUEST,
       );
     }
     const highlight = await this.packageHighlightRepo.findOne({ where: { HiId } })
     if (!highlight) {
       throw new HttpException(
-        `Package highlight not found with this id=${HiId}`,
+        `Package highlight not found with this Id=${HiId}`,
         HttpStatus.BAD_REQUEST,
       );
     }

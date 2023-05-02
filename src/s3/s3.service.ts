@@ -57,7 +57,7 @@ export class S3Service {
 
     }
     // update cover image 
-    async updateImage(Id: number, file: Express.Multer.File) {
+    async updateImage(Id: string, file: Express.Multer.File) {
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
         if (tourpackage.coverimageurl) {
@@ -93,7 +93,7 @@ export class S3Service {
 
     }
 
-    async updateAlbumImage(Id: number, AlbumId: number, file: Express.Multer.File) {
+    async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -104,7 +104,7 @@ export class S3Service {
         const albummage = await this.AlbumimageRepo.findOneBy({ AlbumId })
         if (!albummage) {
             throw new HttpException(
-                `albummage not found with this id=${Id}`,
+                `albummage not found with this id=${AlbumId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -142,7 +142,7 @@ export class S3Service {
 
     }
 
-    async updateMainImage(Id: number, mainimgId: number, file: Express.Multer.File) {
+    async updateMainImage(Id: string, mainimgId: number, file: Express.Multer.File) {
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -153,7 +153,7 @@ export class S3Service {
         const mainImage = await this.MainImageeRepo.findOneBy({ mainimgId })
         if (!mainImage) {
             throw new HttpException(
-                `mainImage not found with this id=${Id}`,
+                `mainImage not found with this id=${mainimgId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -192,7 +192,7 @@ export class S3Service {
     }
 
 
-    async updatevisitedImage(Id: number, VimageId: number, file: Express.Multer.File) {
+    async updatevisitedImage(Id: string, VimageId: number, file: Express.Multer.File) {
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -203,7 +203,7 @@ export class S3Service {
         const VisitedImage = await this.VisitedPlaceRepo.findOneBy({ VimageId })
         if (!VisitedImage) {
             throw new HttpException(
-                `VisitedImage not found with this id=${Id}`,
+                `VisitedImage not found with this id=${VimageId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }

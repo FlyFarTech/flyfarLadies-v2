@@ -73,8 +73,8 @@ export class User{
    @IsNotEmpty()
    @Column({default:null})
    LinkedIn:string
-   @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
-   wishlist: Tourpackage[];
+   // @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
+   // wishlist: Tourpackage[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
    chequeDeposit:Promise<Cheque[]>
    @OneToMany(() => Cash, (cash) => cash.userprofile,{lazy:true})

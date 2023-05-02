@@ -144,31 +144,31 @@ export class userProfileController {
       return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
    }
 
-   @Post(':Uid/:Id')
-   async addToWishlist(
-      @Param('Uid', new ParseUUIDPipe) Uid: string,
-      @Param('Id', ParseIntPipe) Id: number,
-   ) {
-      return this.UserServices.addToWishlist(Uid, Id);
-   }
+   // @Post(':Uid/:Id')
+   // async addToWishlist(
+   //    @Param('Uid', new ParseUUIDPipe) Uid: string,
+   //    @Param('FFLPKID') FFLPKID: string,
+   // ) {
+   //    return this.UserServices.addToWishlist(Uid, FFLPKID);
+   // }
 
-   @Delete(':Uid/:Id')
-   async removeFromWishlist(
-      @Param('Uid', new ParseUUIDPipe) Uid: string,
-      @Param('Id', ParseIntPipe) Id: number,
-      @Res() res: Response,
-   ) {
-      await this.UserServices.removeFromWishlist(Uid, Id);
-      return res.status(HttpStatus.OK).json({
-         status: "success",
-         message: `Wishlist has removed`,
-      });
-   }
+   // @Delete(':Uid/:Id')
+   // async removeFromWishlist(
+   //    @Param('Uid', new ParseUUIDPipe) Uid: string,
+   //    @Param('FFLPKID') FFLPKID: string,
+   //    @Res() res: Response,
+   // ) {
+   //    await this.UserServices.removeFromWishlist(Uid, FFLPKID);
+   //    return res.status(HttpStatus.OK).json({
+   //       status: "success",
+   //       message: `Wishlist has removed`,
+   //    });
+   // }
 
-   @Get(':Uid')
-   async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
-      return this.UserServices.getWishlist(Uid);
-   }
+   // @Get(':Uid')
+   // async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
+   //    return this.UserServices.getWishlist(Uid);
+   // }
 
 
    //cheque details
@@ -285,6 +285,15 @@ export class userProfileController {
     return res.status(HttpStatus.OK).json({ AllDeposit });
   }
 
+  @Get('allDeposit/request')
+  async allDepositrequest(
+    @Param('uuid') uuid: string,
+    @Req() req: Request,
+    @Res() res: Response) {
+    const AllDeposit= await this.UserServices.AllDepositRequest()
+    return res.status(HttpStatus.OK).json({ AllDeposit });
+  }
+
 
 
    @Get('cheques/approved')
@@ -296,7 +305,7 @@ export class userProfileController {
    @Get('cheques/reject')
    async rejectChequeDeposit(): Promise<Cheque[]> {
       const status: PaymentStatus = PaymentStatus.REJECTED;
-   return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.REJECTED)}});
+      return await this.chequeRepository.find({where:{status:  Equal(PaymentStatus.REJECTED)}});
    }
 
    //mobileBank details

@@ -13,11 +13,19 @@ import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
 import { User } from "src/userProfile/entitties/user.entity";
 
+let userCount = 0;
 
 @Entity()
 export class Tourpackage {
-    @PrimaryGeneratedColumn()
-    Id: number;
+    @PrimaryGeneratedColumn('uuid')
+    uuid: string;
+    @Column()
+    Id:string
+    @BeforeInsert()
+    generateUserId() {
+       userCount++;
+       this.Id = `FFLPKID${100 + userCount}`;
+    }
     @Column({ nullable: true })
     MainTitle: string;
     @Column({ nullable: true })
@@ -85,8 +93,8 @@ export class Tourpackage {
 
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
     bookings:Promise<Booking[]>   
-    @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
-    usersWishlist:Promise<User[]>;
+    // @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
+    // usersWishlist:Promise<User[]>;
 
 
 }

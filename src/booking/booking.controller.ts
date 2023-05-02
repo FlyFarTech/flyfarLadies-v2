@@ -15,11 +15,11 @@ export class BookingController {
   async addbooking(
 
     @Body() bookingDto: CreateBookingDto,
-    @Param('Id') Id:number,
+    @Param('FFLPKID') FFLPKID:string,
     uuid:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.BookTravelpackage(Id,bookingDto,uuid)
+    await this.bookingService.BookTravelpackage(FFLPKID,bookingDto,uuid)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
 

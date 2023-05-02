@@ -110,32 +110,32 @@ export class UserServices {
          return this.userRepo.findOne({ where:{Email} });
        }
 
-   async addToWishlist(uuid: string, Id: number): Promise<User> {
-      const user = await this.userRepository.findOne({
-         where: { uuid }  
-      });
-      const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
-      if (!user || !tourPackage) {
-         // Handle error, user or tourpackage not found
-         throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
-      }
-      user.wishlist.push(tourPackage)
-     return await this.userRepository.save(user);
-   }
+  //  async addToWishlist(uuid: string, Id: string): Promise<User> {
+  //     const user = await this.userRepository.findOne({
+  //        where: { uuid }  
+  //     });
+  //     const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
+  //     if (!user || !tourPackage) {
+  //        // Handle error, user or tourpackage not found
+  //        throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
+  //     }
+  //     user.wishlist.push(tourPackage)
+  //    return await this.userRepository.save(user);
+  //  }
 
-   async removeFromWishlist(uuid: string, Id: number): Promise<User> {
-      const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
-      if (!user) {
-         // Handle error, user or tourpackage not found
-         throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
-      }
-      user.wishlist = user.wishlist.filter((tourPackage) => tourPackage.Id !== Id);
-      return this.userRepository.save(user);
-   }
+  //  async removeFromWishlist(uuid: string, Id: string): Promise<User> {
+  //     const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
+  //     if (!user) {
+  //        // Handle error, user or tourpackage not found
+  //        throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+  //     }
+  //     user.wishlist = user.wishlist.filter((tourPackage) => tourPackage.Id !== Id);
+  //     return this.userRepository.save(user);
+  //  }
 
-   async getWishlist(uuid: string): Promise<User> {
-      return await this.userRepository.findOne({ where: { uuid } });
-   }
+  //  async getWishlist(uuid: string): Promise<User> {
+  //     return await this.userRepository.findOne({ where: { uuid } });
+  //  }
 
    // get All User
    async FindAllProfile() {
@@ -241,6 +241,52 @@ export class UserServices {
  
    return allDeposits;
  }
+
+
+ async AllDepositRequest() {
+  const chequeDeposits = await this.chequeRepository.find({
+    where: {
+      DepositType: 'Cheque', // retrieve cheque deposit requests
+    },
+    order: {
+      CreatedAt: 'DESC',
+    },
+  });
+
+  const mobileBankings = await this.MobileBankingRepository.find({
+    where: {
+      DepositType: 'MobileBank', // retrieve mobile banking deposit requests
+    },
+    order: {
+     CreatedAt: 'DESC',
+    },
+  });
+
+  const bankTransfers = await this.BankTransferRepository.find({
+    where: {
+
+      DepositType: 'Bank', // retrieve bank transfer deposit requests
+    },
+    order: {
+      CreatedAt: 'DESC',
+    },
+  });
+
+  const allDeposits = [
+    ...chequeDeposits,
+    ...mobileBankings,
+    ...bankTransfers,
+  ].sort((a, b) => b.CreatedAt.getTime() - a.CreatedAt.getTime());
+
+  if (!allDeposits || allDeposits.length === 0) {
+    throw new HttpException(
+      `No deposit requests found`,
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  return allDeposits;
+}
  
 
  async AllCheqDepo(uuid: string) {
@@ -268,6 +314,8 @@ export class UserServices {
    }
    return cheque;
  }
+
+ 
 
 
 
