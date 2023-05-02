@@ -84,9 +84,8 @@ async findOne(Id: number) {
 
   async FindAllPackages() {
     const packages = await this.TourpackageRepo.find({
-      relations: ['mainimage'],
+      relations: ['mainimage']
     });
-    
     for (const pack of packages) {
       await pack.albumImages;
       await pack.vistitedImages;
@@ -106,7 +105,7 @@ async findOne(Id: number) {
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
     const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
-      .leftJoin('tourPackage.mainimage', 'mainimage')
+      .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
       .where('tourPackage.TripType = :TripType', { TripType })
       .andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth })
       .andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
