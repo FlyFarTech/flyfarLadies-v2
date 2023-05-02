@@ -198,7 +198,7 @@ export class UserServices {
        HttpStatus.BAD_REQUEST,
      );
    }
-   const cheque = await this.chequeRepository.findOne({
+   const cheque = await this.chequeRepository.find({
       order:{
          CreatedAt:'DESC'
       }

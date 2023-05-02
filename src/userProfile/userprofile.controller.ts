@@ -272,8 +272,8 @@ export class userProfileController {
     @Param('uuid') uuid: string,
     @Req() req: Request,
     @Res() res: Response) {
-    const chequeDeposit= await this.UserServices.AllCheqDepo(uuid)
-    return res.status(HttpStatus.OK).json({ chequeDeposit });
+    const AllChequeDeposit= await this.UserServices.AllCheqDepo(uuid)
+    return res.status(HttpStatus.OK).json({ AllChequeDeposit });
   }
 
 
