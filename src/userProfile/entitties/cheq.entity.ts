@@ -39,6 +39,8 @@ export class Cheque{
    chequeattachmenturl:string
    @Column()
    rejectionReason:string
+   @Column()
+   ActionBy:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
    @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit)

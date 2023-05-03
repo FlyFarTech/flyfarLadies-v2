@@ -40,6 +40,8 @@ export class BankTransfer{
    @Column({nullable:true})
    Bankattachmenturl:string
    @Column()
+   ActionBy:string
+   @Column()
    rejectionReason:string
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;

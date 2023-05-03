@@ -200,11 +200,12 @@ export class userProfileController {
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
    }
 
-   @Patch('cheques/:Depositid/approve')
+   @Patch('Cheque/:Depositid/approve')
    async approveCheque(
    @Param('Depositid') Depositid: string,
    @Body('uuid') uuid:string,
-   @Res() res: Response
+   @Res() res: Response,
+   @Req() req: Request
 
    ) {
    const cheque = await this.chequeRepository.findOne({where:{Depositid}})
@@ -220,6 +221,7 @@ export class userProfileController {
       throw new NotFoundException('user not found');
    }
    cheque.status =  PaymentStatus.APPROVED
+   cheque.ActionBy =req.body.ActionBy
    await this.chequeRepository.save(cheque);
    profile.Wallet += cheque.Amount;
    await this.UserRepository.save(profile);
@@ -364,13 +366,14 @@ export class userProfileController {
          throw new NotFoundException('user not found');
       }
       mobnank.status =  PaymentStatus.APPROVED
+      mobnank.ActionBy = req.body.ActionBy
       await this.MobileBankingRepository.save(mobnank);
       profile.Wallet += mobnank.Amount;
       await this.UserRepository.save(profile);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
       }
 
-      @Patch('mobilebank/:Depositid/reject')
+      @Patch('MobileBank/:Depositid/reject')
       async RejectMobilebankDeposit (
       @Param('Depositid') Depositid: string,
       @Body() body: { reason: string },
@@ -473,7 +476,7 @@ export class userProfileController {
       }
 
 
-      @Patch('bank/:Depositid/reject')
+      @Patch('Bank/:Depositid/reject')
       async RejectbankDeposit (
       @Param('Depositid') Depositid: string,
       @Body() body: { reason: string },
@@ -489,7 +492,7 @@ export class userProfileController {
          throw new NotFoundException('Deposit request already rejected or approved');
       }
       bank.status =  PaymentStatus.REJECTED
-   
+      bank.ActionBy =req.body.ActionBy
       bank.rejectionReason = `Rejected due to ${body.reason}`;
       if(!body.reason){
          throw new NotFoundException(' please add reason');
@@ -503,7 +506,6 @@ export class userProfileController {
          const status: PaymentStatus = PaymentStatus.PENDING;
       return await this.BankTransferRepository.find({where:{status:  Equal(PaymentStatus.PENDING)}});
       }
-   
    
       @Get('bank/approved')
       async ApprovebankDeposit(): Promise<BankTransfer[]> {
