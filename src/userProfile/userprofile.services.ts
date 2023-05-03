@@ -114,13 +114,19 @@ export class UserServices {
       const user = await this.userRepository.findOne({
          where: { uuid }  
       });
-      const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } });
-      if (!user || !tourPackage) {
+
+      const tourpackage =await this.tourPackageRepository.find({where:{Id}})
+      
+      if (!user) {
          // Handle error, user or tourpackage not found
          throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
       }
+      if (!user.wishlist) {
+        user.wishlist = []; // Initialize wishlist array if it's undefined
+      }
       const newWishlistItem = new WishlistItem();
-      // newWishlistItem.tourPackage =tourPackage
+      // newWishlistItem.tourPackage =tourpackage
+      user.wishlist.push(newWishlistItem);
       return await this.userRepository.save(user);
     ;
    }

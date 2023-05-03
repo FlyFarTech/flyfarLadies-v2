@@ -1,6 +1,6 @@
 
 import { CreateInstallmentDto } from './dto/create-installment.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, ParseIntPipe, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
 import { TourpackageService } from './tourpackage.service';
 import { UpdateTourpackageDto } from './dto/update-tourpackage.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -231,7 +231,7 @@ async getTourPackages(
         }),
     )
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,
@@ -261,12 +261,11 @@ async getTourPackages(
   // add booking policy
   @Post(':Id/AddBookingPolicy')
   addTourPackageBookingPolicy(
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Body() bookingpolicydto: CreateBookingPolicyDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
-
     this.tourpackageService.createbookingPolicy(
       Id,
       bookingpolicydto,
@@ -325,7 +324,7 @@ async getTourPackages(
 
   @Post(':Id/AddrefundPolicy')
   async addrefundPolicy(
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Body() refundpolicydto: createRefundPolicyDto[],
     @Req() req: Request,
     @Res() res: Response,
@@ -387,7 +386,7 @@ async getTourPackages(
   // add inclsuions
   @Post(':Id/AddPackageInclusions')
   async addInclusion(
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Body() Inclusionsdto: createpackageincluionDto[],
     @Req() req: Request,
     @Res() res: Response,
@@ -595,7 +594,7 @@ async getTourPackages(
         }),
     )
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,
@@ -640,7 +639,7 @@ async getTourPackages(
         }),
     )
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: string,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,

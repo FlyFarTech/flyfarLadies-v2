@@ -15,6 +15,7 @@ import { Bkash } from "./entitties/Bkash.entity";
 import { MobileBanking } from "./entitties/MobileBanking.enity";
 import { profile } from "console";
 import { UserServices } from "./userprofile.services";
+import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
 
 @Controller('user')
 export class userProfileController {
@@ -143,15 +144,15 @@ export class userProfileController {
       return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
    }
 
-   @Post(':Uid/:Id')
+   @Post(':uuid/wishlist')
    async addToWishlist(
       @Param('uuid',) uuid: string,
-      @Param('FFLPKID') FFLPKID: string,
+      @Body() tourpackage: Promise<Tourpackage>
    ) {
-      return this.UserServices.addToWishlist(uuid, FFLPKID);
+      // return this.UserServices.addToWishlist(uuid,tourpackage);
    }
 
-   @Delete(':Uid/:Id')
+   @Delete(':uuid')
    async removeFromWishlist(
       @Param('Uid', new ParseUUIDPipe) Uid: string,
       @Param('FFLPKID') FFLPKID: string,

@@ -10,7 +10,7 @@ export enum BookingStatus {
    REJECTED = 'rejected',
  }
 
-let userCount = 0;
+let userCount = Math.floor(Math.random() * 10000);
 
 @Entity()
 export class Booking{
