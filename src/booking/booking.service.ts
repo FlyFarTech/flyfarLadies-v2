@@ -141,6 +141,15 @@ export class BookingService {
       return bookedpackage;
    }
 
+   async userAllBooking(uuid:string){
+    const user = await this.UserRepository.findOne({where:{uuid}})
+    if (!user) {
+      throw new NotFoundException('there is no booking ');
+   }
+    const bookedpackage = await this.bookingRepository.find({})
+    return bookedpackage;
+ }
+
    async approveBooking(Bookingid: string, uuid:string,
     Email:string,): Promise<void> {
       // Find the booking object with the provided ID

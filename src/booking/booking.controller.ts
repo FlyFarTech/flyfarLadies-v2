@@ -39,6 +39,11 @@ export class BookingController {
     @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
+  @Get(':uuid/allbooking')
+  async getalluserBooking(
+    @Param('uuid') uuid: string) {
+    return await this.bookingService.userAllBooking(uuid)
+  }
 
   @Get('getall/booking')
   async getALlBooking(@Res() res: Response) {
