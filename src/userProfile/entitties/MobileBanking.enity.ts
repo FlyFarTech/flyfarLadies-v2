@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity"
 
 
@@ -15,7 +15,7 @@ export enum PaymentStatus {
 export class MobileBanking{
    @PrimaryGeneratedColumn('uuid')
    Depositid:string
-
+   @BeforeInsert()
    generateUserId() {
       userCount++;
       this.Depositid = `BANK${100 + userCount}`;
