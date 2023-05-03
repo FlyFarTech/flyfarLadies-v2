@@ -120,7 +120,7 @@ export class UserServices {
          throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
       }
       const newWishlistItem = new WishlistItem();
-      user.wishlist.push(newWishlistItem);
+      // newWishlistItem.tourPackage =tourPackage
       return await this.userRepository.save(user);
     ;
    }
