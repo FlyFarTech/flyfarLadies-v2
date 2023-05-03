@@ -12,6 +12,8 @@ import { refundpolicy } from "./refundpolicy.entity";
 import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
 import { User } from "src/userProfile/entitties/user.entity";
+import { IsNotEmpty } from "class-validator";
+import { WishlistItem } from "src/userProfile/entitties/wishlist.entity";
 
 let userCount = 0;
 
@@ -26,28 +28,40 @@ export class Tourpackage {
        userCount++;
        this.Id = `FFLPKID${100 + userCount}`;
     }
+    @IsNotEmpty({message:'Main title could not be empty'})
     @Column({ nullable: true })
     MainTitle: string;
+    @IsNotEmpty({message:'SubTitle could not be empty'})
     @Column({ nullable: true })
     SubTitle: string;
+    @IsNotEmpty({message:'Price could not be empty'})
     @Column({ nullable: true })
     Price: number;
+    @IsNotEmpty({message:'Location could not be empty'})
     @Column({ nullable: true })
     Location: string;
+    @IsNotEmpty({message:'City could not be empty'})
     @Column({ nullable: true })
     City: string
+    @IsNotEmpty({message:'Discount could not be empty'})
     @Column({ nullable: true })
     Discount: number
+    @IsNotEmpty({message:'StartDate could not be empty'})
     @Column({default:null,type:'date' })
     StartDate: Date;
+    @IsNotEmpty({message:'EndDate could not be empty'})
     @Column({default:null,type:'date' })
     EndDate: Date;
+    @IsNotEmpty({message:'TripType could not be empty'})
     @Column({ nullable: true })
     TripType: string;
+    @IsNotEmpty({message:'Country could not be empty'})
     @Column({ nullable: true })
     Country: string;
+    @IsNotEmpty({message:'TotalDuration could not be empty'})
     @Column({ nullable: true })
     TotalDuration: string
+    @IsNotEmpty({message:'PackageOverview could not be empty'})
     @Column('text', { nullable: true })
     PackageOverview: string;
     @Column('bool', { default: false, nullable: true })
@@ -62,6 +76,7 @@ export class Tourpackage {
     Transport: boolean
     @Column('bool', { default: false, nullable: true })
     Hotel: boolean
+    @IsNotEmpty({message:'coverimageurl could not be empty'})
     @Column({ nullable: true })
     coverimageurl: string
 
@@ -69,32 +84,26 @@ export class Tourpackage {
     mainimage:Promise<MainImage[]> ;
     @OneToMany(() => AlbumImage, (albumImage) => albumImage.tourpackage,{lazy:true})
     albumImages: Promise<AlbumImage[]> ;
-    
     @OneToMany(() => VisitedPlace, (visitedimage) => visitedimage.tourpackage,{lazy:true} )
     vistitedImages:Promise<VisitedPlace[]>;
     @OneToMany(() => packageexcluions, (exclusion) => exclusion.tourpackage, {lazy:true, eager:true})
     exclusions:Promise<packageexcluions[]>;
     @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage,{lazy:true, eager:true} )
     PackageInclusions:Promise<Packageinclusion[]> ;
-
     @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,{lazy:true, eager:true})
     BookingPolicys:Promise<bookingpolicy[]> ;
-
     @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage,{lazy:true} )
     highlights:Promise<packagehighlight[]>;
-
     @OneToMany(() => refundpolicy, (refundpolicy) => refundpolicy.tourpackage,{lazy:true, eager:true})
     refundpolicys:Promise<refundpolicy[]>;
-
     @OneToMany(() => tourpackageplan, (dayplans) => dayplans.tourpackage,{lazy:true})
     tourpackageplans:Promise<tourpackageplan[]> ;
     @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true, eager:true} )
     installments:Promise <Installment[]>;
-
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
-    bookings:Promise<Booking[]>   
-    @ManyToOne(() => User, userprofile => userprofile.wishlist,{lazy:true})
-    usersWishlist:Promise<User[]>;
+    bookings:Promise<Booking[]>;  
+    @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.tourPackage)
+    wishlist: WishlistItem[];
 
 
 }

@@ -14,11 +14,11 @@ export enum PaymentStatus {
 @Entity()
 export class MobileBanking{
    @PrimaryGeneratedColumn('uuid')
-   mobbankid:string
+   Depositid:string
 
    generateUserId() {
       userCount++;
-      this.mobbankid = `BANK${100 + userCount}`;
+      this.Depositid = `BANK${100 + userCount}`;
    }
    @Column()
    uuid:string

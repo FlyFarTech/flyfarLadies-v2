@@ -30,6 +30,7 @@ import { BankTransfer } from './userProfile/entitties/BankTransfer.entity';
 import { CardPayment } from './userProfile/entitties/Cardpayment.entity';
 import { Bkash } from './userProfile/entitties/Bkash.entity';
 import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
+import { WishlistItem } from './userProfile/entitties/wishlist.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -66,7 +67,8 @@ import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
         Traveller,
         refundpolicy,
         Installment,
-        Booking
+        Booking,
+        WishlistItem
       ],
       synchronize:false
     }),

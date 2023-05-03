@@ -128,7 +128,6 @@ export class userProfileController {
    @Get(':id')
    async UserDashboard(
       @Param('id') id: string,
-      @Req() req: Request,
       @Res() res: Response) {
       const dashboard = await this.UserServices.FindProfile(id);
       return res.status(HttpStatus.OK).json({ dashboard });
@@ -144,31 +143,31 @@ export class userProfileController {
       return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
    }
 
-   // @Post(':Uid/:Id')
-   // async addToWishlist(
-   //    @Param('Uid', new ParseUUIDPipe) Uid: string,
-   //    @Param('FFLPKID') FFLPKID: string,
-   // ) {
-   //    return this.UserServices.addToWishlist(Uid, FFLPKID);
-   // }
+   @Post(':Uid/:Id')
+   async addToWishlist(
+      @Param('uuid',) uuid: string,
+      @Param('FFLPKID') FFLPKID: string,
+   ) {
+      return this.UserServices.addToWishlist(uuid, FFLPKID);
+   }
 
-   // @Delete(':Uid/:Id')
-   // async removeFromWishlist(
-   //    @Param('Uid', new ParseUUIDPipe) Uid: string,
-   //    @Param('FFLPKID') FFLPKID: string,
-   //    @Res() res: Response,
-   // ) {
-   //    await this.UserServices.removeFromWishlist(Uid, FFLPKID);
-   //    return res.status(HttpStatus.OK).json({
-   //       status: "success",
-   //       message: `Wishlist has removed`,
-   //    });
-   // }
+   @Delete(':Uid/:Id')
+   async removeFromWishlist(
+      @Param('Uid', new ParseUUIDPipe) Uid: string,
+      @Param('FFLPKID') FFLPKID: string,
+      @Res() res: Response,
+   ) {
+      await this.UserServices.removeFromWishlist(Uid, FFLPKID);
+      return res.status(HttpStatus.OK).json({
+         status: "success",
+         message: `Wishlist has removed`,
+      });
+   }
 
-   // @Get(':Uid')
-   // async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
-   //    return this.UserServices.getWishlist(Uid);
-   // }
+   @Get(':Uid')
+   async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
+      return this.UserServices.getWishlist(Uid);
+   }
 
 
    //cheque details
@@ -201,14 +200,14 @@ export class userProfileController {
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
    }
 
-   @Patch('cheques/:cheqdepoid/approve')
+   @Patch('cheques/:Depositid/approve')
    async approveCheque(
-   @Param('cheqdepoid') cheqdepoid: string,
+   @Param('Depositid') Depositid: string,
    @Body('uuid') uuid:string,
    @Res() res: Response
 
    ) {
-   const cheque = await this.chequeRepository.findOne({where:{cheqdepoid}})
+   const cheque = await this.chequeRepository.findOne({where:{Depositid}})
    if (!cheque) {
       throw new NotFoundException('Cheque not found');
    }
@@ -227,14 +226,14 @@ export class userProfileController {
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
    }
 
-   @Patch('cheques/:cheqdepoid/reject')
+   @Patch('cheques/:Depositid/reject')
    async rejectCheque(
-   @Param('cheqdepoid') cheqdepoid: string,
+   @Param('Depositid') Depositid: string,
    @Body() body: { reason: string },
    @Req() req: Request,
    @Res() res: Response
    ){
-   const cheque = await this.chequeRepository.findOne({where:{cheqdepoid}})
+   const cheque = await this.chequeRepository.findOne({where:{Depositid}})
    if (!cheque) {
       throw new NotFoundException('Cheque not found');
    }
@@ -258,13 +257,13 @@ export class userProfileController {
    }
 
      // get refund policy
-  @Get(':uuid/getcheque/:cheqdepoid')
+  @Get(':uuid/getcheque/:Depositid')
   async getchequeDeporequest(
     @Param('uuid') uuid: string,
-    @Param('cheqdepoid') cheqdepoid: string,
+    @Param('Depositid') Depositid: string,
     @Req() req: Request,
     @Res() res: Response) {
-    const chequeDeposit= await this.UserServices.GetCheqDepo(uuid, cheqdepoid)
+    const chequeDeposit= await this.UserServices.GetCheqDepo(uuid, Depositid)
     return res.status(HttpStatus.OK).json({ chequeDeposit });
   }
 
@@ -344,15 +343,15 @@ export class userProfileController {
       await this.MobileBankingRepository.save(MobileBank)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
-      @Patch('mobilebank/:mobbankid/approve')
+      @Patch('mobilebank/:Depositid/approve')
       async ApproveMobile(
-      @Param('mobbankid') mobbankid: string,
+      @Param('Depositid') Depositid: string,
       @Body('uuid') uuid:string,
       @Req() req: Request,
       @Res() res: Response
 
       ) {
-      const mobnank = await this.MobileBankingRepository.findOne({where:{mobbankid}})
+      const mobnank = await this.MobileBankingRepository.findOne({where:{Depositid}})
       if (!mobnank) {
          throw new NotFoundException('Deposit not found');
       }
@@ -371,14 +370,14 @@ export class userProfileController {
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
       }
 
-      @Patch('mobilebank/:mobbankid/reject')
+      @Patch('mobilebank/:Depositid/reject')
       async RejectMobilebankDeposit (
-      @Param('mobbankid') mobbankid: string,
+      @Param('Depositid') Depositid: string,
       @Body() body: { reason: string },
       @Req() req: Request,
       @Res() res: Response
       ){
-      const mobilebank = await this.MobileBankingRepository.findOne({where:{mobbankid}})
+      const mobilebank = await this.MobileBankingRepository.findOne({where:{Depositid}})
       if (!mobilebank) {
          throw new NotFoundException('Deposit not found');
       }
@@ -447,14 +446,14 @@ export class userProfileController {
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
    }
 
-      @Patch('bank/:bankdepoid/approve')
+      @Patch('bank/:Depositid/approve')
       async ApproveBankDepo(
-      @Param('	bankdepoid') 	bankdepoid: string,
+      @Param('Depositid') 	Depositid: string,
       @Body('uuid') uuid:string,
       @Req() req: Request,
       @Res() res: Response
       ) {
-      const bank = await this.BankTransferRepository.findOne({where:{bankdepoid}})
+      const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
       if (!bank) {
          throw new NotFoundException('Deposit not found');
       }
@@ -474,14 +473,14 @@ export class userProfileController {
       }
 
 
-      @Patch('bank/:bankdepoid/reject')
+      @Patch('bank/:Depositid/reject')
       async RejectbankDeposit (
-      @Param('bankdepoid') bankdepoid: string,
+      @Param('Depositid') Depositid: string,
       @Body() body: { reason: string },
       @Req() req: Request,
       @Res() res: Response
       ){
-      const bank = await this.BankTransferRepository.findOne({where:{bankdepoid}})
+      const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
       if (!bank) {
          throw new NotFoundException('Deposit not found');
       }

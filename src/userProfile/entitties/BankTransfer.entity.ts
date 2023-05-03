@@ -13,11 +13,11 @@ export enum PaymentStatus {
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
-   bankdepoid:string
+   Depositid:string
    @BeforeInsert()
    generateUserId() {
       userCount++;
-      this.bankdepoid = `BANK${100 + userCount}`;
+      this.Depositid = `BANK${100 + userCount}`;
    }
    @Column()
    uuid:string

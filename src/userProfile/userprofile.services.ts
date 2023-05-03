@@ -1,4 +1,4 @@
-
+import { WishlistItem } from 'src/userProfile/entitties/wishlist.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -119,17 +119,19 @@ export class UserServices {
          // Handle error, user or tourpackage not found
          throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
       }
-      user.wishlist.push(tourPackage)
-     return await this.userRepository.save(user);
+      const newWishlistItem = new WishlistItem();
+      user.wishlist.push(newWishlistItem);
+      return await this.userRepository.save(user);
+    ;
    }
 
-   async removeFromWishlist(uuid: string, Id: string): Promise<User> {
+   async removeFromWishlist(uuid: string, id: string): Promise<User> {
       const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
       if (!user) {
          // Handle error, user or tourpackage not found
          throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
       }
-      user.wishlist = user.wishlist.filter((tourPackage) => tourPackage.Id !== Id);
+      // user.wishlist = user.wishlist.filter((WishlistItem) => WishlistItem.tourPackage.id !== id);
       return this.userRepository.save(user);
    }
 
@@ -163,7 +165,7 @@ export class UserServices {
    }
 
    
-  async GetCheqDepo(uuid: string, cheqdepoid: string) {
+  async GetCheqDepo(uuid: string, Depositid: string) {
    const user = await this.userRepository.findOne({
      where: {
       uuid
@@ -175,10 +177,10 @@ export class UserServices {
        HttpStatus.BAD_REQUEST,
      );
    }
-   const cheque = await this.chequeRepository.findOne({ where: { cheqdepoid } })
+   const cheque = await this.chequeRepository.findOne({ where: { Depositid } })
    if (!cheque) {
      throw new HttpException(
-       `cheque deposit request does not exist with this id=${cheqdepoid}`,
+       `cheque deposit request does not exist with this id=${Depositid}`,
        HttpStatus.BAD_REQUEST,
      );
    }

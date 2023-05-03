@@ -6,6 +6,7 @@ import { Cheque } from "./cheq.entity"
 import { Cash } from "./cash.entity"
 import { MobileBanking } from "./MobileBanking.enity"
 import { BankTransfer } from "./BankTransfer.entity"
+import { WishlistItem } from "./wishlist.entity"
 
 let userCount =0;
 
@@ -32,15 +33,19 @@ export class User{
    @IsNotEmpty()
    @Column()
    Password:string
+   @IsNotEmpty()
    @Column({nullable:true})
    jwtToken:string
+   @IsNotEmpty()
    @Column({nullable:true})
    NameTitle:string
+   @IsNotEmpty()
    @Column({default:null})   
    FirstName:string
+   @IsNotEmpty()
    @Column({default:null})
    LastName:string
-   @IsEmail()
+   @IsNotEmpty()
    @Column({default:null})
    DOB:string
    @IsNotEmpty()
@@ -80,8 +85,6 @@ export class User{
    @IsNotEmpty()
    @Column({default:null})
    LinkedIn:string
-   @OneToMany(() => Tourpackage, tourpackage => tourpackage.usersWishlist, {lazy:true})
-   wishlist: Tourpackage[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
    chequeDeposit:Promise<Cheque[]>
    @OneToMany(() => Cash, (cash) => cash.userprofile,{lazy:true})
@@ -90,6 +93,8 @@ export class User{
    mobilebankDeposit:Promise<MobileBanking[]> 
    @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
    bankDeposit:Promise<BankTransfer[]> 
+   @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.user)
+   wishlist: WishlistItem[];
    @CreateDateColumn()
    CreatedAt:Date
    @UpdateDateColumn()
