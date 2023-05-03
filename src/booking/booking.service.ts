@@ -47,9 +47,12 @@ export class BookingService {
         newTraveler.Price = Price ? Price : tourPackage.Price;
         await this.travelerRepository.save(newTraveler)
         arrayoftravlers.push(newTraveler)
-        TotalPrice +=newTraveler.Price
+        const discount = tourPackage.Price* tourPackage.Discount/100
+        TotalPrice +=newTraveler.Price-discount
       }
-  
+
+
+    const discount = tourPackage.Price* tourPackage.Discount/100
       const newbooking = await this.bookingRepository.create({
          tourPackage,
          travelers: arrayoftravlers,
@@ -61,6 +64,7 @@ export class BookingService {
          WhatsApp:userprofile.WhatsApp,
          FaceBookId:userprofile.FaceBookId,
          LinkedIn:userprofile.LinkedIn
+  
 
       })
       const savebooking= await this.bookingRepository.save(newbooking)
