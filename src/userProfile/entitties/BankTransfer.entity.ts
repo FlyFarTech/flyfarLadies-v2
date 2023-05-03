@@ -9,7 +9,7 @@ export enum PaymentStatus {
  }
 
 
- let userCount =Math.floor(Math.random() * 10);
+ let userCount =Math.floor(Math.random() * 10000);
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
@@ -17,7 +17,7 @@ export class BankTransfer{
    @BeforeInsert()
    generateUserId() {
       userCount++;
-      this.Depositid = `BANK${100 + userCount}`;
+      this.Depositid = `B${100 + userCount}`;
    }
    @Column()
    uuid:string

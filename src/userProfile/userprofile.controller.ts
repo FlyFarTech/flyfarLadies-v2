@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundExcep
 import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { Equal, FindOperator, Repository } from "typeorm";;
+import { Equal, Repository } from "typeorm";;
 import { S3Service } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user.dto";
 import { User } from "./entitties/user.entity";
@@ -204,7 +204,7 @@ export class userProfileController {
    async approveCheque(
    @Param('Depositid') Depositid: string,
    @Body('uuid') uuid:string,
-   @Body() body: { reason: string },
+   @Body() body:{ActionBy:string},
    @Res() res: Response,
    @Req() req: Request
 
@@ -222,7 +222,10 @@ export class userProfileController {
       throw new NotFoundException('user not found');
    }
    cheque.status =  PaymentStatus.APPROVED
-   cheque.ActionBy =`Approved By${body.reason}`
+   cheque.ActionBy =`Approved By ${body.ActionBy}`
+   if(!body.ActionBy){
+      throw new NotFoundException('ActionBy');
+   }
    await this.chequeRepository.save(cheque);
    profile.Wallet += cheque.Amount;
    await this.UserRepository.save(profile);
@@ -232,7 +235,7 @@ export class userProfileController {
    @Patch('cheques/:Depositid/reject')
    async rejectCheque(
    @Param('Depositid') Depositid: string,
-   @Body() body: { reason: string },
+   @Body() body: { rejectionReason: string , ActionBy: string},
    @Req() req: Request,
    @Res() res: Response
    ){
@@ -245,9 +248,12 @@ export class userProfileController {
       throw new NotFoundException('Deposit request already rejected or approved');
    }
    cheque.status =  PaymentStatus.REJECTED
-   cheque.ActionBy =`Rejected by ${body.reason}` 
-   cheque.rejectionReason = `Rejected due to ${body.reason}`;
-   if(!body.reason){
+   cheque.ActionBy =`Action by ${body.ActionBy}` 
+   if(!body.ActionBy){
+      throw new NotFoundException('Action by??');
+   }
+   cheque.rejectionReason = `Rejected due to ${body.rejectionReason}`;
+   if(!body.rejectionReason){
       throw new NotFoundException('please add reason');
    }
    await this.chequeRepository.save(cheque);
@@ -351,7 +357,7 @@ export class userProfileController {
       async ApproveMobile(
       @Param('Depositid') Depositid: string,
       @Body('uuid') uuid:string,
-      @Body() body: { reason: string },
+      @Body() body: { ActionBy: string },
       @Req() req: Request,
       @Res() res: Response
 
@@ -369,7 +375,10 @@ export class userProfileController {
          throw new NotFoundException('user not found');
       }
       mobnank.status =  PaymentStatus.APPROVED
-      mobnank.ActionBy = `Approved B${body.reason}`
+      mobnank.ActionBy = `Approved By ${body.ActionBy}`
+      if (!body.ActionBy) {
+         throw new NotFoundException('Action By?');
+      }
       await this.MobileBankingRepository.save(mobnank);
       profile.Wallet += mobnank.Amount;
       await this.UserRepository.save(profile);
@@ -379,7 +388,7 @@ export class userProfileController {
       @Patch('MobileBank/:Depositid/reject')
       async RejectMobilebankDeposit (
       @Param('Depositid') Depositid: string,
-      @Body() body: { reason: string },
+      @Body() body: { ActionBy: string, rejectionReason:string },
       @Req() req: Request,
       @Res() res: Response
       ){
@@ -392,9 +401,12 @@ export class userProfileController {
          throw new NotFoundException('Deposit request already rejected or approved');
       }
       mobilebank.status =  PaymentStatus.REJECTED
-      mobilebank.ActionBy=`Rejected By ${body.reason}`
-      mobilebank.rejectionReason = `Rejected due to ${body.reason}`;
-      if(!body.reason){
+      mobilebank.ActionBy=`Action By ${body.ActionBy}`
+      if(!body.ActionBy){
+         throw new NotFoundException('Action By?');
+      }
+      mobilebank.rejectionReason = `Rejected due to ${body.rejectionReason}`;
+      if(!body.rejectionReason){
          throw new NotFoundException(' please add reason');
       }
       await this.MobileBankingRepository.save(mobilebank);
@@ -457,7 +469,7 @@ export class userProfileController {
       async ApproveBankDepo(
       @Param('Depositid') 	Depositid: string,
       @Body('uuid') uuid:string,
-      @Body() body:{reason:string},
+      @Body() body:{ActionBy:string},
       @Req() req: Request,
       @Res() res: Response
       ) {
@@ -474,7 +486,10 @@ export class userProfileController {
          throw new NotFoundException('user not found');
       }
       bank.status =  PaymentStatus.APPROVED
-      bank.ActionBy =`Approved By ${body.reason}`
+      bank.ActionBy =`Approved By ${body.ActionBy}`
+      if (!body.ActionBy) {
+         throw new NotFoundException('Action By');
+      }
       await this.BankTransferRepository.save(bank);
       profile.Wallet += bank.Amount;
       await this.UserRepository.save(profile);
@@ -485,7 +500,7 @@ export class userProfileController {
       @Patch('Bank/:Depositid/reject')
       async RejectbankDeposit (
       @Param('Depositid') Depositid: string,
-      @Body() body: { reason: string },
+      @Body() body: { ActionBy: string ,rejectionReason:string},
       @Req() req: Request,
       @Res() res: Response
       ){
@@ -498,9 +513,12 @@ export class userProfileController {
          throw new NotFoundException('Deposit request already rejected or approved');
       }
       bank.status =  PaymentStatus.REJECTED
-      bank.ActionBy =`Rejected By ${body.reason}`
-      bank.rejectionReason = `Rejected due to ${body.reason}`;
-      if(!body.reason){
+      bank.ActionBy =`Approved By ${body.ActionBy}`
+      if(!body.ActionBy){
+         throw new NotFoundException('Action By?');
+      }
+      bank.rejectionReason = `Rejected due to ${body.rejectionReason}`;
+      if(!body.rejectionReason){
          throw new NotFoundException(' please add reason');
       }
       await this.BankTransferRepository.save(bank);

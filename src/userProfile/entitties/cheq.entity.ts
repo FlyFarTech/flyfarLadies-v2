@@ -8,8 +8,7 @@ export enum PaymentStatus {
    REJECTED = 'rejected',
  }
 
-
- let userCount=Math.floor(Math.random() * 10);
+ let userCount=Math.floor(Math.random() * 10000);
 @Entity()
 export class Cheque{
    @PrimaryGeneratedColumn('uuid')
@@ -17,7 +16,7 @@ export class Cheque{
    @BeforeInsert()
    generateUserId() {
       userCount++;
-      this.Depositid = `CHQ${100 + userCount}`;
+      this.Depositid = `C${100 + userCount}`;
    }
    @Column()
    ChequeNumber:string
@@ -44,6 +43,6 @@ export class Cheque{
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
    @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit)
-   @JoinColumn({name:'deposit_Id'})
+   @JoinColumn({name:'userId'})
    userprofile:User
 }
