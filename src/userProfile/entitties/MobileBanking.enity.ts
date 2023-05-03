@@ -10,7 +10,7 @@ export enum PaymentStatus {
  }
 
 
- let userCount =0
+ let userCount =Math.floor(Math.random() * 10);
 @Entity()
 export class MobileBanking{
    @PrimaryGeneratedColumn('uuid')

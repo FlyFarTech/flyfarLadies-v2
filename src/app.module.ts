@@ -70,7 +70,7 @@ import { WishlistItem } from './userProfile/entitties/wishlist.entity';
         Booking,
         WishlistItem
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
