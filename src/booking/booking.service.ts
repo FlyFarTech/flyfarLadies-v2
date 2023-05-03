@@ -144,10 +144,10 @@ export class BookingService {
    async userAllBooking(uuid:string){
     const user = await this.UserRepository.findOne({where:{uuid}})
     if (!user) {
-      throw new NotFoundException('there is no booking ');
+      throw new NotFoundException('User Not valid');
    }
-    const bookedpackage = await this.bookingRepository.find({})
-    return bookedpackage;
+    const bookedpackage = await this.bookingRepository.find({ where: {},relations:[ 'tourPackage']})
+    return {bookedpackage};
  }
 
    async approveBooking(Bookingid: string, uuid:string,
