@@ -50,6 +50,6 @@ export class MobileBanking{
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
    @ManyToOne(()=>User, (userprofile)=>userprofile.mobilebankDeposit)
-   @JoinColumn({name:'bank_Id',})
+   @JoinColumn({name:'Mbank_Id',})
    userprofile:User
 }

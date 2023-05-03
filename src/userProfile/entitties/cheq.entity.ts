@@ -43,6 +43,6 @@ export class Cheque{
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
    @ManyToOne(()=>User, (userprofile)=>userprofile.chequeDeposit)
-   @JoinColumn({name:'userId'})
+   @JoinColumn({name:'BankId'})
    userprofile:User
 }

@@ -232,7 +232,7 @@ export class userProfileController {
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
    }
 
-   @Patch('cheques/:Depositid/reject')
+   @Patch('Cheque/:Depositid/reject')
    async rejectCheque(
    @Param('Depositid') Depositid: string,
    @Body() body: { rejectionReason: string , ActionBy: string},
@@ -353,7 +353,7 @@ export class userProfileController {
       await this.MobileBankingRepository.save(MobileBank)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
-      @Patch('mobilebank/:Depositid/approve')
+      @Patch('MobileBank/:Depositid/approve')
       async ApproveMobile(
       @Param('Depositid') Depositid: string,
       @Body('uuid') uuid:string,
@@ -465,7 +465,7 @@ export class userProfileController {
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
    }
 
-      @Patch('bank/:Depositid/approve')
+      @Patch('Bank/:Depositid/approve')
       async ApproveBankDepo(
       @Param('Depositid') 	Depositid: string,
       @Body('uuid') uuid:string,
