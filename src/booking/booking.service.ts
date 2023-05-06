@@ -50,9 +50,6 @@ export class BookingService {
         const discount = tourPackage.Price* tourPackage.Discount/100
         TotalPrice +=newTraveler.Price-discount
       }
-
-
-    const discount = tourPackage.Price* tourPackage.Discount/100
       const newbooking = await this.bookingRepository.create({
          tourPackage,
          travelers: arrayoftravlers,
@@ -145,13 +142,14 @@ export class BookingService {
       return bookedpackage;
    }
 
-   async userAllBooking(uuid:string){
+   async userAllBooking(uuid:string,Bookingid:string){
     const user = await this.UserRepository.findOne({where:{uuid}})
     if (!user) {
       throw new NotFoundException('User Not valid');
    }
-    const bookedpackage = await this.bookingRepository.find({ where: {},relations:[
+    const bookedpackage = await this.bookingRepository.find({ where: {Bookingid},relations:[
        'tourPackage',
+       'travelers',
        'tourPackage.mainimage',
        'tourPackage.albumImages',
        'tourPackage.vistitedImages',

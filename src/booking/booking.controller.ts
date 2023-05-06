@@ -39,10 +39,11 @@ export class BookingController {
     @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
-  @Get(':uuid/allbooking')
+  @Get(':uuid/booking/:bookingid')
   async getalluserBooking(
-    @Param('uuid') uuid: string) {
-    return await this.bookingService.userAllBooking(uuid)
+    @Param('uuid') uuid: string,
+    @Param('Bookingid') Bookingid: string) {
+    return await this.bookingService.userAllBooking(uuid,Bookingid)
   }
 
   @Get('getall/booking')

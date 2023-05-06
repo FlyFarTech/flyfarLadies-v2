@@ -126,21 +126,11 @@ export class userProfileController {
          file:{passportphotoUrl?: Express.Multer.File[] },
          @Param('uuid') uuid: string,
          @Res() res: Response,
-         @Req() req: Request,
-         @Body() body: { travelers: any[]}) {
+         @Req() req: Request,) {
          const user = await this.UserRepository.findOne({where:{uuid}});
-   
-         const travelers = [];
-         const Passportcopy = await this.s3service.Addimage(file.passportphotoUrl[0])
-         let travelerDataArray =body.travelers;
 
-         if (!Array.isArray(travelerDataArray)) {
-          travelerDataArray = [travelerDataArray];
-        }
-    
-      for (const travelerData of travelerDataArray){
-         if(travelerData){
-            const {Title, FirstName, LastName, Nationality, DOB, Gender, PaxType,PassportNumber,PassportExpireDate}=travelerData
+        const {Title, FirstName, LastName, Nationality, DOB, Gender, PaxType,PassportNumber,PassportExpireDate}=req.body
+            const Passportcopy = await this.s3service.Addimage(file.passportphotoUrl[0])
             const traveler = new Traveller();
             traveler.Title = Title
             traveler.FirstName = FirstName
@@ -153,12 +143,8 @@ export class userProfileController {
             traveler.PassportExpireDate =PassportExpireDate
             traveler.PassportCopyURL =Passportcopy
             traveler.user = user;
-            travelers.push(traveler)
-            }
-         }
-         await this.TravellerRepository.save({ ...travelers})
+            await this.TravellerRepository.save({...traveler})
          return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
-        
       }
      
 
