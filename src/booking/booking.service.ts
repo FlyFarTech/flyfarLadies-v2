@@ -73,7 +73,6 @@ export class BookingService {
    async sendBookingDetailsToUser(booking: Booking,Email:string ) {
       const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
       // Get tour package details
-      const { MainTitle, TripType} = tourPackage as Tourpackage;
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
         host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
@@ -84,46 +83,667 @@ export class BookingService {
           pass: '123Next2$', // Replace with your email password
         },
       });
-      const pdfDoc = new PDFDocument({font: 'Courier'});
-      // Add a 50 point margin on all sides
-            
-      // Set default font
-      pdfDoc.font('Helvetica');
+      
 
-      // Add a bulleted list
-   
-   // Add different margins on each side
-      // Add content to the PDF document, e.g., text, images, etc.
-      pdfDoc.text(`Booking ID: ${Bookingid}`);
-      pdfDoc.text(`Tour Package: ${MainTitle}`);
-      pdfDoc.text(`Trip Type: ${TripType}`);
-      pdfDoc.text(`Total Price: ${TotalPrice}`);
-      pdfDoc.text('Travelers:');
-      for (const traveler of travelers) {
-         pdfDoc.text(`- ${traveler.FirstName} ${traveler.LastName}`);
+      const number = booking.TotalPrice
+      function convertNumberToWords(number) {
+        const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+        const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+        const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+        
+        if (number === 0) {
+          return 'zero';
+        }
+        
+        if (number < 0) {
+          return 'minus ' + convertNumberToWords(Math.abs(number));
+        }
+        
+        if (number < 10) {
+          return ones[number];
+        }
+        
+        if (number < 20) {
+          return teens[number - 10];
+        }
+        
+        if (number < 100) {
+          return tens[Math.floor(number / 10)] + (number % 10 !== 0 ? ' ' : '') + ones[number % 10];
+        }
+        
+        if (number < 1000) {
+          return ones[Math.floor(number / 100)] + ' hundred' + (number % 100 !== 0 ? ' ' : '') + convertNumberToWords(number % 100);
+        }
+        
+        if (number < 1000000) {
+          return convertNumberToWords(Math.floor(number / 1000)) + ' thousand' + (number % 1000 !== 0 ? ' ' : '') + convertNumberToWords(number % 1000);
+        }
+        
+        return 'Number is too large';
       }
-      pdfDoc.end();
-    
-      // Convert the PDF document to a buffer
-      const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        pdfDoc.on('data', chunk => chunks.push(chunk));
-        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
-        pdfDoc.on('error', reject);
-      });
+      
+
+      const amountInWords = convertNumberToWords({number});
+
+      const htmlContent =`<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Deposit Request</title>
+        </head>
+        <body>
+          <div
+            class="div"
+            style="
+              width: 700px;
+              height: 120vh;
+              margin: 0 auto;
+              background-color: #efefef;
+            "
+          >
+            <div style="width: 700px; height: 70px; background: #8b2c51">
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                "
+              >
+                <tr>
+                  <td
+                    align="center"
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #ffffff;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      line-height: 38px;
+                      padding: 20px 0 20px 0;
+                      text-transform: uppercase;
+                      letter-spacing: 5px;
+                    "
+                  >
+                    Booking confiramtion
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #584660;
+                      font-family: sans-serif;
+                      font-size: 30px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 20px 40px 0px 55px;
+                    "
+                  >
+                    ${tourPackage.MainTitle}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 17px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 40px 20px 55px;
+                    "
+                  >
+                   ${tourPackage.SubTitle}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 620px;
+                  background-color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    Package Details
+                  </td>
+                </tr>
+      
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Start Date
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                   ${tourPackage.StartDate}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    End Date
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${tourPackage.EndDate}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    Duration
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${tourPackage.TotalDuration}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    Location to Visit
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${tourPackage.Location}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 620px;
+                  background-color: #ffffff;
+                  margin-top: 15px;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    Passenger Details
+                  </td>
+                </tr>
+      
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    Travel Count
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                  if(Array.isArray(travelers)
+                    ${travelers.length}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 620px;
+                  background-color: #ffffff;
+                  margin-top: 15px;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    Fare Details
+                  </td>
+                </tr>
+      
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    Fare Per Passenger
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    01
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+      
+                    "
+                  >
+                    Total Amount
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                   ${booking.TotalPrice}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #702c8b;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      font-style: italic;
+                    "
+                  >
+                  ${amountInWords}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 670px;
+                  background-color: #702c8b;
+                  margin-top: 25px;
+                  text-align: center;
+                  color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 16px;
+                      font-weight: 500;
+                      padding: 20px 20px 0px 20px;
+                    "
+                  >
+                    Need more help?
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 12px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 20px 10px 20px;
+                      
+                    "
+                  >
+                    Mail us at <span style="color: #ffffff">support@flyfarladies.com</span> agency or Call us at 09606912912
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="left"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 420px;
+                  color: #ffffff;
+                  "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 600;
+                      padding: 20px 0px 0px 45px;
+                      color: #767676;
+                    "
+                  >
+                    <a style="padding-right: 20px ; color: #584660" href="http://"
+                      >Terms & Conditions</a
+                    >
+                 
+                    <a style="padding-right: 20px ; color: #584660" href="http://"
+                      >Booking Policy</a
+                    >
+               
+               
+                    <a style="padding-right: 20px ; color: #584660" href="http://"
+                      >Privacy Policy</a
+                    >
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  width: 700px;
+                  color: #ffffff;
+                  margin-top: 85px;
+                "
+              >
+                <tr>
+                  <td style="padding-left: 45px;">
+                    <img style="padding-right: 5px;" src="./img/Vector (5).png" href="http://" alt="">
+                    <img style="padding-right: 5px;" src="./img/Vector (6).png" href="http://" alt="">
+                    <img style="padding-right: 5px;" src="./img/Vector (7).png" href="http://" alt="">
+                    
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 500;
+                      padding: 5px 0px 0px 45px;
+                      color: #767676;
+                    "
+                  >
+                    Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                  </td>
+      
+                  <td
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    font-family: sans-serif;
+                    font-weight: 500;
+                    color: #767676;
+                  "
+                >
+                 <img width="100px" src="./img/logo 1 (1).png" alt="">
+                </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </body>
+      </html>
+      `
 
       const useremail = await this.UserRepository.findOne({where:{Email}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: useremail.Email, // Recipient's email address
+        to: 'faisal@flyfar.tech', // Recipient's email address
         subject: 'Booking Details',
         text: 'Please find the attached PDF file.',
         attachments: [
          {
-           filename: 'booking_details.pdf',
-           content: pdfBuffer,
-           contentType: 'application/pdf',
+           filename: 'booking_details.html',
+           content: htmlContent,
+           contentType: 'text/html',
          },
        ],
       }
@@ -211,32 +831,10 @@ export class BookingService {
           pass: '123Next2$', // Replace with your email password
         },
       });
-      const pdfDoc = new PDFDocument({font: 'Courier'});
-      // Add a 50 point margin on all sides
-            
-      // Set default font
-      pdfDoc.font('Helvetica');
+      const htmlContent =``;
 
-      // Add a bulleted list
-   
-   // Add different margins on each side
-      // Add content to the PDF document, e.g., text, images, etc.
-      pdfDoc.text(`Booking ID: ${Bookingid}`);
-      pdfDoc.text(`Total Price: ${TotalPrice}`);
 
-      pdfDoc.end();
-   
-      // Convert the PDF document to a buffer
-      const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        pdfDoc.on('data', chunk => chunks.push(chunk));
-        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
-        pdfDoc.on('error', reject);
-      });
       const bookedemail = await this.bookingRepository.findOne({ where: {Email} });
-
-      
-  
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
@@ -246,8 +844,8 @@ export class BookingService {
         attachments: [
          {
            filename: 'booking_details.pdf',
-           content: pdfBuffer,
-           contentType: 'application/pdf',
+           content: htmlContent,
+           contentType: 'text/html',
          },
        ],
       }

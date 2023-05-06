@@ -144,7 +144,7 @@ export class userProfileController {
             traveler.PassportCopyURL =Passportcopy
             traveler.user = user;
             await this.TravellerRepository.save({...traveler})
-         return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
+           return res.status(HttpStatus.CREATED).json({ status: "success", message: 'Traveler Added successfully' });
       }
      
 
