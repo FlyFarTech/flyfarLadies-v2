@@ -5,7 +5,7 @@ import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, C
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum BookingStatus {
-   PENDING = 'pending',
+   Hold = 'hold',
    APPROVED = 'approved',
    REJECTED = 'rejected',
  }
@@ -43,9 +43,9 @@ export class Booking{
    @BeforeInsert()
    generateUserId() {
       userCount++;
-      this.Bookingid = `FFLBK${100 + userCount}`;
+      this.Bookingid = `FFLB${100 + userCount}`;
    }
-   @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.PENDING })
+   @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.Hold })
    status: BookingStatus;
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
    tourPackage: Tourpackage;

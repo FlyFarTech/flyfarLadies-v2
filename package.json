@@ -42,6 +42,7 @@
     "mysql2": "^3.2.0",
     "node-fetch": "^3.3.1",
     "npm-install-global": "^1.0.0",
+    "number-to-words": "^1.2.4",
     "ormconfig.json": "^1.0.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",

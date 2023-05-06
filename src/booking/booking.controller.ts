@@ -23,7 +23,7 @@ export class BookingController {
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
 
-  @Patch(':Bookingid/approved')
+  @Patch(':Bookingid/confirmed')
   async Approvedbooking(
     @Param('Bookingid') Bookingid:string,
     @Body('uuid') uuid:string,
