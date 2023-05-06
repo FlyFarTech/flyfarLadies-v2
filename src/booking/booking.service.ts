@@ -85,45 +85,45 @@ export class BookingService {
       });
       
 
-      const number = booking.TotalPrice
-      function convertNumberToWords(number) {
-        const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-        const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-        const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+      // const number = booking.TotalPrice
+      // function convertNumberToWords(number) {
+      //   const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+      //   const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+      //   const teens = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
         
-        if (number === 0) {
-          return 'zero';
-        }
+      //   if (number === 0) {
+      //     return 'zero';
+      //   }
         
-        if (number < 0) {
-          return 'minus ' + convertNumberToWords(Math.abs(number));
-        }
+      //   if (number < 0) {
+      //     return 'minus ' + convertNumberToWords(Math.abs(number));
+      //   }
         
-        if (number < 10) {
-          return ones[number];
-        }
+      //   if (number < 10) {
+      //     return ones[number];
+      //   }
         
-        if (number < 20) {
-          return teens[number - 10];
-        }
+      //   if (number < 20) {
+      //     return teens[number - 10];
+      //   }
         
-        if (number < 100) {
-          return tens[Math.floor(number / 10)] + (number % 10 !== 0 ? ' ' : '') + ones[number % 10];
-        }
+      //   if (number < 100) {
+      //     return tens[Math.floor(number / 10)] + (number % 10 !== 0 ? ' ' : '') + ones[number % 10];
+      //   }
         
-        if (number < 1000) {
-          return ones[Math.floor(number / 100)] + ' hundred' + (number % 100 !== 0 ? ' ' : '') + convertNumberToWords(number % 100);
-        }
+      //   if (number < 1000) {
+      //     return ones[Math.floor(number / 100)] + ' hundred' + (number % 100 !== 0 ? ' ' : '') + convertNumberToWords(number % 100);
+      //   }
         
-        if (number < 1000000) {
-          return convertNumberToWords(Math.floor(number / 1000)) + ' thousand' + (number % 1000 !== 0 ? ' ' : '') + convertNumberToWords(number % 1000);
-        }
+      //   if (number < 1000000) {
+      //     return convertNumberToWords(Math.floor(number / 1000)) + ' thousand' + (number % 1000 !== 0 ? ' ' : '') + convertNumberToWords(number % 1000);
+      //   }
         
-        return 'Number is too large';
-      }
+      //   return 'Number is too large';
+      // }
       
 
-      const amountInWords = convertNumberToWords({number});
+      // const amountInWords = convertNumberToWords({number});
 
       const htmlContent =`<!DOCTYPE html>
       <html lang="en">
@@ -579,7 +579,7 @@ export class BookingService {
                       font-style: italic;
                     "
                   >
-                  ${amountInWords}
+                  ${booking.TotalPrice}
                   </td>
                 </tr>
               </table>
