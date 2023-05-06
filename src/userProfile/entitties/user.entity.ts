@@ -7,6 +7,7 @@ import { Cash } from "./cash.entity"
 import { MobileBanking } from "./MobileBanking.enity"
 import { BankTransfer } from "./BankTransfer.entity"
 import { WishlistItem } from "./wishlist.entity"
+import { Traveller } from "src/Traveller/entities/traveller.entity"
 
 let userCount =0;
 
@@ -94,7 +95,9 @@ export class User{
    @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
    bankDeposit:Promise<BankTransfer[]> 
    @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.user)
-   wishlist: WishlistItem[];
+   wishlist:WishlistItem[];
+   @OneToMany(()=>Traveller, (traveller)=>traveller.user,{lazy:true})
+   travelers:Promise<Traveller[]>
    @CreateDateColumn()
    CreatedAt:Date
    @UpdateDateColumn()

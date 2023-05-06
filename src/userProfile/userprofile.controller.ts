@@ -16,6 +16,8 @@ import { MobileBanking } from "./entitties/MobileBanking.enity";
 import { profile } from "console";
 import { UserServices } from "./userprofile.services";
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
+import { Traveller } from "src/Traveller/entities/traveller.entity";
+import { title } from "process";
 
 @Controller('user')
 export class userProfileController {
@@ -26,6 +28,7 @@ export class userProfileController {
      @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
      @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
      @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
+     @InjectRepository(Traveller) private TravellerRepository:Repository<Traveller>,
       private readonly UserServices: UserServices,
       private s3service: S3Service
       ) {}
@@ -113,6 +116,51 @@ export class userProfileController {
       await this.UserRepository.save({ ...userprofile })
       return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
    }
+
+   @Post(':id/addtraveler')
+   @UseInterceptors(FileFieldsInterceptor([
+      { name: 'passportphotoUrl', maxCount: 2 },
+   ]))
+      async addTraveler(
+         @UploadedFiles()
+         file:{passportphotoUrl?: Express.Multer.File[] },
+         @Param('uuid') uuid: string,
+         @Res() res: Response,
+         @Req() req: Request,
+         @Body() body: { travelers: any[]}) {
+         const user = await this.UserRepository.findOne({where:{uuid}});
+   
+         const travelers = [];
+         const Passportcopy = await this.s3service.Addimage(file.passportphotoUrl[0])
+         let travelerDataArray =body.travelers;
+
+         if (!Array.isArray(travelerDataArray)) {
+          travelerDataArray = [travelerDataArray];
+        }
+    
+      for (const travelerData of travelerDataArray){
+         if(travelerData){
+            const {Title, FirstName, LastName, Nationality, DOB, Gender, PaxType,PassportNumber,PassportExpireDate}=travelerData
+            const traveler = new Traveller();
+            traveler.Title = Title
+            traveler.FirstName = FirstName
+            traveler.LastName = LastName
+            traveler.Nationality = Nationality
+            traveler.Gender = Gender
+            traveler.PaxType = PaxType
+            traveler.DOB = DOB
+            traveler.PassportNumber =PassportNumber
+            traveler.PassportExpireDate =PassportExpireDate
+            traveler.PassportCopyURL =Passportcopy
+            traveler.user = user;
+            travelers.push(traveler)
+            }
+         }
+         await this.TravellerRepository.save({ ...travelers})
+         return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
+        
+      }
+     
 
 
    // all user

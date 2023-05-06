@@ -150,7 +150,21 @@ export class BookingService {
     if (!user) {
       throw new NotFoundException('User Not valid');
    }
-    const bookedpackage = await this.bookingRepository.find({ where: {},relations:[ 'tourPackage']})
+    const bookedpackage = await this.bookingRepository.find({ where: {},relations:[
+       'tourPackage',
+       'tourPackage.mainimage',
+       'tourPackage.albumImages',
+       'tourPackage.vistitedImages',
+       'tourPackage.exclusions',
+       'tourPackage.PackageInclusions',
+       'tourPackage.BookingPolicys',
+       'tourPackage.highlights',
+       'tourPackage.mainimage',
+       'tourPackage.refundpolicys',
+       'tourPackage.tourpackageplans',
+       'tourPackage.installments'
+      
+      ]})
     return {bookedpackage};
  }
 

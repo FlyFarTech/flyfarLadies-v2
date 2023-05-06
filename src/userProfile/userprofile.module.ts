@@ -16,9 +16,10 @@ import { CardPayment } from "./entitties/Cardpayment.entity";
 import { Bkash } from "./entitties/Bkash.entity";
 import { MobileBanking } from "./entitties/MobileBanking.enity";
 import { UserServices } from "./userprofile.services";
+import { Traveller } from "src/Traveller/entities/traveller.entity";
 
 @Module({
-   imports: [TypeOrmModule.forFeature([Tourpackage,User,Cheque,Cash, BankTransfer, CardPayment, Bkash, MobileBanking]),   
+   imports: [TypeOrmModule.forFeature([Tourpackage,User,Cheque,Cash, BankTransfer, CardPayment, Bkash, MobileBanking, Traveller]),   
    JwtModule.register({
       secret: jwtConstants.secret,
       signOptions:{expiresIn:'1d'},
