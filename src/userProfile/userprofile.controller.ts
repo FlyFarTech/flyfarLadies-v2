@@ -160,13 +160,15 @@ export class userProfileController {
    }
 
    @Get(':uuid/mytraveler')
-   async GetTravler(@Param('uuid')uuid: string){
+   async GetTravler(
+      @Param('uuid')uuid: string,
+      @Res() res: Response){
       const Profile = await this.UserRepository.findOne({ where: { uuid }});
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
-      const travler = await this.TravellerRepository.find({ where:{}})
-      return travler;
+      const mytravlerbuddy = await this.TravellerRepository.find({ where:{}})
+      return res.status(HttpStatus.OK).json({ mytravlerbuddy });
   
    }
   
