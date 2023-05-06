@@ -142,12 +142,12 @@ export class BookingService {
       return bookedpackage;
    }
 
-   async userAllBooking(uuid:string,Bookingid:string){
+   async userAllBooking(uuid:string){
     const user = await this.UserRepository.findOne({where:{uuid}})
     if (!user) {
       throw new NotFoundException('User Not valid');
    }
-    const bookedpackage = await this.bookingRepository.find({ where: {Bookingid},relations:[
+    const bookedpackage = await this.bookingRepository.find({ where: {},relations:[
        'tourPackage',
        'travelers',
        'tourPackage.mainimage',

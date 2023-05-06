@@ -49,7 +49,7 @@ export class Booking{
    status: BookingStatus;
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
    tourPackage: Tourpackage;
-   @ManyToMany(() => Traveller,)
+   @ManyToMany(() => Traveller,{lazy:true})
    @JoinTable({name: 'Traveler_bookings'})
    travelers: Traveller[];
 }
