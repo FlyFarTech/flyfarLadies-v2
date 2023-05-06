@@ -159,7 +159,7 @@ export class userProfileController {
       return res.status(HttpStatus.OK).json({ Profile });
    }
 
-   @Get(':uuid/mytravler')
+   @Get(':uuid/mytraveler')
    async GetTravler(@Param('uuid')uuid: string){
       const Profile = await this.UserRepository.findOne({ where: { uuid }});
       if (!Profile) {
