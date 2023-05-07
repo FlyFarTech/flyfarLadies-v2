@@ -5,7 +5,7 @@ import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, C
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum BookingStatus {
-   Hold = 'hold',
+   HOLD = 'hold',
    APPROVED = 'approved',
    REJECTED = 'rejected',
  }
@@ -24,6 +24,10 @@ export class Booking{
    UpdatedAt:Date
    @Column()
    Email:string
+   @Column()
+   MainTitle:string
+   @Column()
+   SubTitle:string
    @Column()
    Name:string
    @Column()
@@ -45,7 +49,7 @@ export class Booking{
       userCount++;
       this.Bookingid = `FFLB${100 + userCount}`;
    }
-   @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.Hold })
+   @Column({ type: 'enum', enum: BookingStatus, default: BookingStatus.HOLD })
    status: BookingStatus;
    @ManyToOne(() => Tourpackage, tourPackage => tourPackage.bookings)
    tourPackage: Tourpackage;

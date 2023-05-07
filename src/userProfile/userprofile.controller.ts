@@ -17,7 +17,7 @@ import { profile } from "console";
 import { UserServices } from "./userprofile.services";
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
 import { Traveller } from "src/Traveller/entities/traveller.entity";
-import { title } from "process";
+import * as nodemailer from 'nodemailer'
 
 @Controller('user')
 export class userProfileController {
@@ -248,6 +248,39 @@ export class userProfileController {
       await this.chequeRepository.save(cheque);
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
    }
+
+   
+   // async sendDepositDetailsToUser() {
+   
+   //    // Get tour package details
+   //    // Create a transporter with SMTP configuration
+   //    const transporter = nodemailer.createTransport({
+   //      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+   //      port: 465, // Replace with your email service provider's SMTP port
+   //      secure: true, // Use TLS for secure connection
+   //      auth: {
+   //        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+   //        pass: '123Next2$', // Replace with your email password
+   //      },
+   //    });
+   //    const user = await this.UserRepository.findOne({where:{Email}})
+   //    // Compose the email message
+   //    const mailOptions = {
+   //      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+   //      to: useremail.Email, // Recipient's email address
+   //      subject: 'Booking Details',
+   //      text: 'Please find the attached file.',
+   
+    
+   //    }
+   //    await transporter.sendMail(mailOptions,(error, info) => {
+   //       if (error) {
+   //         console.error(error);
+   //       } else {
+   //         console.log('Email sent successfully:', info.response);
+   //       }
+   //     });
+   // }
 
    @Patch('Cheque/:Depositid/approve')
    async approveCheque(

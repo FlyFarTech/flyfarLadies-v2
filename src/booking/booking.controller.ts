@@ -30,7 +30,7 @@ export class BookingController {
     Email:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.approveBooking(Bookingid, uuid, Email)
+    await this.bookingService.ConfirmedBooking(Bookingid, uuid, Email)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
 
