@@ -9,15 +9,17 @@ export enum PaymentStatus {
  }
 
 
- let userCount =Math.floor(Math.random() * 10000);
+let userCount =Math.floor(Math.random() * 10000);
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
+   buid:string
+   @Column()
    Depositid:string
    @BeforeInsert()
    generateUserId() {
       userCount++;
-      this.Depositid = `B${100 + userCount}`;
+      this.Depositid =`B${100 + userCount}`;
    }
    @Column()
    uuid:string
@@ -46,6 +48,6 @@ export class BankTransfer{
    @Column({ type: 'enum', enum: PaymentStatus, default: PaymentStatus.PENDING })
    status: PaymentStatus;
    @ManyToOne(()=>User, (userprofile)=>userprofile.bankDeposit)
-   @JoinColumn({name:'Bank_Id',})
+   @JoinColumn({name:'user_Id',})
    userprofile:User
 }

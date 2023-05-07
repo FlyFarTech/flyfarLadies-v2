@@ -15,7 +15,7 @@ import { User } from "src/userProfile/entitties/user.entity";
 import { IsNotEmpty } from "class-validator";
 import { WishlistItem } from "src/userProfile/entitties/wishlist.entity";
 
-let userCount = 0;
+let userCount = Math.floor(Math.random() * 10000);
 
 @Entity()
 export class Tourpackage {

@@ -114,7 +114,7 @@ export class userProfileController {
       userprofile.LinkedIn = req.body.LinkedIn
       userprofile.WhatsApp = req.body.whatsApp
       await this.UserRepository.save({ ...userprofile })
-      return res.status(HttpStatus.CREATED).json({ staus: "success", message: 'user Profile Added successfully' });
+      return res.status(HttpStatus.CREATED).json({ status: "success", message: 'user Profile updated successfully' });
    }
 
    @Post(':id/addtraveler')
@@ -226,6 +226,7 @@ export class userProfileController {
    )
    async AddCheque(
    @Param('uuid') uuid: string,
+   Depositid:string,
    @UploadedFile()
    file: Express.Multer.File,
    @Req() req: Request,
@@ -246,41 +247,510 @@ export class userProfileController {
       cheque.userprofile =Profile;
       cheque.uuid =Profile.uuid
       await this.chequeRepository.save(cheque);
-      return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull",cheque })     
+      await this.sendChequeDepositDetails(uuid,Depositid)
+      return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull"})     
    }
 
    
-   // async sendDepositDetailsToUser() {
-   
-   //    // Get tour package details
-   //    // Create a transporter with SMTP configuration
-   //    const transporter = nodemailer.createTransport({
-   //      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
-   //      port: 465, // Replace with your email service provider's SMTP port
-   //      secure: true, // Use TLS for secure connection
-   //      auth: {
-   //        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-   //        pass: '123Next2$', // Replace with your email password
-   //      },
-   //    });
-   //    const user = await this.UserRepository.findOne({where:{Email}})
-   //    // Compose the email message
-   //    const mailOptions = {
-   //      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-   //      to: useremail.Email, // Recipient's email address
-   //      subject: 'Booking Details',
-   //      text: 'Please find the attached file.',
-   
+   async sendChequeDepositDetails(uuid:string,Depositid:string) {
+      // Get tour package details
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      // Compose the email message
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Deposit Details',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Confirmation
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${mbank.Amount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${mbank.DepositType}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Bank Name
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.BankName}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.ChequeDate}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${mbank.Reference}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
     
-   //    }
-   //    await transporter.sendMail(mailOptions,(error, info) => {
-   //       if (error) {
-   //         console.error(error);
-   //       } else {
-   //         console.log('Email sent successfully:', info.response);
-   //       }
-   //     });
-   // }
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
 
    @Patch('Cheque/:Depositid/approve')
    async approveCheque(
@@ -311,12 +781,554 @@ export class userProfileController {
    await this.chequeRepository.save(cheque);
    profile.Wallet += cheque.Amount;
    await this.UserRepository.save(profile);
+   await this.sendDepositConfirmationToUser(uuid,Depositid)
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
    }
+
+
+   async sendDepositConfirmationToUser(uuid:string,Depositid:string) {
+      // Get tour package details
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      // Compose the email message
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Deposit Confirmation',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Approve
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${mbank.Amount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${mbank.DepositType}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Bank Name
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.BankName}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.ChequeDate}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${mbank.Reference}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Total Balance
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${user.Wallet}
+                  </td>
+                </tr>
+
+
+
+
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
+    
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
+
+
 
    @Patch('Cheque/:Depositid/reject')
    async rejectCheque(
    @Param('Depositid') Depositid: string,
+   uuid:string,
    @Body() body: { rejectionReason: string , ActionBy: string},
    @Req() req: Request,
    @Res() res: Response
@@ -339,8 +1351,545 @@ export class userProfileController {
       throw new NotFoundException('please add reason');
    }
    await this.chequeRepository.save(cheque);
+   await this.sendDepositrejectionToUser(uuid,Depositid)
    return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
    }
+
+
+   async sendDepositrejectionToUser(uuid:string,Depositid:string) {
+      // Get tour package details
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      // Compose the email message
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Deposit Rejection',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Reject
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${mbank.Amount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${mbank.DepositType}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Bank Name
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.BankName}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.ChequeDate}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${mbank.Reference}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Reason
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${mbank.rejectionReason}
+                  </td>
+                </tr>
+
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
+    
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
+
   
    @Get('cheques/pending')
    async PendingChequeDeposit(): Promise<Cheque[]> {
@@ -387,7 +1936,6 @@ export class userProfileController {
   }
 
 
-
    @Get('cheques/approved')
    async ApprovedChequeDeposit(): Promise<Cheque[]> {
       const status: PaymentStatus = PaymentStatus.APPROVED;
@@ -409,6 +1957,7 @@ export class userProfileController {
    async addmobilebankinbg( @UploadedFile()
    file: Express.Multer.File,
    @Param('uuid') uuid: string,
+   Depositid:string,
    @Req() req: Request,
    @Res() res: Response) {
       const Profile = await this.UserRepository.findOne({ where: { uuid } });
@@ -433,8 +1982,510 @@ export class userProfileController {
       MobileBank.userprofile =Profile;
       MobileBank.uuid =Profile.uuid
       await this.MobileBankingRepository.save(MobileBank)
+      await this.sendMobileBankDepositDetails(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Mobile Banking Deposit Request Successfull", })
    }
+
+ 
+   async sendMobileBankDepositDetails(uuid:string,Depositid:string) {
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Deposit Details',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Confirmation
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${mbank.DepositedAmount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${mbank.AgentType}
+                    </td>
+                  </tr>
+                </table>
+   
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${mbank.Reference}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Reference
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                   ${mbank.Reference}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  Gateway Fee
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                 ${mbank.GatewayFee}
+                </td>
+              </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
+      }
+
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
+
+
+
       @Patch('MobileBank/:Depositid/approve')
       async ApproveMobile(
       @Param('Depositid') Depositid: string,
@@ -464,12 +2515,546 @@ export class userProfileController {
       await this.MobileBankingRepository.save(mobnank);
       profile.Wallet += mobnank.Amount;
       await this.UserRepository.save(profile);
+      await this.sendMBankDepositConfirmationToUser(uuid, Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request approved"})
       }
+
+      
+   async sendMBankDepositConfirmationToUser(uuid:string,Depositid:string) {
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email,// Recipient's email address
+        subject: 'Deposit approve',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Approve
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${mbank.DepositedAmount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${mbank.DepositType}
+                    </td>
+                  </tr>
+                </table>
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                     Gateway Fee
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.GatewayFee}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.CreatedAt}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${mbank.Reference}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Total Balance
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${user.Wallet}
+                  </td>
+                </tr>
+
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
+    
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
+
 
       @Patch('MobileBank/:Depositid/reject')
       async RejectMobilebankDeposit (
       @Param('Depositid') Depositid: string,
+      uuid:string,
       @Body() body: { ActionBy: string, rejectionReason:string },
       @Req() req: Request,
       @Res() res: Response
@@ -492,8 +3077,543 @@ export class userProfileController {
          throw new NotFoundException(' please add reason');
       }
       await this.MobileBankingRepository.save(mobilebank);
+      await this.sendMbankDepositrejectionToUser(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
       }
+
+
+      async sendMbankDepositrejectionToUser(uuid:string,Depositid:string) {
+         const transporter = nodemailer.createTransport({
+           host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+           port: 465, // Replace with your email service provider's SMTP port
+           secure: true, // Use TLS for secure connection
+           auth: {
+             user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+             pass: '123Next2$', // Replace with your email password
+           },
+         });
+         const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
+         const user = await this.UserRepository.findOne({where:{uuid}})
+         // Compose the email message
+         const mailOptions = {
+           from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+           to: user.Email, // Recipient's email address
+           subject: 'Deposit Rejection',
+           text: 'Please find the attached file.',
+           html: `<!DOCTYPE html>
+           <html lang="en">
+             <head>
+               <meta charset="UTF-8" />
+               <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+               <title>Deposit Request</title>
+             </head>
+             <body>
+               <div
+                 style="
+                   width: 700px;
+                   height: fit-content;
+                   margin: 0 auto;
+                   background-color: #efefef;
+                 "
+               >
+                 <div style="width: 700px; height: 70px; background: #fe99a6">
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="center"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 700px;
+                     "
+                   >
+                     <tr>
+                       <td
+                         align="center"
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #ffffff;
+                           font-family: sans-serif;
+                           font-size: 15px;
+                           line-height: 38px;
+                           padding: 20px 0 20px 0;
+                           text-transform: uppercase;
+                           letter-spacing: 5px;
+                         "
+                       >
+                         Deposit Reject
+                       </td>
+                     </tr>
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="center"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 700px;
+                     "
+                   >
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           background-color: #efefef;
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #584660;
+                           font-family: sans-serif;
+                           font-size: 30px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 20px 40px 0px 55px;
+                         "
+                       >
+                         BDT ${mbank.DepositedAmount}
+                       </td>
+                     </tr>
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           background-color: #efefef;
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #bc6277;
+                           font-family: sans-serif;
+                           font-size: 17px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 0px 40px 20px 55px;
+                         "
+                       >
+                         ${mbank.DepositType}
+                       </td>
+                     </tr>
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="center"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 620px;
+                       background-color: #ffffff;
+                     "
+                   >
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #bc6277;
+                           font-family: sans-serif;
+                           font-size: 15px;
+                           font-weight: 600;
+                           line-height: 38px;
+                           padding: 10px 20px 5px 20px;
+                         "
+                       >
+                         Transaction Details
+                       </td>
+                     </tr>
+           
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                           width: 180px;
+                         "
+                       >
+                         Trasaction ID
+                       </td>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                         "
+                       >
+                         ${mbank.Depositid}
+                       </td>
+                     </tr>
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                           width: 180px;
+                         "
+                       >
+                       GateWay Fee
+                       </td>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                         "
+                       >
+                         ${mbank.GatewayFee}
+                       </td>
+                     </tr>
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                           width: 180px;
+                         "
+                       >
+                         Transaction Date
+                       </td>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                         "
+                       >
+                         ${mbank.CreatedAt}
+                       </td>
+                     </tr>
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                           width: 180px;
+                         "
+                       >
+                         Reference
+                       </td>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                         "
+                       >
+                        ${mbank.Reference}
+                       </td>
+                     </tr>
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                     <td
+                       valign="top"
+                       style="
+                         border-collapse: collapse;
+                         border-spacing: 0;
+                         color: #767676;
+                         font-family: sans-serif;
+                         font-size: 14px;
+                         font-weight: 500;
+                         line-height: 38px;
+                         padding: 5px 20px;
+                         width: 180px;
+                       "
+                     >
+                       Reason
+                     </td>
+                     <td
+                       valign="top"
+                       style="
+                         border-collapse: collapse;
+                         border-spacing: 0;
+                         color: #767676;
+                         font-family: sans-serif;
+                         font-size: 14px;
+                         font-weight: 500;
+                         line-height: 38px;
+                         padding: 5px 20px;
+                       "
+                     >
+                       ${mbank.rejectionReason}
+                     </td>
+                   </tr>
+   
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="center"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 670px;
+                       margin-top: 15px;
+                       color: #ffffff !important;
+                       text-decoration: none !important;
+                     "
+                   >
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           color: #767676;
+                           font-family: sans-serif;
+                           font-size: 14px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 5px 20px;
+                           width: 600;
+                           font-style: italic;
+                         "
+                       >
+                         Please Wait a little while. Your money will be added to
+                         your wallet after verification is complete.
+                       </td>
+                     </tr>
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="center"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 670px;
+                       background-color: #702c8b;
+                       margin-top: 25px;
+                       text-align: center;
+                       color: #ffffff !important;
+                       text-decoration: none !important;
+                     "
+                   >
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           font-family: sans-serif;
+                           font-size: 16px;
+                           font-weight: 500;
+                           padding: 20px 20px 0px 20px;
+                         "
+                       >
+                         Need more help?
+                       </td>
+                     </tr>
+           
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           font-family: sans-serif;
+                           font-size: 12px;
+                           font-weight: 500;
+                           line-height: 38px;
+                           padding: 0px 20px 10px 20px;
+                         "
+                       >
+                         Mail us at
+                         <span style="color: #ffffff !important; text-decoration: none"
+                           >support@flyfarladies.com</span
+                         >
+                         or Call us at 09606912912
+                       </td>
+                     </tr>
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     align="left"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       padding: 0;
+                       width: 420px;
+                       color: #ffffff;
+                     "
+                   >
+                     <tr>
+                       <td
+                         valign="top"
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           font-family: sans-serif;
+                           font-size: 13px;
+                           font-weight: 600;
+                           padding: 20px 0px 0px 45px;
+                           color: #767676;
+                         "
+                       >
+                         <a style="padding-right: 20px; color: #584660" href="http://"
+                           >Terms & Conditions</a
+                         >
+           
+                         <a style="padding-right: 20px; color: #584660" href="http://"
+                           >Booking Policy</a
+                         >
+           
+                         <a style="padding-right: 20px; color: #584660" href="http://"
+                           >Privacy Policy</a
+                         >
+                       </td>
+                     </tr>
+                   </table>
+           
+                   <table
+                     border="0"
+                     cellpadding="0"
+                     cellspacing="0"
+                     style="
+                       border-collapse: collapse;
+                       border-spacing: 0;
+                       width: 700px;
+                       color: #ffffff;
+                       margin-top: 85px;
+                     "
+                   >
+                     <tr>
+                       <td style="padding-left: 45px">
+                         <img
+                           style="padding-right: 5px"
+                           src="./img/Vector (5).png"
+                           href="http://"
+                           alt=""
+                         />
+                         <img
+                           style="padding-right: 5px"
+                           src="./img/Vector (6).png"
+                           href="http://"
+                           alt=""
+                         />
+                         <img
+                           style="padding-right: 5px"
+                           src="./img/Vector (7).png"
+                           href="http://"
+                           alt=""
+                         />
+                       </td>
+                     </tr>
+           
+                     <tr>
+                       <td
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           font-family: sans-serif;
+                           font-size: 13px;
+                           font-weight: 500;
+                           padding: 5px 0px 0px 45px;
+                           color: #767676;
+                           padding-bottom: 2px;
+                         "
+                       >
+                         Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                       </td>
+           
+                       <td
+                         style="
+                           border-collapse: collapse;
+                           border-spacing: 0;
+                           font-family: sans-serif;
+                           font-weight: 500;
+                           color: #767676;
+                           padding-bottom: 20px;
+                         "
+                       >
+                         <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                       </td>
+                     </tr>
+                   </table>
+                 </div>
+               </div>
+             </body>
+           </html>`
+           
+       
+         }
+         await transporter.sendMail(mailOptions,(error, info) => {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log('Email sent successfully:', info.response);
+            }
+          });
+      }
+   
 
       
    @Get('mobilebank/pending')
@@ -524,6 +3644,7 @@ export class userProfileController {
    async addBankDeposit( @UploadedFile()
    file: Express.Multer.File,
    @Param('uuid') uuid: string,
+   Depositid:string,
    @Req() req: Request,
    @Res() res: Response) {
       const Profile = await this.UserRepository.findOne({ where: { uuid } });
@@ -538,14 +3659,550 @@ export class userProfileController {
       Banktransfer.DepositType = req.body.DepositType
       Banktransfer.ChequeDate =req.body.ChequeDate
       Banktransfer.TransactionId =req.body.TransactionId
+      Banktransfer.ChequeNumber =req.body.ChequeNumber
       Banktransfer.Amount =parseFloat(req.body.Amount)
       Profile.Wallet += Banktransfer.Amount
       Banktransfer.userprofile =Profile;
       Banktransfer.uuid =Profile.uuid
       await this.BankTransferRepository.save({...Banktransfer})
       await this.UserRepository.save(Profile)
+      await this.sendBankDepositDetails(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
    }
+
+   
+   async sendBankDepositDetails(uuid:string,Depositid:string) {
+      // Get tour package details
+      // Create a transporter with SMTP configuration
+      const transporter = nodemailer.createTransport({
+        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        port: 465, // Replace with your email service provider's SMTP port
+        secure: true, // Use TLS for secure connection
+        auth: {
+          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+          pass: '123Next2$', // Replace with your email password
+        },
+      });
+      const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
+      const user = await this.UserRepository.findOne({where:{uuid}})
+      const mailOptions = {
+        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        to: user.Email, // Recipient's email address
+        subject: 'Deposit Details',
+        text: 'Please find the attached file.',
+        html: `<!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <title>Deposit Request</title>
+          </head>
+          <body>
+            <div
+              style="
+                width: 700px;
+                height: fit-content;
+                margin: 0 auto;
+                background-color: #efefef;
+              "
+            >
+              <div style="width: 700px; height: 70px; background: #fe99a6">
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      align="center"
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #ffffff;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        line-height: 38px;
+                        padding: 20px 0 20px 0;
+                        text-transform: uppercase;
+                        letter-spacing: 5px;
+                      "
+                    >
+                      Deposit Confirmation
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 700px;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #584660;
+                        font-family: sans-serif;
+                        font-size: 30px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 20px 40px 0px 55px;
+                      "
+                    >
+                      BDT ${bank.Amount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        background-color: #efefef;
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 17px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 40px 20px 55px;
+                      "
+                    >
+                      ${bank.DepositType}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 620px;
+                    background-color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #bc6277;
+                        font-family: sans-serif;
+                        font-size: 15px;
+                        font-weight: 600;
+                        line-height: 38px;
+                        padding: 10px 20px 5px 20px;
+                      "
+                    >
+                      Transaction Details
+                    </td>
+                  </tr>
+        
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Trasaction ID
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${bank.Depositid}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                    DepositFrom
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${bank.DepositFrom}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                  DepositTo
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.DepositTo}
+                  </td>
+                </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${bank.ChequeDate}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      ChequeNumber
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                     ${bank.ChequeNumber}
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    margin-top: 15px;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 600;
+                        font-style: italic;
+                      "
+                    >
+                      Please Wait a little while. Your money will be added to
+                      your wallet after verification is complete.
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 670px;
+                    background-color: #702c8b;
+                    margin-top: 25px;
+                    text-align: center;
+                    color: #ffffff !important;
+                    text-decoration: none !important;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 16px;
+                        font-weight: 500;
+                        padding: 20px 20px 0px 20px;
+                      "
+                    >
+                      Need more help?
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 12px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 0px 20px 10px 20px;
+                      "
+                    >
+                      Mail us at
+                      <span style="color: #ffffff !important; text-decoration: none"
+                        >support@flyfarladies.com</span
+                      >
+                      or Call us at 09606912912
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="left"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    padding: 0;
+                    width: 420px;
+                    color: #ffffff;
+                  "
+                >
+                  <tr>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 600;
+                        padding: 20px 0px 0px 45px;
+                        color: #767676;
+                      "
+                    >
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Terms & Conditions</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Booking Policy</a
+                      >
+        
+                      <a style="padding-right: 20px; color: #584660" href="http://"
+                        >Privacy Policy</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+        
+                <table
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    width: 700px;
+                    color: #ffffff;
+                    margin-top: 85px;
+                  "
+                >
+                  <tr>
+                    <td style="padding-left: 45px">
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (5).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (6).png"
+                        href="http://"
+                        alt=""
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="./img/Vector (7).png"
+                        href="http://"
+                        alt=""
+                      />
+                    </td>
+                  </tr>
+        
+                  <tr>
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        font-weight: 500;
+                        padding: 5px 0px 0px 45px;
+                        color: #767676;
+                        padding-bottom: 2px;
+                      "
+                    >
+                      Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                    </td>
+        
+                    <td
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        font-family: sans-serif;
+                        font-weight: 500;
+                        color: #767676;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </body>
+        </html>`
+        
+    
+      }
+      await transporter.sendMail(mailOptions,(error, info) => {
+         if (error) {
+           console.error(error);
+         } else {
+           console.log('Email sent successfully:', info.response);
+         }
+       });
+   }
+
 
       @Patch('Bank/:Depositid/approve')
       async ApproveBankDepo(
@@ -561,7 +4218,7 @@ export class userProfileController {
       }
       if(bank.status !== PaymentStatus.PENDING)
       {
-         throw new NotFoundException('Deposit request already approved or Rejected');
+        throw new NotFoundException('Deposit request already approved or Rejected');
       }
       const profile = await this.UserRepository.findOne({ where: {uuid} });
       if (!profile) {
@@ -575,13 +4232,579 @@ export class userProfileController {
       await this.BankTransferRepository.save(bank);
       profile.Wallet += bank.Amount;
       await this.UserRepository.save(profile);
+      await this.sendbankDepositConfirmationToUser(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message:" Deposit Request approved"})
       }
+
+
+      
+   async sendbankDepositConfirmationToUser(uuid:string,Depositid:string) {
+    // Get tour package details
+    // Create a transporter with SMTP configuration
+    const transporter = nodemailer.createTransport({
+      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+      port: 465, // Replace with your email service provider's SMTP port
+      secure: true, // Use TLS for secure connection
+      auth: {
+        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        pass: '123Next2$', // Replace with your email password
+      },
+    });
+    const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
+    const user = await this.UserRepository.findOne({where:{uuid}})
+    // Compose the email message
+    const mailOptions = {
+      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+      to: user.Email, // Recipient's email address
+      subject: 'Deposit Confirmation',
+      text: 'Please find the attached file.',
+      html: `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Deposit Request</title>
+        </head>
+        <body>
+          <div
+            style="
+              width: 700px;
+              height: fit-content;
+              margin: 0 auto;
+              background-color: #efefef;
+            "
+          >
+            <div style="width: 700px; height: 70px; background: #fe99a6">
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                "
+              >
+                <tr>
+                  <td
+                    align="center"
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #ffffff;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      line-height: 38px;
+                      padding: 20px 0 20px 0;
+                      text-transform: uppercase;
+                      letter-spacing: 5px;
+                    "
+                  >
+                    Deposit Approve
+                  </td>
+                </tr>
+              </table>
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                  "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #584660;
+                      font-family: sans-serif;
+                      font-size: 30px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 20px 40px 0px 55px;
+                    "
+                  >
+                    BDT ${bank.Amount}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 17px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 40px 20px 55px;
+                    "
+                  >
+                    ${bank.DepositType}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 620px;
+                  background-color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      line-height: 38px;
+                      padding: 10px 20px 5px 20px;
+                    "
+                  >
+                    Transaction Details
+                  </td>
+                </tr>
+      
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Trasaction ID
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.Depositid}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    DepositFrom
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.DepositFrom}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  DepositTo
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${bank.DepositTo}
+                </td>
+              </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Transaction Date
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.ChequeDate}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    ChequeNumber
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                   ${bank.ChequeNumber}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                Total Balance
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${user.Wallet}
+                </td>
+              </tr>
+              </table>
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 670px;
+                  margin-top: 15px;
+                  color: #ffffff !important;
+                  text-decoration: none !important;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 600;
+                      font-style: italic;
+                    "
+                  >
+                    Please Wait a little while. Your money will be added to
+                    your wallet after verification is complete.
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 670px;
+                  background-color: #702c8b;
+                  margin-top: 25px;
+                  text-align: center;
+                  color: #ffffff !important;
+                  text-decoration: none !important;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 16px;
+                      font-weight: 500;
+                      padding: 20px 20px 0px 20px;
+                    "
+                  >
+                    Need more help?
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 12px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 20px 10px 20px;
+                    "
+                  >
+                    Mail us at
+                    <span style="color: #ffffff !important; text-decoration: none"
+                      >support@flyfarladies.com</span
+                    >
+                    or Call us at 09606912912
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="left"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 420px;
+                  color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 600;
+                      padding: 20px 0px 0px 45px;
+                      color: #767676;
+                    "
+                  >
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Terms & Conditions</a
+                    >
+      
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Booking Policy</a
+                    >
+      
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Privacy Policy</a
+                    >
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  width: 700px;
+                  color: #ffffff;
+                  margin-top: 85px;
+                "
+              >
+                <tr>
+                  <td style="padding-left: 45px">
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (5).png"
+                      href="http://"
+                      alt=""
+                    />
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (6).png"
+                      href="http://"
+                      alt=""
+                    />
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (7).png"
+                      href="http://"
+                      alt=""
+                    />
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 500;
+                      padding: 5px 0px 0px 45px;
+                      color: #767676;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                  </td>
+      
+                  <td
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-weight: 500;
+                      color: #767676;
+                      padding-bottom: 20px;
+                    "
+                  >
+                    <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </body>
+      </html>`
+    }
+    await transporter.sendMail(mailOptions,(error, info) => {
+       if (error) {
+         console.error(error);
+       } else {
+         console.log('Email sent successfully:', info.response);
+       }
+     });
+ }
 
 
       @Patch('Bank/:Depositid/reject')
       async RejectbankDeposit (
       @Param('Depositid') Depositid: string,
+      uuid:string,
       @Body() body: { ActionBy: string ,rejectionReason:string},
       @Req() req: Request,
       @Res() res: Response
@@ -604,8 +4827,577 @@ export class userProfileController {
          throw new NotFoundException(' please add reason');
       }
       await this.BankTransferRepository.save(bank);
+      await this.sendBankDepositrejectionToUser(uuid, Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Deposit Request Rejected"})
       }
+
+      
+   async sendBankDepositrejectionToUser(uuid:string,Depositid:string) {
+    // Get tour package details
+    // Create a transporter with SMTP configuration
+    const transporter = nodemailer.createTransport({
+      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+      port: 465, // Replace with your email service provider's SMTP port
+      secure: true, // Use TLS for secure connection
+      auth: {
+        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        pass: '123Next2$', // Replace with your email password
+      },
+    });
+    const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
+    const user = await this.UserRepository.findOne({where:{uuid}})
+    // Compose the email message
+    const mailOptions = {
+      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+      to: user.Email, // Recipient's email address
+      subject: 'Deposit Rejection',
+      text: 'Please find the attached file.',
+      html: `<!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Deposit Request</title>
+        </head>
+        <body>
+          <div
+            style="
+              width: 700px;
+              height: fit-content;
+              margin: 0 auto;
+              background-color: #efefef;
+            "
+          >
+            <div style="width: 700px; height: 70px; background: #fe99a6">
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                "
+              >
+                <tr>
+                  <td
+                    align="center"
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #ffffff;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      line-height: 38px;
+                      padding: 20px 0 20px 0;
+                      text-transform: uppercase;
+                      letter-spacing: 5px;
+                    "
+                  >
+                    Deposit Reject
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 700px;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #584660;
+                      font-family: sans-serif;
+                      font-size: 30px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 20px 40px 0px 55px;
+                    "
+                  >
+                    BDT ${bank.Amount}
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      background-color: #efefef;
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 17px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 40px 20px 55px;
+                    "
+                  >
+                    ${bank.DepositType}
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 620px;
+                  background-color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #bc6277;
+                      font-family: sans-serif;
+                      font-size: 15px;
+                      font-weight: 600;
+                      line-height: 38px;
+                      padding: 10px 20px 5px 20px;
+                    "
+                  >
+                    Transaction Details
+                  </td>
+                </tr>
+      
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Trasaction ID
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.Depositid}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    DepositFrom
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.DepositFrom}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  DepositTo
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${bank.DepositTo}
+                </td>
+              </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Transaction Date
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.ChequeDate}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    Reference
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                   ${bank.ChequeNumber}
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  Reason
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${bank.rejectionReason}
+                </td>
+              </tr>
+
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 670px;
+                  margin-top: 15px;
+                  color: #ffffff !important;
+                  text-decoration: none !important;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 600;
+                      font-style: italic;
+                    "
+                  >
+                    Please Wait a little while. Your money will be added to
+                    your wallet after verification is complete.
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="center"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 670px;
+                  background-color: #702c8b;
+                  margin-top: 25px;
+                  text-align: center;
+                  color: #ffffff !important;
+                  text-decoration: none !important;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 16px;
+                      font-weight: 500;
+                      padding: 20px 20px 0px 20px;
+                    "
+                  >
+                    Need more help?
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 12px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 0px 20px 10px 20px;
+                    "
+                  >
+                    Mail us at
+                    <span style="color: #ffffff !important; text-decoration: none"
+                      >support@flyfarladies.com</span
+                    >
+                    or Call us at 09606912912
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                align="left"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  padding: 0;
+                  width: 420px;
+                  color: #ffffff;
+                "
+              >
+                <tr>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 600;
+                      padding: 20px 0px 0px 45px;
+                      color: #767676;
+                    "
+                  >
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Terms & Conditions</a
+                    >
+      
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Booking Policy</a
+                    >
+      
+                    <a style="padding-right: 20px; color: #584660" href="http://"
+                      >Privacy Policy</a
+                    >
+                  </td>
+                </tr>
+              </table>
+      
+              <table
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  width: 700px;
+                  color: #ffffff;
+                  margin-top: 85px;
+                "
+              >
+                <tr>
+                  <td style="padding-left: 45px">
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (5).png"
+                      href="http://"
+                      alt=""
+                    />
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (6).png"
+                      href="http://"
+                      alt=""
+                    />
+                    <img
+                      style="padding-right: 5px"
+                      src="./img/Vector (7).png"
+                      href="http://"
+                      alt=""
+                    />
+                  </td>
+                </tr>
+      
+                <tr>
+                  <td
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-size: 13px;
+                      font-weight: 500;
+                      padding: 5px 0px 0px 45px;
+                      color: #767676;
+                      padding-bottom: 2px;
+                    "
+                  >
+                    Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
+                  </td>
+      
+                  <td
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      font-family: sans-serif;
+                      font-weight: 500;
+                      color: #767676;
+                      padding-bottom: 20px;
+                    "
+                  >
+                    <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </body>
+      </html>`
+      
+  
+    }
+    await transporter.sendMail(mailOptions,(error, info) => {
+       if (error) {
+         console.error(error);
+       } else {
+         console.log('Email sent successfully:', info.response);
+       }
+     });
+ }
 
       @Get('bank/pending')
       async PendingBankDeposit(): Promise<BankTransfer[]> {

@@ -734,7 +734,6 @@ export class BookingService {
           </body>
         </html>
         `
-    
       }
       await transporter.sendMail(mailOptions,(error, info) => {
          if (error) {
