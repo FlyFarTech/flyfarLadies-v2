@@ -63,13 +63,13 @@ export class BookingService {
          LinkedIn:userprofile.LinkedIn
       })
       const savebooking= await this.bookingRepository.save(newbooking)
-      await this.sendBookingDetailsToUser(savebooking,Email);
+      await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
       return savebooking;
    
    }
 
-   async sendBookingDetailsToUser(booking: Booking,Email:string ) {
-      const { Bookingid, tourPackage, travelers, TotalPrice } = booking;
+   async sendBookingDetailsToUser(booking: Booking,Email:string, travelers: Traveller[] ) {
+      const { Bookingid, tourPackage, TotalPrice } = booking;
       // Get tour package details
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
@@ -81,15 +81,17 @@ export class BookingService {
           pass: '123Next2$', // Replace with your email password
         },
       });
-  
+
       const amountInWords = converter.toWords(booking.TotalPrice)
       const useremail = await this.UserRepository.findOne({where:{Email}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: 'faisal@flyfar.tech', // Recipient's email address
+        to: useremail.Email, // Recipient's email address
         subject: 'Booking Details',
-        text: 'Please find the attached PDF file.',
+        text: 'Please find the attached file.',
+    
+        
         html:`<!DOCTYPE html>
         <html lang="en">
           <head>
@@ -392,42 +394,79 @@ export class BookingService {
                     </td>
                   </tr>
         
-                  <tr style="border-bottom: 1px solid #dfdfdf">
-                    <td
-                      valign="top"
-                      style="
-                        border-collapse: collapse;
-                        border-spacing: 0;
-                        color: #767676;
-                        font-family: sans-serif;
-                        font-size: 14px;
-                        font-weight: 500;
-                        line-height: 38px;
-                        padding: 5px 20px;
-                        width: 180px;
-        
-                      "
-                    >
-                      Travel Count
-                    </td>
-                    <td
-                      valign="top"
-                      style="
-                        border-collapse: collapse;
-                        border-spacing: 0;
-                        color: #767676;
-                        font-family: sans-serif;
-                        font-size: 14px;
-                        font-weight: 500;
-                        line-height: 38px;
-                        padding: 5px 20px;
-                      "
-                    >
-                      ${travelers.length}
-                    </td>
-                  </tr>
-                </table>
-        
+                      
+              <tr style="border-bottom: 1px solid #dfdfdf">
+              <td
+                valign="top"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  color: #767676;
+                  font-family: sans-serif;
+                  font-size: 14px;
+                  font-weight: 500;
+                  line-height: 38px;
+                  padding: 5px 20px;
+                  width: 180px;
+
+                "
+              >
+                Travel Count
+              </td>
+              <td
+                valign="top"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  color: #767676;
+                  font-family: sans-serif;
+                  font-size: 14px;
+                  font-weight: 500;
+                  line-height: 38px;
+                  padding: 5px 20px;
+                "
+              >
+                ${travelers.length}
+              </td>
+            </tr>
+
+            ${travelers.map((traveler,index)=>`
+            <tr style="border-bottom: 1px solid #dfdfdf">
+              <td
+                valign="top"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  color: #767676;
+                  font-family: sans-serif;
+                  font-size: 14px;
+                  font-weight: 500;
+                  line-height: 38px;
+                  padding: 5px 20px;
+                  width: 180px;
+
+                "
+              >
+                Passanger x${index+1}
+              </td>
+              <td
+                valign="top"
+                style="
+                  border-collapse: collapse;
+                  border-spacing: 0;
+                  color: #767676;
+                  font-family: sans-serif;
+                  font-size: 14px;
+                  font-weight: 500;
+                  line-height: 38px;
+                  padding: 5px 20px;
+                "
+              >
+              ${traveler.FirstName}
+              </td>
+            </tr>
+            `).join('\n')}
+          </table>
                 <table
                   border="0"
                   cellpadding="0"
@@ -491,7 +530,7 @@ export class BookingService {
                         padding: 5px 20px;
                       "
                     >
-                      01
+                      ${booking.TotalPrice/travelers.length}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
