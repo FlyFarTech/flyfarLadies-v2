@@ -72,7 +72,7 @@ import { socialimageenity } from './userProfile/entitties/socialimages.entity';
         WishlistItem,
         socialimageenity,
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
