@@ -125,7 +125,7 @@ export class UserServices {
         user.wishlist = []; // Initialize wishlist array if it's undefined
       }
       const newWishlistItem = new WishlistItem();
-      // newWishlistItem.tourPackage =tourpackage
+      // newWishlistItem.tourPackage =[tourpackage]
       user.wishlist.push(newWishlistItem);
       return await this.userRepository.save(user);
     ;

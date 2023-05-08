@@ -67,19 +67,11 @@ export class userProfileController {
    
    // Add Traveller
    @Patch('update/:uuid')
-   @UseInterceptors(FileFieldsInterceptor([
-      { name: 'PassportsizephotoUrl', maxCount: 2 },
-      { name: 'passportphotoUrl', maxCount: 2 },
-   ]))
    async updateProfile(
-      @UploadedFiles()
-      file: { PassportsizephotoUrl?: Express.Multer.File[], passportphotoUrl?: Express.Multer.File[] },
       @Body() body,
       @Param('uuid') uuid:string,
       @Req() req: Request,
       @Res() res: Response) {
-      const PassportsizephotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0])
-      const passportphotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0])
       const userprofile =  await this.UserRepository.findOne({where:{uuid}})
       if (!userprofile) {
          throw new HttpException(
@@ -87,19 +79,6 @@ export class userProfileController {
            HttpStatus.BAD_REQUEST,
          );
        }
-
-       if (file.PassportsizephotoUrl && file.PassportsizephotoUrl.length > 0) {
-         const passportSizePhotoUrl = await this.s3service.Addimage(file.PassportsizephotoUrl[0]);
-         userprofile.PassportsizephotoUrl = passportSizePhotoUrl;
-       }
-     
-       if (file.passportphotoUrl && file.passportphotoUrl.length > 0) {
-         const passportPhotoUrl = await this.s3service.Addimage(file.passportphotoUrl[0]);
-         userprofile.PassportCopy = passportPhotoUrl;
-       }
-       
-      userprofile.PassportCopy = passportphotoUrl
-      userprofile.PassportsizephotoUrl = PassportsizephotoUrl
       userprofile.NameTitle = req.body.NameTitle
       userprofile.FirstName = req.body.FirstName
       userprofile.LastName = req.body.LastName
@@ -297,8 +276,7 @@ export class userProfileController {
 
    
    async sendChequeDepositDetails(uuid:string,Depositid:string,iconid:string) {
-      // Get tour package details
-      // Create a transporter with SMTP configuration
+
       const transporter = nodemailer.createTransport({
         host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
@@ -314,7 +292,7 @@ export class userProfileController {
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: user.Email,  // Recipient's email address
+        to: 'faisal@flyfar.tech',  // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
