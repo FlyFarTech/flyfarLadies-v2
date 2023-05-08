@@ -31,6 +31,7 @@ import { CardPayment } from './userProfile/entitties/Cardpayment.entity';
 import { Bkash } from './userProfile/entitties/Bkash.entity';
 import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
 import { WishlistItem } from './userProfile/entitties/wishlist.entity';
+import { socialimageenity } from './userProfile/entitties/socialimages.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -68,7 +69,8 @@ import { WishlistItem } from './userProfile/entitties/wishlist.entity';
         refundpolicy,
         Installment,
         Booking,
-        WishlistItem
+        WishlistItem,
+        socialimageenity,
       ],
       synchronize:false
     }),

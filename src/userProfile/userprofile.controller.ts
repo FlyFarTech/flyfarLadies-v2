@@ -18,6 +18,7 @@ import { UserServices } from "./userprofile.services";
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
 import { Traveller } from "src/Traveller/entities/traveller.entity";
 import * as nodemailer from 'nodemailer'
+import { socialimageenity } from "./entitties/socialimages.entity";
 
 @Controller('user')
 export class userProfileController {
@@ -29,6 +30,7 @@ export class userProfileController {
      @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
      @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
      @InjectRepository(Traveller) private TravellerRepository:Repository<Traveller>,
+     @InjectRepository(socialimageenity) private socialimageenityRepository:Repository<socialimageenity>,
       private readonly UserServices: UserServices,
       private s3service: S3Service
       ) {}
@@ -115,6 +117,46 @@ export class userProfileController {
       userprofile.WhatsApp = req.body.whatsApp
       await this.UserRepository.save({ ...userprofile })
       return res.status(HttpStatus.CREATED).json({ status: "success", message: 'user Profile updated successfully' });
+   }
+
+
+
+   // Add Traveller
+   @Post('upload/logos')
+   @UseInterceptors(FileFieldsInterceptor([
+      { name: 'Logo', maxCount: 2 },
+      { name: 'facebookIcon', maxCount: 2},
+      { name: 'linkedinIcon', maxCount: 2 },
+      { name: 'whatsappIcon', maxCount: 2},
+   ]))
+   async AddSocialImages(
+      @UploadedFiles()
+      file: { facebookIcon?: Express.Multer.File[], Logo?: Express.Multer.File[],linkedinIcon?: Express.Multer.File[], whatsappIcon?: Express.Multer.File[]  },
+      @Body() body,
+      uuid:string,
+      @Res() res: Response) {
+      const facebookIcon = await this.s3service.Addimage(file.facebookIcon[0])
+      const Logo = await this.s3service.Addimage(file.Logo[0])
+      const linkedinIcon = await this.s3service.Addimage(file.linkedinIcon[0])
+      const whatsappIcon = await this.s3service.Addimage(file.whatsappIcon[0])
+      const logos = new  socialimageenity()
+       logos.Logo =Logo
+       logos.facebookIcon=facebookIcon;
+       logos.linkedinIcon=linkedinIcon;
+       logos.whatsappIcon=whatsappIcon;
+      await this.socialimageenityRepository.save({ ...logos })
+      return res.status(HttpStatus.CREATED).json({ status: "success", message: 'Logo Added successfully'});
+   }
+
+   @Get('/allsocial/image')
+   async alllogo(
+      @Res() res: Response){
+      const logos = await this.socialimageenityRepository.find({ where: {}});
+      if (!logos) {
+         throw new HttpException("Profile logos found", HttpStatus.BAD_REQUEST);
+      }
+      return res.status(HttpStatus.OK).json({ logos });
+  
    }
 
    @Post(':id/addtraveler')
