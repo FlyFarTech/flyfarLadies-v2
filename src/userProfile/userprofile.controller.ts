@@ -149,7 +149,6 @@ export class userProfileController {
          @Res() res: Response,
          @Req() req: Request,) {
          const user = await this.UserRepository.findOne({where:{uuid}});
-
         const {Title, FirstName, LastName, Nationality, DOB, Gender, PaxType,PassportNumber,PassportExpireDate}=req.body
             const Passportcopy = await this.s3service.Addimage(file.passportphotoUrl[0])
             const traveler = new Traveller();
@@ -275,14 +274,13 @@ export class userProfileController {
 
    
    async sendChequeDepositDetails(uuid:string,Depositid:string,iconid:string) {
-
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
       const mbank = await this.chequeRepository.findOne({where:{Depositid}})
@@ -290,8 +288,8 @@ export class userProfileController {
       const icons = await this.socialimageenityRepository.findOne({where:{iconid}})
       // Compose the email message
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: 'faisal@flyfar.tech',  // Recipient's email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
+        to: user.Email,  // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
@@ -692,7 +690,6 @@ export class userProfileController {
                     </td>
                   </tr>
                 </table>
-                ${icons.facebookIcon}
         
                 <table
                   border="0"
@@ -708,25 +705,22 @@ export class userProfileController {
                 >
                   <tr>
                     <td style="padding-left: 45px">
-                  
-                      // <img
-                      //   style="padding-right: 5px"
-                      //   src=
-                      //   href="http://"
-                      //   alt=""
-                      // />
-                      // <img
-                      //   style="padding-right: 5px"
-                      //   src=${icons.linkedinIcon}
-                      //   href="http://"
-                      //   alt=""
-                      // />
-                      // <img
-                      //   style="padding-right: 5px"
-                      //   src="${icons.whatsappIcon}"
-                      //   href="http://"
-                      //   alt=""
-                      // />
+                      <img
+                        style="padding-right: 5px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        alt="FFL Facebook Logo
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        alt="LinkedIn logo"
+                      />
+                      <img
+                        style="padding-right: 5px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href=""
+                        alt="WahtsApp  Icon"
+                      />
                     </td>
                   </tr>
         
@@ -745,7 +739,6 @@ export class userProfileController {
                     >
                       Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
                     </td>
-        
                     <td
                       style="
                         border-collapse: collapse;
@@ -756,7 +749,7 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="${icons.Logo}" alt="" />
+                      <img width="100px" src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png" alt="" />
                     </td>
                   </tr>
                 </table>
@@ -764,10 +757,8 @@ export class userProfileController {
             </div>
           </body>
         </html>`
-        
-    
       }
-      await transporter.sendMail(mailOptions,(error, info) => {
+       transporter.sendMail(mailOptions,(error, info) => {
          if (error) {
            console.error(error);
          } else {
@@ -814,19 +805,19 @@ export class userProfileController {
       // Get tour package details
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
       const mbank = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       // Compose the email message
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email, // Recipient's email address
         subject: 'Deposit Confirmation',
         text: 'Please find the attached file.',
@@ -1384,19 +1375,19 @@ export class userProfileController {
       // Get tour package details
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
       const mbank = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       // Compose the email message
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email, // Recipient's email address
         subject: 'Deposit Rejection',
         text: 'Please find the attached file.',
@@ -2013,18 +2004,18 @@ export class userProfileController {
  
    async sendMobileBankDepositDetails(uuid:string,Depositid:string) {
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
       const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email, // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
@@ -2509,7 +2500,6 @@ export class userProfileController {
    }
 
 
-
       @Patch('MobileBank/:Depositid/approve')
       async ApproveMobile(
       @Param('Depositid') Depositid: string,
@@ -2546,18 +2536,18 @@ export class userProfileController {
       
    async sendMBankDepositConfirmationToUser(uuid:string,Depositid:string) {
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
       const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email,// Recipient's email address
         subject: 'Deposit approve',
         text: 'Please find the attached file.',
@@ -3108,19 +3098,19 @@ export class userProfileController {
 
       async sendMbankDepositrejectionToUser(uuid:string,Depositid:string) {
          const transporter = nodemailer.createTransport({
-           host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
-           port: 465, // Replace with your email service provider's SMTP port
-           secure: true, // Use TLS for secure connection
-           auth: {
-             user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-             pass: '123Next2$', // Replace with your email password
-           },
+          host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
+          port: 465, // Replace with your email service provider's SMTP port
+          secure: true, // Use TLS for secure connection
+          auth: {
+            user: 'flyfarladies@mailservice.center', // Replace with your email address
+            pass: 'YVWJCU.?UY^R', // Replace with your email password
+          },
          });
          const mbank = await this.MobileBankingRepository.findOne({where:{Depositid}})
          const user = await this.UserRepository.findOne({where:{uuid}})
          // Compose the email message
          const mailOptions = {
-           from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+           from: 'flyfarladies@mailservice.center', // Replace with your email address
            to: user.Email, // Recipient's email address
            subject: 'Deposit Rejection',
            text: 'Please find the attached file.',
@@ -3638,7 +3628,6 @@ export class userProfileController {
           });
       }
    
-
       
    @Get('mobilebank/pending')
    async PendingMobileBankDeposit(): Promise<MobileBanking[]> {
@@ -3693,24 +3682,23 @@ export class userProfileController {
       await this.sendBankDepositDetails(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Banktransfer Deposit Request Successfull", })
    }
-
    
    async sendBankDepositDetails(uuid:string,Depositid:string) {
       // Get tour package details
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
-        port: 465, // Replace with your email service provider's SMTP port
-        secure: true, // Use TLS for secure connection
-        auth: {
-          user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
-        },
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
+          port: 465, // Replace with your email service provider's SMTP port
+          secure: true, // Use TLS for secure connection
+          auth: {
+            user: 'flyfarladies@mailservice.center', // Replace with your email address
+            pass: 'YVWJCU.?UY^R', // Replace with your email password
+          },
       });
       const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       const mailOptions = {
-        from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email, // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
@@ -4266,19 +4254,19 @@ export class userProfileController {
     // Get tour package details
     // Create a transporter with SMTP configuration
     const transporter = nodemailer.createTransport({
-      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+      host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
       port: 465, // Replace with your email service provider's SMTP port
       secure: true, // Use TLS for secure connection
       auth: {
-        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        pass: '123Next2$', // Replace with your email password
+        user: 'flyfarladies@mailservice.center', // Replace with your email address
+        pass: 'YVWJCU.?UY^R', // Replace with your email password
       },
     });
     const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
     const user = await this.UserRepository.findOne({where:{uuid}})
     // Compose the email message
     const mailOptions = {
-      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+      from: 'flyfarladies@mailservice.center', // Replace with your email address
       to: user.Email, // Recipient's email address
       subject: 'Deposit Confirmation',
       text: 'Please find the attached file.',
@@ -4860,19 +4848,19 @@ export class userProfileController {
     // Get tour package details
     // Create a transporter with SMTP configuration
     const transporter = nodemailer.createTransport({
-      host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+      host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
       port: 465, // Replace with your email service provider's SMTP port
       secure: true, // Use TLS for secure connection
       auth: {
-        user: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        pass: '123Next2$', // Replace with your email password
+        user: 'flyfarladies@mailservice.center', // Replace with your email address
+        pass: 'YVWJCU.?UY^R', // Replace with your email password
       },
     });
     const bank = await this.BankTransferRepository.findOne({where:{Depositid}})
     const user = await this.UserRepository.findOne({where:{uuid}})
     // Compose the email message
     const mailOptions = {
-      from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
+      from: 'flyfarladies@mailservice.center', // Replace with your email address
       to: user.Email, // Recipient's email address
       subject: 'Deposit Rejection',
       text: 'Please find the attached file.',
