@@ -19,6 +19,7 @@ import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity";
 import { Traveller } from "src/Traveller/entities/traveller.entity";
 import * as nodemailer from 'nodemailer'
 import { socialimageenity } from "./entitties/socialimages.entity";
+import { use } from "passport";
 
 @Controller('user')
 export class userProfileController {
@@ -269,6 +270,7 @@ export class userProfileController {
    async AddCheque(
    @Param('uuid') uuid: string,
    Depositid:string,
+   iconid:string,
    @UploadedFile()
    file: Express.Multer.File,
    @Req() req: Request,
@@ -289,12 +291,12 @@ export class userProfileController {
       cheque.userprofile =Profile;
       cheque.uuid =Profile.uuid
       await this.chequeRepository.save(cheque);
-      await this.sendChequeDepositDetails(uuid,Depositid)
+      await this.sendChequeDepositDetails(uuid,Depositid,iconid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull"})     
    }
 
    
-   async sendChequeDepositDetails(uuid:string,Depositid:string) {
+   async sendChequeDepositDetails(uuid:string,Depositid:string,iconid:string) {
       // Get tour package details
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
@@ -308,10 +310,11 @@ export class userProfileController {
       });
       const mbank = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
+      const icons = await this.socialimageenityRepository.findOne({where:{iconid}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailcenter.flyfarladies.com', // Replace with your email address
-        to: user.Email, // Recipient's email address
+        to: user.Email,  // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
@@ -727,24 +730,25 @@ export class userProfileController {
                 >
                   <tr>
                     <td style="padding-left: 45px">
-                      <img
-                        style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
-                        alt=""
-                      />
-                      <img
-                        style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
-                        alt=""
-                      />
-                      <img
-                        style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
-                        alt=""
-                      />
+                    ${icons.facebookIcon}
+                      // <img
+                      //   style="padding-right: 5px"
+                      //   src=
+                      //   href="http://"
+                      //   alt=""
+                      // />
+                      // <img
+                      //   style="padding-right: 5px"
+                      //   src="${icons.linkedinIcon}"
+                      //   href="http://"
+                      //   alt=""
+                      // />
+                      // <img
+                      //   style="padding-right: 5px"
+                      //   src="${icons.whatsappIcon}"
+                      //   href="http://"
+                      //   alt=""
+                      // />
                     </td>
                   </tr>
         
@@ -774,7 +778,7 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img width="100px" src="${icons.Logo}" alt="" />
                     </td>
                   </tr>
                 </table>

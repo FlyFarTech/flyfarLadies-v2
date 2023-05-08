@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export class socialimageenity{
    @PrimaryGeneratedColumn('uuid')
-   uuid:string
+   iconid:string
    @Column()
    Logo:string
    @Column()

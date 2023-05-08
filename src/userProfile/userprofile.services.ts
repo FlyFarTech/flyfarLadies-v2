@@ -293,7 +293,6 @@ export class UserServices {
       HttpStatus.BAD_REQUEST,
     );
   }
-
   return allDeposits;
 }
  
