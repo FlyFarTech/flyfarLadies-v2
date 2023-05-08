@@ -95,7 +95,7 @@ export class userProfileController {
       userprofile.FaceBookId = req.body.FaceBookId
       userprofile.LinkedIn = req.body.LinkedIn
       userprofile.WhatsApp = req.body.whatsApp
-      await this.UserRepository.save({ ...userprofile })
+      await this.UserRepository.update({uuid},{...userprofile})
       return res.status(HttpStatus.CREATED).json({ status: "success", message: 'user Profile updated successfully' });
    }
 
@@ -113,7 +113,6 @@ export class userProfileController {
       @UploadedFiles()
       file: { facebookIcon?: Express.Multer.File[], Logo?: Express.Multer.File[],linkedinIcon?: Express.Multer.File[], whatsappIcon?: Express.Multer.File[]  },
       @Body() body,
-      uuid:string,
       @Res() res: Response) {
       const facebookIcon = await this.s3service.Addimage(file.facebookIcon[0])
       const Logo = await this.s3service.Addimage(file.Logo[0])
@@ -693,6 +692,7 @@ export class userProfileController {
                     </td>
                   </tr>
                 </table>
+                ${icons.facebookIcon}
         
                 <table
                   border="0"
@@ -708,7 +708,7 @@ export class userProfileController {
                 >
                   <tr>
                     <td style="padding-left: 45px">
-                    ${icons.facebookIcon}
+                  
                       // <img
                       //   style="padding-right: 5px"
                       //   src=
@@ -717,7 +717,7 @@ export class userProfileController {
                       // />
                       // <img
                       //   style="padding-right: 5px"
-                      //   src="${icons.linkedinIcon}"
+                      //   src=${icons.linkedinIcon}
                       //   href="http://"
                       //   alt=""
                       // />
