@@ -1,6 +1,6 @@
 
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, ParseFilePipeBuilder, ParseIntPipe, ParseUUIDPipe, Patch, Post, Req, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
 import { Equal, Repository } from "typeorm";;
@@ -98,6 +98,32 @@ export class userProfileController {
       await this.UserRepository.update({uuid},{...userprofile})
       return res.status(HttpStatus.CREATED).json({ status: "success", message: 'user Profile updated successfully' });
    }
+   @Patch('updateprofile/:uuid')
+   @UseInterceptors(FileFieldsInterceptor([
+     { name: 'profilephoto', maxCount: 1 },
+     { name: 'passportcopy', maxCount: 1 },
+   ]))
+   async updateImageUrl(
+     @UploadedFiles() files: { profilephoto?: Express.Multer.File[], passportcopy?: Express.Multer.File[] },
+     @Param('uuid') uuid: string,
+     @Body() @Req() req: Request,
+     @Res() res: Response,
+   ) {
+     const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
+     const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
+   
+     const userphotos = new User();
+     if (profilephoto) userphotos.PassportsizephotoUrl = profilephoto;
+     if (passportcopy) userphotos.PassportCopy = passportcopy;
+   
+     await this.UserRepository.update({ uuid }, { ...userphotos });
+   
+     return res.status(HttpStatus.OK).json({
+       status: 'success',
+       message: 'image has been updated successfully',
+     });
+   }
+   
 
 
 

@@ -1,11 +1,12 @@
 import { AlbumImage } from './../tourpackage/entities/albumimage.entity';
 import { DeleteObjectCommand, PutObjectCommand, PutObjectCommandInput, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
+import { User } from 'src/userProfile/entitties/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -18,6 +19,7 @@ export class S3Service {
         @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
         @InjectRepository(MainImage) private MainImageeRepo: Repository<MainImage>,
         @InjectRepository(VisitedPlace) private VisitedPlaceRepo: Repository<VisitedPlace>,
+        @InjectRepository(User) private UserRepository: Repository<User>,
         private ConfigService: ConfigService) {
         this.region = this.ConfigService.get<string>('DO_REGION') || 'sgp1';
         this.s3 = new S3Client({
@@ -90,6 +92,45 @@ export class S3Service {
             throw err;
         }
 
+
+    }
+    
+    // update cover image 
+     async updateImageuserphotos(uuid: string, file:Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const user = await this.UserRepository.findOneBy({uuid})
+        const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
+        if (user.PassportsizephotoUrl) {
+            const PassportsizephotoUrl = user.PassportsizephotoUrl.split('/').pop();
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: bucket,
+                Key: PassportsizephotoUrl
+            }))
+        }
+        const key =`${uuid}/${file.originalname}`
+       
+        try {
+            const response: PutObjectCommandOutput = await this.s3.send(
+                new PutObjectCommand({
+                    Body: file.buffer,
+                    Bucket: bucket,
+                    Key: key,
+                    ACL: 'public-read',
+                    ContentType: file.mimetype
+                }),
+            );
+            if (response.$metadata.httpStatusCode === 200) {
+                return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+
+            }
+            throw new Error("image not update in digital ocean s3")
+        }
+        catch (err) {
+            this.logger.error("cannot save file inside s3 spacebucket", err);
+            throw err;
+        }
 
     }
 
