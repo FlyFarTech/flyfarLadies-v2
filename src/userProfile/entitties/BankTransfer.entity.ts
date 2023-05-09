@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "./user.entity"
+import { IsNotEmpty, isNotEmpty } from "class-validator";
 
 
 export enum PaymentStatus {
@@ -8,19 +9,22 @@ export enum PaymentStatus {
    REJECTED = 'rejected',
  }
 
-
-let userCount =Math.floor(Math.random() * 10000);
+const crypto = require('crypto');
+const keyKey = 'kapjhapkappa';
+const maximumValue = 100000;
 @Entity()
 export class BankTransfer{
    @PrimaryGeneratedColumn('uuid')
-   buid:string
-   @Column()
    Depositid:string
    @BeforeInsert()
-   generateUserId() {
-      userCount++;
-      this.Depositid =`B${100 + userCount}`;
+   async generateUniqueRandomNumber() {
+     const timestamp = new Date().toISOString();
+     const data = `${timestamp}-${keyKey}`;
+     const hash = crypto.createHash('sha256').update(data).digest('hex');
+     const randomNumber = parseInt(hash, 16) % maximumValue;
+     this.Depositid =`Bank${randomNumber.toString().padStart(4,'0')}`;
    }
+   @IsNotEmpty()
    @Column()
    uuid:string
    @Column({nullable:true})

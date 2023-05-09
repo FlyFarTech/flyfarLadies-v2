@@ -273,7 +273,6 @@ export class userProfileController {
    async AddCheque(
    @Param('uuid') uuid: string,
    Depositid:string,
-   iconid:string,
    @UploadedFile()
    file: Express.Multer.File,
    @Req() req: Request,
@@ -294,12 +293,12 @@ export class userProfileController {
       cheque.userprofile =Profile;
       cheque.uuid =Profile.uuid
       await this.chequeRepository.save(cheque);
-      await this.sendChequeDepositDetails(uuid,Depositid,iconid)
+      await this.sendChequeDepositDetails(uuid,Depositid)
       return res.status(HttpStatus.OK).send({ status: "success", message: " Cheque Deposit Request Successfull"})     
    }
 
    
-   async sendChequeDepositDetails(uuid:string,Depositid:string,iconid:string) {
+   async sendChequeDepositDetails(uuid:string,Depositid:string,) {
       const transporter = nodemailer.createTransport({
         host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
@@ -309,14 +308,13 @@ export class userProfileController {
           pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
-      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const chequedepo = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
-      const icons = await this.socialimageenityRepository.findOne({where:{iconid}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email,  // Recipient's email address
-        subject: 'Deposit Details',
+        subject: 'Deposit Confiramtion',
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
         <html lang="en">
@@ -327,14 +325,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -396,7 +387,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${mbank.Amount}
+                      ${chequedepo.Amount}
                     </td>
                   </tr>
                   <tr>
@@ -414,7 +405,7 @@ export class userProfileController {
                         padding: 0px 40px 20px 55px;
                       "
                     >
-                      ${mbank.DepositType}
+                      ${chequedepo.DepositType}
                     </td>
                   </tr>
                 </table>
@@ -480,7 +471,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.Depositid}
+                      ${chequedepo.Depositid}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -513,7 +504,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.BankName}
+                      ${chequedepo.BankName}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -546,7 +537,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.ChequeDate}
+                      ${chequedepo.ChequeDate}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -579,7 +570,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${mbank.Reference}
+                      ${chequedepo.Reference}
                     </td>
                   </tr>
                 </table>
@@ -615,8 +606,8 @@ export class userProfileController {
                         font-style: italic;
                       "
                     >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                      Please Wait a little while. Your money will be added to your
+                      wallet after verification is complete.
                     </td>
                   </tr>
                 </table>
@@ -671,7 +662,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -734,18 +725,20 @@ export class userProfileController {
                       <img
                         style="padding-right: 5px"
                         src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
-                        alt="FFL Facebook Logo
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
+                        alt=""
                       />
                       <img
                         style="padding-right: 5px"
                         src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
-                        alt="LinkedIn logo"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
+                        alt=""
                       />
                       <img
                         style="padding-right: 5px"
                         src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
-                        href=""
-                        alt="WahtsApp  Icon"
+                        href="https://wa.me/+88 01755582111"
+                        alt=""
                       />
                     </td>
                   </tr>
@@ -765,6 +758,7 @@ export class userProfileController {
                     >
                       Ka 11/2A, Bashundhora R/A Road, Jagannathpur, Dhaka 1229.
                     </td>
+        
                     <td
                       style="
                         border-collapse: collapse;
@@ -775,14 +769,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
+        </html>
+        `
       }
        transporter.sendMail(mailOptions,(error, info) => {
          if (error) {
@@ -839,13 +839,13 @@ export class userProfileController {
           pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
-      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const chequedepo = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       // Compose the email message
       const mailOptions = {
         from: 'flyfarladies@mailservice.center', // Replace with your email address
         to: user.Email, // Recipient's email address
-        subject: 'Deposit Confirmation',
+        subject: 'Deposit Approved', // Replace with your email
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
         <html lang="en">
@@ -856,14 +856,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -893,7 +886,7 @@ export class userProfileController {
                         letter-spacing: 5px;
                       "
                     >
-                      Deposit Approve
+                      Deposit Approved
                     </td>
                   </tr>
                 </table>
@@ -925,7 +918,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${mbank.Amount}
+                      ${chequedepo.Amount}
                     </td>
                   </tr>
                   <tr>
@@ -943,7 +936,7 @@ export class userProfileController {
                         padding: 0px 40px 20px 55px;
                       "
                     >
-                      ${mbank.DepositType}
+                      ${chequedepo.DepositType}
                     </td>
                   </tr>
                 </table>
@@ -1009,7 +1002,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.Depositid}
+                      ${chequedepo.Depositid}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1042,7 +1035,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.BankName}
+                      ${chequedepo.BankName}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1075,7 +1068,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.ChequeDate}
+                      ${chequedepo.ChequeDate}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1108,46 +1101,9 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${mbank.Reference}
+                      ${chequedepo.Reference}
                     </td>
                   </tr>
-                  <tr style="border-bottom: 1px solid #dfdfdf">
-                  <td
-                    valign="top"
-                    style="
-                      border-collapse: collapse;
-                      border-spacing: 0;
-                      color: #767676;
-                      font-family: sans-serif;
-                      font-size: 14px;
-                      font-weight: 500;
-                      line-height: 38px;
-                      padding: 5px 20px;
-                      width: 180px;
-                    "
-                  >
-                    Total Balance
-                  </td>
-                  <td
-                    valign="top"
-                    style="
-                      border-collapse: collapse;
-                      border-spacing: 0;
-                      color: #767676;
-                      font-family: sans-serif;
-                      font-size: 14px;
-                      font-weight: 500;
-                      line-height: 38px;
-                      padding: 5px 20px;
-                    "
-                  >
-                    ${user.Wallet}
-                  </td>
-                </tr>
-
-
-
-
                 </table>
         
                 <table
@@ -1181,8 +1137,8 @@ export class userProfileController {
                         font-style: italic;
                       "
                     >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                      Please Wait a little while. Your money will be added to your
+                      wallet after verification is complete.
                     </td>
                   </tr>
                 </table>
@@ -1237,7 +1193,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -1299,20 +1255,20 @@ export class userProfileController {
                     <td style="padding-left: 45px">
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href="https://wa.me/+88 01755582111"
                         alt=""
                       />
                     </td>
@@ -1344,14 +1300,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
+        </html>
+        `
         
     
       }
@@ -1363,7 +1325,6 @@ export class userProfileController {
          }
        });
    }
-
 
 
    @Patch('Cheque/:Depositid/reject')
@@ -1409,7 +1370,7 @@ export class userProfileController {
           pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
-      const mbank = await this.chequeRepository.findOne({where:{Depositid}})
+      const chequedepo = await this.chequeRepository.findOne({where:{Depositid}})
       const user = await this.UserRepository.findOne({where:{uuid}})
       // Compose the email message
       const mailOptions = {
@@ -1426,14 +1387,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -1495,7 +1449,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${mbank.Amount}
+                      BDT ${chequedepo.Amount}
                     </td>
                   </tr>
                   <tr>
@@ -1513,7 +1467,7 @@ export class userProfileController {
                         padding: 0px 40px 20px 55px;
                       "
                     >
-                      ${mbank.DepositType}
+                    ${chequedepo.DepositType}
                     </td>
                   </tr>
                 </table>
@@ -1579,7 +1533,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.Depositid}
+                    ${chequedepo.Depositid}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1612,7 +1566,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.BankName}
+                    ${chequedepo.BankName}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1645,7 +1599,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.ChequeDate}
+                    ${chequedepo.ChequeDate}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -1663,7 +1617,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                      Reference
+                      Reject Reason
                     </td>
                     <td
                       valign="top"
@@ -1678,78 +1632,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${mbank.Reference}
-                    </td>
-                  </tr>
-                  <tr style="border-bottom: 1px solid #dfdfdf">
-                  <td
-                    valign="top"
-                    style="
-                      border-collapse: collapse;
-                      border-spacing: 0;
-                      color: #767676;
-                      font-family: sans-serif;
-                      font-size: 14px;
-                      font-weight: 500;
-                      line-height: 38px;
-                      padding: 5px 20px;
-                      width: 180px;
-                    "
-                  >
-                    Reason
-                  </td>
-                  <td
-                    valign="top"
-                    style="
-                      border-collapse: collapse;
-                      border-spacing: 0;
-                      color: #767676;
-                      font-family: sans-serif;
-                      font-size: 14px;
-                      font-weight: 500;
-                      line-height: 38px;
-                      padding: 5px 20px;
-                    "
-                  >
-                    ${mbank.rejectionReason}
-                  </td>
-                </tr>
-
-                </table>
-        
-                <table
-                  border="0"
-                  cellpadding="0"
-                  cellspacing="0"
-                  align="center"
-                  style="
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    padding: 0;
-                    width: 670px;
-                    margin-top: 15px;
-                    color: #ffffff !important;
-                    text-decoration: none !important;
-                  "
-                >
-                  <tr>
-                    <td
-                      valign="top"
-                      style="
-                        border-collapse: collapse;
-                        border-spacing: 0;
-                        color: #767676;
-                        font-family: sans-serif;
-                        font-size: 14px;
-                        font-weight: 500;
-                        line-height: 38px;
-                        padding: 5px 20px;
-                        width: 600;
-                        font-style: italic;
-                      "
-                    >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                    ${chequedepo.rejectionReason}
                     </td>
                   </tr>
                 </table>
@@ -1804,7 +1687,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -1835,15 +1718,21 @@ export class userProfileController {
                         color: #767676;
                       "
                     >
-                      <a style="padding-right: 20px; color: #584660" href="http://"
+                      <a
+                        style="padding-right: 20px; color: #584660"
+                        href="https://www.flyfarladies.com/termsandcondition"
                         >Terms & Conditions</a
                       >
         
-                      <a style="padding-right: 20px; color: #584660" href="http://"
+                      <a
+                        style="padding-right: 20px; color: #584660"
+                        href="https://www.flyfarladies.com/bookingpolicy"
                         >Booking Policy</a
                       >
         
-                      <a style="padding-right: 20px; color: #584660" href="http://"
+                      <a
+                        style="padding-right: 20px; color: #584660"
+                        href="https://www.flyfarladies.com/privacypolicy"
                         >Privacy Policy</a
                       >
                     </td>
@@ -1866,20 +1755,20 @@ export class userProfileController {
                     <td style="padding-left: 45px">
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href="https://wa.me/+88 01755582111"
                         alt=""
                       />
                     </td>
@@ -1911,16 +1800,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
-        
-    
+        </html>
+        `
       }
       await transporter.sendMail(mailOptions,(error, info) => {
          if (error) {
@@ -2042,7 +1935,8 @@ export class userProfileController {
       const user = await this.UserRepository.findOne({where:{uuid}})
       const mailOptions = {
         from: 'flyfarladies@mailservice.center', // Replace with your email address
-        to: user.Email, // Recipient's email address
+        to: user.Email,
+         // Recipient's email address
         subject: 'Deposit Details',
         text: 'Please find the attached file.',
         html: `<!DOCTYPE html>
@@ -2054,14 +1948,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -2123,7 +2010,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${mbank.DepositedAmount}
+                      ${mbank.DepositedAmount}
                     </td>
                   </tr>
                   <tr>
@@ -2141,11 +2028,11 @@ export class userProfileController {
                         padding: 0px 40px 20px 55px;
                       "
                     >
-                      ${mbank.AgentType}
+                      ${mbank.DepositType}
                     </td>
                   </tr>
                 </table>
-   
+        
                 <table
                   border="0"
                   cellpadding="0"
@@ -2225,7 +2112,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                      Reference
+                      Agent Type
                     </td>
                     <td
                       valign="top"
@@ -2240,7 +2127,40 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${mbank.Reference}
+                      ${mbank.AgentType}
+                    </td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Transaction Date
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.CreatedAt}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -2258,7 +2178,7 @@ export class userProfileController {
                       width: 180px;
                     "
                   >
-                    Reference
+                    Gateway Fee
                   </td>
                   <td
                     valign="top"
@@ -2271,44 +2191,44 @@ export class userProfileController {
                       font-weight: 500;
                       line-height: 38px;
                       padding: 5px 20px;
-                    "
+                      "
                   >
-                   ${mbank.Reference}
+                    ${mbank.GatewayFee}
                   </td>
                 </tr>
-                <tr style="border-bottom: 1px solid #dfdfdf">
-                <td
-                  valign="top"
-                  style="
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    color: #767676;
-                    font-family: sans-serif;
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 38px;
-                    padding: 5px 20px;
-                    width: 180px;
-                  "
-                >
-                  Gateway Fee
-                </td>
-                <td
-                  valign="top"
-                  style="
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    color: #767676;
-                    font-family: sans-serif;
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 38px;
-                    padding: 5px 20px;
-                  "
-                >
-                 ${mbank.GatewayFee}
-                </td>
-              </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                        width: 180px;
+                      "
+                    >
+                      Reference
+                    </td>
+                    <td
+                      valign="top"
+                      style="
+                        border-collapse: collapse;
+                        border-spacing: 0;
+                        color: #767676;
+                        font-family: sans-serif;
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 38px;
+                        padding: 5px 20px;
+                      "
+                    >
+                      ${mbank.Reference}
+                    </td>
+                  </tr>
                 </table>
         
                 <table
@@ -2342,8 +2262,8 @@ export class userProfileController {
                         font-style: italic;
                       "
                     >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                      Please Wait a little while. Your money will be added to your
+                      wallet after verification is complete.
                     </td>
                   </tr>
                 </table>
@@ -2398,7 +2318,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -2460,20 +2380,20 @@ export class userProfileController {
                     <td style="padding-left: 45px">
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href="https://wa.me/+88 01755582111"
                         alt=""
                       />
                     </td>
@@ -2505,15 +2425,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
-        
+        </html>
+        `
       }
 
       await transporter.sendMail(mailOptions,(error, info) => {
@@ -2586,14 +2511,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -2623,7 +2541,7 @@ export class userProfileController {
                         letter-spacing: 5px;
                       "
                     >
-                      Deposit Approve
+                      Deposit Approved
                     </td>
                   </tr>
                 </table>
@@ -2655,7 +2573,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${mbank.DepositedAmount}
+                      ${mbank.DepositedAmount}
                     </td>
                   </tr>
                   <tr>
@@ -2677,6 +2595,7 @@ export class userProfileController {
                     </td>
                   </tr>
                 </table>
+        
                 <table
                   border="0"
                   cellpadding="0"
@@ -2756,7 +2675,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                     Gateway Fee
+                      Bank Name
                     </td>
                     <td
                       valign="top"
@@ -2771,7 +2690,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${mbank.GatewayFee}
+                      ${mbank.AgentType}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -2822,7 +2741,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                      Reference
+                      Gateway Fee
                     </td>
                     <td
                       valign="top"
@@ -2837,7 +2756,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${mbank.Reference}
+                      ${mbank.GatewayFee}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -2855,7 +2774,7 @@ export class userProfileController {
                       width: 180px;
                     "
                   >
-                    Total Balance
+                    Reference
                   </td>
                   <td
                     valign="top"
@@ -2870,10 +2789,9 @@ export class userProfileController {
                       padding: 5px 20px;
                     "
                   >
-                    ${user.Wallet}
+                    ${mbank.Reference}
                   </td>
                 </tr>
-
                 </table>
         
                 <table
@@ -2907,8 +2825,8 @@ export class userProfileController {
                         font-style: italic;
                       "
                     >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                      Please Wait a little while. Your money will be added to your
+                      wallet after verification is complete.
                     </td>
                   </tr>
                 </table>
@@ -2963,7 +2881,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -3025,20 +2943,20 @@ export class userProfileController {
                     <td style="padding-left: 45px">
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href="https://wa.me/+88 01755582111"
                         alt=""
                       />
                     </td>
@@ -3070,14 +2988,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
+        </html>
+        `
         
     
       }
@@ -3149,14 +3073,7 @@ export class userProfileController {
                <title>Deposit Request</title>
              </head>
              <body>
-               <div
-                 style="
-                   width: 700px;
-                   height: fit-content;
-                   margin: 0 auto;
-                   background-color: #efefef;
-                 "
-               >
+               <div style="width: 700px; height: 110vh; margin: 0 auto">
                  <div style="width: 700px; height: 70px; background: #fe99a6">
                    <table
                      border="0"
@@ -3236,7 +3153,7 @@ export class userProfileController {
                            padding: 0px 40px 20px 55px;
                          "
                        >
-                         ${mbank.DepositType}
+                       ${mbank.DepositType}
                        </td>
                      </tr>
                    </table>
@@ -3302,9 +3219,42 @@ export class userProfileController {
                            padding: 5px 20px;
                          "
                        >
-                         ${mbank.Depositid}
+                       ${mbank.Depositid}
                        </td>
                      </tr>
+                     <tr style="border-bottom: 1px solid #dfdfdf">
+                     <td
+                       valign="top"
+                       style="
+                         border-collapse: collapse;
+                         border-spacing: 0;
+                         color: #767676;
+                         font-family: sans-serif;
+                         font-size: 14px;
+                         font-weight: 500;
+                         line-height: 38px;
+                         padding: 5px 20px;
+                         width: 180px;
+                       "
+                     >
+                      Gatway Fee
+                     </td>
+                     <td
+                       valign="top"
+                       style="
+                         border-collapse: collapse;
+                         border-spacing: 0;
+                         color: #767676;
+                         font-family: sans-serif;
+                         font-size: 14px;
+                         font-weight: 500;
+                         line-height: 38px;
+                         padding: 5px 20px;
+                       "
+                     >
+                     ${mbank.GatewayFee}
+                     </td>
+                   </tr>
                      <tr style="border-bottom: 1px solid #dfdfdf">
                        <td
                          valign="top"
@@ -3320,7 +3270,7 @@ export class userProfileController {
                            width: 180px;
                          "
                        >
-                       GateWay Fee
+                         Bank Name
                        </td>
                        <td
                          valign="top"
@@ -3335,7 +3285,7 @@ export class userProfileController {
                            padding: 5px 20px;
                          "
                        >
-                         ${mbank.GatewayFee}
+                       ${mbank.AgentType}
                        </td>
                      </tr>
                      <tr style="border-bottom: 1px solid #dfdfdf">
@@ -3368,7 +3318,7 @@ export class userProfileController {
                            padding: 5px 20px;
                          "
                        >
-                         ${mbank.CreatedAt}
+                       ${mbank.CreatedAt}
                        </td>
                      </tr>
                      <tr style="border-bottom: 1px solid #dfdfdf">
@@ -3386,7 +3336,7 @@ export class userProfileController {
                            width: 180px;
                          "
                        >
-                         Reference
+                         Reject Reason
                        </td>
                        <td
                          valign="top"
@@ -3401,78 +3351,7 @@ export class userProfileController {
                            padding: 5px 20px;
                          "
                        >
-                        ${mbank.Reference}
-                       </td>
-                     </tr>
-                     <tr style="border-bottom: 1px solid #dfdfdf">
-                     <td
-                       valign="top"
-                       style="
-                         border-collapse: collapse;
-                         border-spacing: 0;
-                         color: #767676;
-                         font-family: sans-serif;
-                         font-size: 14px;
-                         font-weight: 500;
-                         line-height: 38px;
-                         padding: 5px 20px;
-                         width: 180px;
-                       "
-                     >
-                       Reason
-                     </td>
-                     <td
-                       valign="top"
-                       style="
-                         border-collapse: collapse;
-                         border-spacing: 0;
-                         color: #767676;
-                         font-family: sans-serif;
-                         font-size: 14px;
-                         font-weight: 500;
-                         line-height: 38px;
-                         padding: 5px 20px;
-                       "
-                     >
                        ${mbank.rejectionReason}
-                     </td>
-                   </tr>
-   
-                   </table>
-           
-                   <table
-                     border="0"
-                     cellpadding="0"
-                     cellspacing="0"
-                     align="center"
-                     style="
-                       border-collapse: collapse;
-                       border-spacing: 0;
-                       padding: 0;
-                       width: 670px;
-                       margin-top: 15px;
-                       color: #ffffff !important;
-                       text-decoration: none !important;
-                     "
-                   >
-                     <tr>
-                       <td
-                         valign="top"
-                         style="
-                           border-collapse: collapse;
-                           border-spacing: 0;
-                           color: #767676;
-                           font-family: sans-serif;
-                           font-size: 14px;
-                           font-weight: 500;
-                           line-height: 38px;
-                           padding: 5px 20px;
-                           width: 600;
-                           font-style: italic;
-                         "
-                       >
-                         Please Wait a little while. Your money will be added to
-                         your wallet after verification is complete.
                        </td>
                      </tr>
                    </table>
@@ -3527,7 +3406,7 @@ export class userProfileController {
                          <span style="color: #ffffff !important; text-decoration: none"
                            >support@flyfarladies.com</span
                          >
-                         or Call us at 09606912912
+                         or Call us at +88 01755582111
                        </td>
                      </tr>
                    </table>
@@ -3558,15 +3437,21 @@ export class userProfileController {
                            color: #767676;
                          "
                        >
-                         <a style="padding-right: 20px; color: #584660" href="http://"
+                         <a
+                           style="padding-right: 20px; color: #584660"
+                           href="https://www.flyfarladies.com/termsandcondition"
                            >Terms & Conditions</a
                          >
            
-                         <a style="padding-right: 20px; color: #584660" href="http://"
+                         <a
+                           style="padding-right: 20px; color: #584660"
+                           href="https://www.flyfarladies.com/bookingpolicy"
                            >Booking Policy</a
                          >
            
-                         <a style="padding-right: 20px; color: #584660" href="http://"
+                         <a
+                           style="padding-right: 20px; color: #584660"
+                           href="https://www.flyfarladies.com/privacypolicy"
                            >Privacy Policy</a
                          >
                        </td>
@@ -3589,20 +3474,20 @@ export class userProfileController {
                        <td style="padding-left: 45px">
                          <img
                            style="padding-right: 5px"
-                           src="./img/Vector (5).png"
-                           href="http://"
+                           src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                           href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                            alt=""
                          />
                          <img
                            style="padding-right: 5px"
-                           src="./img/Vector (6).png"
-                           href="http://"
+                           src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                           href="https://www.linkedin.com/company/fly-far-ladies/"
                            alt=""
                          />
                          <img
                            style="padding-right: 5px"
-                           src="./img/Vector (7).png"
-                           href="http://"
+                           src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                           href="https://wa.me/+88 01755582111"
                            alt=""
                          />
                        </td>
@@ -3634,14 +3519,20 @@ export class userProfileController {
                            padding-bottom: 20px;
                          "
                        >
-                         <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                         <img
+                           width="100px"
+                           src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                           href="https://www.flyfarladies.com/"
+                           alt=""
+                         />
                        </td>
                      </tr>
                    </table>
                  </div>
                </div>
              </body>
-           </html>`
+           </html>
+           `
            
        
          }
@@ -3737,14 +3628,7 @@ export class userProfileController {
             <title>Deposit Request</title>
           </head>
           <body>
-            <div
-              style="
-                width: 700px;
-                height: fit-content;
-                margin: 0 auto;
-                background-color: #efefef;
-              "
-            >
+            <div style="width: 700px; height: 110vh; margin: 0 auto">
               <div style="width: 700px; height: 70px; background: #fe99a6">
                 <table
                   border="0"
@@ -3806,7 +3690,7 @@ export class userProfileController {
                         padding: 20px 40px 0px 55px;
                       "
                     >
-                      BDT ${bank.Amount}
+                      ${bank.Amount}
                     </td>
                   </tr>
                   <tr>
@@ -3890,7 +3774,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                      ${bank.Depositid}
+                    ${bank.Depositid}
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #dfdfdf">
@@ -3908,7 +3792,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                    DepositFrom
+                      DepositFrom
                     </td>
                     <td
                       valign="top"
@@ -3941,7 +3825,40 @@ export class userProfileController {
                       width: 180px;
                     "
                   >
-                  DepositTo
+                    ChequeNumber
+                  </td>
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                    "
+                  >
+                    ${bank.ChequeNumber}
+                  </td>
+                </tr>
+                  <tr style="border-bottom: 1px solid #dfdfdf">
+                  <td
+                    valign="top"
+                    style="
+                      border-collapse: collapse;
+                      border-spacing: 0;
+                      color: #767676;
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      font-weight: 500;
+                      line-height: 38px;
+                      padding: 5px 20px;
+                      width: 180px;
+                    "
+                  >
+                    DepositTo
                   </td>
                   <td
                     valign="top"
@@ -4007,7 +3924,7 @@ export class userProfileController {
                         width: 180px;
                       "
                     >
-                      ChequeNumber
+                      DepositType
                     </td>
                     <td
                       valign="top"
@@ -4022,7 +3939,7 @@ export class userProfileController {
                         padding: 5px 20px;
                       "
                     >
-                     ${bank.ChequeNumber}
+                      ${bank.DepositType}
                     </td>
                   </tr>
                 </table>
@@ -4058,8 +3975,8 @@ export class userProfileController {
                         font-style: italic;
                       "
                     >
-                      Please Wait a little while. Your money will be added to
-                      your wallet after verification is complete.
+                      Please Wait a little while. Your money will be added to your
+                      wallet after verification is complete.
                     </td>
                   </tr>
                 </table>
@@ -4114,7 +4031,7 @@ export class userProfileController {
                       <span style="color: #ffffff !important; text-decoration: none"
                         >support@flyfarladies.com</span
                       >
-                      or Call us at 09606912912
+                      or Call us at +88 01755582111
                     </td>
                   </tr>
                 </table>
@@ -4176,20 +4093,20 @@ export class userProfileController {
                     <td style="padding-left: 45px">
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (5).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                        href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (6).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                        href="https://www.linkedin.com/company/fly-far-ladies/"
                         alt=""
                       />
                       <img
                         style="padding-right: 5px"
-                        src="./img/Vector (7).png"
-                        href="http://"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                        href="https://wa.me/+88 01755582111"
                         alt=""
                       />
                     </td>
@@ -4221,14 +4138,20 @@ export class userProfileController {
                         padding-bottom: 20px;
                       "
                     >
-                      <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                      <img
+                        width="100px"
+                        src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                        href="https://www.flyfarladies.com/"
+                        alt=""
+                      />
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
           </body>
-        </html>`
+        </html>
+        `
         
     
       }
@@ -4293,8 +4216,8 @@ export class userProfileController {
     // Compose the email message
     const mailOptions = {
       from: 'flyfarladies@mailservice.center', // Replace with your email address
-      to: user.Email, // Recipient's email address
-      subject: 'Deposit Confirmation',
+      to:user.Email, // Recipient's email address
+      subject: 'Deposit Approved',
       text: 'Please find the attached file.',
       html: `<!DOCTYPE html>
       <html lang="en">
@@ -4305,14 +4228,7 @@ export class userProfileController {
           <title>Deposit Request</title>
         </head>
         <body>
-          <div
-            style="
-              width: 700px;
-              height: fit-content;
-              margin: 0 auto;
-              background-color: #efefef;
-            "
-          >
+          <div style="width: 700px; height: 110vh; margin: 0 auto">
             <div style="width: 700px; height: 70px; background: #fe99a6">
               <table
                 border="0"
@@ -4342,10 +4258,11 @@ export class userProfileController {
                       letter-spacing: 5px;
                     "
                   >
-                    Deposit Approve
+                    Deposit Approved
                   </td>
                 </tr>
               </table>
+      
               <table
                 border="0"
                 cellpadding="0"
@@ -4356,7 +4273,7 @@ export class userProfileController {
                   border-spacing: 0;
                   padding: 0;
                   width: 700px;
-                  "
+                "
               >
                 <tr>
                   <td
@@ -4373,7 +4290,7 @@ export class userProfileController {
                       padding: 20px 40px 0px 55px;
                     "
                   >
-                    BDT ${bank.Amount}
+                    ${bank.Amount}
                   </td>
                 </tr>
                 <tr>
@@ -4457,7 +4374,7 @@ export class userProfileController {
                       padding: 5px 20px;
                     "
                   >
-                    ${bank.Depositid}
+                  ${bank.Depositid}
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid #dfdfdf">
@@ -4493,6 +4410,39 @@ export class userProfileController {
                     ${bank.DepositFrom}
                   </td>
                 </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  ChequeNumber
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${bank.ChequeNumber}
+                </td>
+              </tr>
                 <tr style="border-bottom: 1px solid #dfdfdf">
                 <td
                   valign="top"
@@ -4574,7 +4524,7 @@ export class userProfileController {
                       width: 180px;
                     "
                   >
-                    ChequeNumber
+                    DepositType
                   </td>
                   <td
                     valign="top"
@@ -4589,43 +4539,11 @@ export class userProfileController {
                       padding: 5px 20px;
                     "
                   >
-                   ${bank.ChequeNumber}
+                    ${bank.DepositType}
                   </td>
                 </tr>
-                <tr style="border-bottom: 1px solid #dfdfdf">
-                <td
-                  valign="top"
-                  style="
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    color: #767676;
-                    font-family: sans-serif;
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 38px;
-                    padding: 5px 20px;
-                    width: 180px;
-                  "
-                >
-                Total Balance
-                </td>
-                <td
-                  valign="top"
-                  style="
-                    border-collapse: collapse;
-                    border-spacing: 0;
-                    color: #767676;
-                    font-family: sans-serif;
-                    font-size: 14px;
-                    font-weight: 500;
-                    line-height: 38px;
-                    padding: 5px 20px;
-                  "
-                >
-                  ${user.Wallet}
-                </td>
-              </tr>
               </table>
+      
               <table
                 border="0"
                 cellpadding="0"
@@ -4657,8 +4575,8 @@ export class userProfileController {
                       font-style: italic;
                     "
                   >
-                    Please Wait a little while. Your money will be added to
-                    your wallet after verification is complete.
+                    Please Wait a little while. Your money will be added to your
+                    wallet after verification is complete.
                   </td>
                 </tr>
               </table>
@@ -4713,7 +4631,7 @@ export class userProfileController {
                     <span style="color: #ffffff !important; text-decoration: none"
                       >support@flyfarladies.com</span
                     >
-                    or Call us at 09606912912
+                    or Call us at +88 01755582111
                   </td>
                 </tr>
               </table>
@@ -4775,20 +4693,20 @@ export class userProfileController {
                   <td style="padding-left: 45px">
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (5).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                      href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                       alt=""
                     />
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (6).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                      href="https://www.linkedin.com/company/fly-far-ladies/"
                       alt=""
                     />
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (7).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                      href="https://wa.me/+88 01755582111"
                       alt=""
                     />
                   </td>
@@ -4820,14 +4738,21 @@ export class userProfileController {
                       padding-bottom: 20px;
                     "
                   >
-                    <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    <img
+                      width="100px"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                      href="https://www.flyfarladies.com/"
+                      alt=""
+                    />
                   </td>
                 </tr>
               </table>
             </div>
           </div>
         </body>
-      </html>`
+      </html>
+      `
+      
     }
     await transporter.sendMail(mailOptions,(error, info) => {
        if (error) {
@@ -4899,14 +4824,7 @@ export class userProfileController {
           <title>Deposit Request</title>
         </head>
         <body>
-          <div
-            style="
-              width: 700px;
-              height: fit-content;
-              margin: 0 auto;
-              background-color: #efefef;
-            "
-          >
+          <div style="width: 700px; height: 110vh; margin: 0 auto">
             <div style="width: 700px; height: 70px; background: #fe99a6">
               <table
                 border="0"
@@ -4968,7 +4886,7 @@ export class userProfileController {
                       padding: 20px 40px 0px 55px;
                     "
                   >
-                    BDT ${bank.Amount}
+                    ${bank.Amount}
                   </td>
                 </tr>
                 <tr>
@@ -5052,7 +4970,7 @@ export class userProfileController {
                       padding: 5px 20px;
                     "
                   >
-                    ${bank.Depositid}
+                  ${bank.Depositid}
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid #dfdfdf">
@@ -5088,6 +5006,39 @@ export class userProfileController {
                     ${bank.DepositFrom}
                   </td>
                 </tr>
+                <tr style="border-bottom: 1px solid #dfdfdf">
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                    width: 180px;
+                  "
+                >
+                  ChequeNumber
+                </td>
+                <td
+                  valign="top"
+                  style="
+                    border-collapse: collapse;
+                    border-spacing: 0;
+                    color: #767676;
+                    font-family: sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    line-height: 38px;
+                    padding: 5px 20px;
+                  "
+                >
+                  ${bank.ChequeNumber}
+                </td>
+              </tr>
                 <tr style="border-bottom: 1px solid #dfdfdf">
                 <td
                   valign="top"
@@ -5169,7 +5120,7 @@ export class userProfileController {
                       width: 180px;
                     "
                   >
-                    Reference
+                    DepositType
                   </td>
                   <td
                     valign="top"
@@ -5184,7 +5135,7 @@ export class userProfileController {
                       padding: 5px 20px;
                     "
                   >
-                   ${bank.ChequeNumber}
+                    ${bank.DepositType}
                   </td>
                 </tr>
                 <tr style="border-bottom: 1px solid #dfdfdf">
@@ -5202,7 +5153,8 @@ export class userProfileController {
                     width: 180px;
                   "
                 >
-                  Reason
+                  
+                Reason
                 </td>
                 <td
                   valign="top"
@@ -5220,7 +5172,6 @@ export class userProfileController {
                   ${bank.rejectionReason}
                 </td>
               </tr>
-
               </table>
       
               <table
@@ -5254,8 +5205,8 @@ export class userProfileController {
                       font-style: italic;
                     "
                   >
-                    Please Wait a little while. Your money will be added to
-                    your wallet after verification is complete.
+                    Please Wait a little while. Your money will be added to your
+                    wallet after verification is complete.
                   </td>
                 </tr>
               </table>
@@ -5310,7 +5261,7 @@ export class userProfileController {
                     <span style="color: #ffffff !important; text-decoration: none"
                       >support@flyfarladies.com</span
                     >
-                    or Call us at 09606912912
+                    or Call us at +88 01755582111
                   </td>
                 </tr>
               </table>
@@ -5372,20 +5323,20 @@ export class userProfileController {
                   <td style="padding-left: 45px">
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (5).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_facebook.png"
+                      href="https://www.facebook.com/flyfarladies/?ref=page_internal"
                       alt=""
                     />
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (6).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_linkedIn.png"
+                      href="https://www.linkedin.com/company/fly-far-ladies/"
                       alt=""
                     />
                     <img
                       style="padding-right: 5px"
-                      src="./img/Vector (7).png"
-                      href="http://"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_whatsapp.png"
+                      href="https://wa.me/+88 01755582111"
                       alt=""
                     />
                   </td>
@@ -5417,14 +5368,20 @@ export class userProfileController {
                       padding-bottom: 20px;
                     "
                   >
-                    <img width="100px" src="./img/logo 1 (1).png" alt="" />
+                    <img
+                      width="100px"
+                      src="https://ladiescdn.sgp1.cdn.digitaloceanspaces.com/ffl_logo.png"
+                      href="https://www.flyfarladies.com/"
+                      alt=""
+                    />
                   </td>
                 </tr>
               </table>
             </div>
           </div>
         </body>
-      </html>`
+      </html>
+      `
       
   
     }
