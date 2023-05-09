@@ -32,6 +32,8 @@ import { Bkash } from './userProfile/entitties/Bkash.entity';
 import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
 import { WishlistItem } from './userProfile/entitties/wishlist.entity';
 import { socialimageenity } from './userProfile/entitties/socialimages.entity';
+import { BlogModule } from './blog/blog.module';
+import { Blog } from './blog/entities/blog.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -49,6 +51,7 @@ import { socialimageenity } from './userProfile/entitties/socialimages.entity';
 
       port:3306,
       entities: [Admin,
+        Blog,
         User,
         Cheque,
         Cash,
@@ -72,7 +75,7 @@ import { socialimageenity } from './userProfile/entitties/socialimages.entity';
         WishlistItem,
         socialimageenity,
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,
@@ -81,6 +84,7 @@ import { socialimageenity } from './userProfile/entitties/socialimages.entity';
     S3Module,
     ConfigModule,
     BookingModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
