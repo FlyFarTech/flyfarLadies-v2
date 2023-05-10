@@ -36,6 +36,7 @@ import { BlogModule } from './blog/blog.module';
 import { Blog } from './blog/entities/blog.entity';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
+import { PressCoverages } from './blog/entities/press.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -53,6 +54,7 @@ import { Testimonial } from './testimonial/entities/testimonial.entity';
 
       port:3306,
       entities: [Admin,
+        PressCoverages,
         Testimonial,
         Blog,
         User,
@@ -78,7 +80,7 @@ import { Testimonial } from './testimonial/entities/testimonial.entity';
         WishlistItem,
         socialimageenity,
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,

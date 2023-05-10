@@ -9,11 +9,13 @@ import { S3Service } from 'src/s3/s3.service';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { User } from 'src/userProfile/entitties/user.entity';
+import { PressCoverages } from './entities/press.entity';
 
 @Controller('blog')
 export class BlogController {
   constructor(
     @InjectRepository(Blog) private BlogRepo: Repository<Blog>,
+    @InjectRepository(PressCoverages) private PressCoveragesrepo: Repository<PressCoverages>,
     private readonly blogService: BlogService,
     private s3service: S3Service) {}
 
@@ -54,6 +56,35 @@ export class BlogController {
     blog.WrittenBy =WrittenBy
     await this.BlogRepo.save({...blog})
     return res.status(HttpStatus.OK).send({ status: "success", message: "blog created successfully", })
+}
+
+
+
+@Post('AddpressCoverage')
+@UseInterceptors(FileFieldsInterceptor([
+  { name: 'Image', maxCount: 2 },
+
+]))
+async AddPressCoverage(
+  @UploadedFiles()
+  file: {
+    Image?: Express.Multer.File[]},
+  @Req() req: Request,
+  @Body() body,
+  @Res() res: Response) {
+  const { links } = req.body;
+  const image = await this.s3service.Addimage(file.Image[0])
+  const press = new PressCoverages();
+  press.Image =image
+  press.links =links
+  await this.PressCoveragesrepo.save({...press})
+  return res.status(HttpStatus.OK).send({ status: "success", message: "Press coverage uploaded successfully", })
+}
+
+
+@Get('allpressoverages')
+ async findAllpress() {
+  return  await this.PressCoveragesrepo.find({})
 }
 
 @Patch('update/:blogid')

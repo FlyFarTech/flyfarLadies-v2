@@ -42,7 +42,7 @@ export class S3Service {
     async Addimage(file: Express.Multer.File) {
         const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME');
-        const key =`${file.fieldname}.webp`
+        const key =`${file.originalname}.webp`
         const input: PutObjectCommandInput = {
             Body: imageBuffer,
             Bucket: bucket,
@@ -170,7 +170,7 @@ export class S3Service {
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
