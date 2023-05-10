@@ -10,6 +10,7 @@ import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Repository } from 'typeorm';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class S3Service {
@@ -39,14 +40,15 @@ export class S3Service {
 
     // Add image 
     async Addimage(file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME');
-        const key = file.originalname
+        const key =`${file.fieldname}.webp`
         const input: PutObjectCommandInput = {
-            Body: file.buffer,
+            Body: imageBuffer,
             Bucket: bucket,
             Key: key,
             ACL: 'public-read',
-            ContentType: file.mimetype
+            ContentType: 'image/webp'
         }
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
@@ -64,6 +66,7 @@ export class S3Service {
     }
     // update cover image 
     async updateImage(Id: string, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
         if (tourpackage.coverimageurl) {
@@ -73,15 +76,15 @@ export class S3Service {
                 Key: coverimageurl
             }))
         }
-        const key = file.originalname
+         const key =`${file.fieldname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -101,6 +104,7 @@ export class S3Service {
     
     // update cover image 
      async updateImageuserphotos(uuid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         if (!file) {
             throw new BadRequestException('File not provided');
           }
@@ -113,16 +117,16 @@ export class S3Service {
                 Key: PassportsizephotoUrl
             }))
         }
-        const key =`${uuid}/${file.originalname}`
+        const key =`${uuid}/${file.originalname}.webp`
        
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -140,6 +144,7 @@ export class S3Service {
 
     // update cover image 
     async updateBlogIMages(blogid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         if (!file) {
             throw new BadRequestException('File not provided');
           }
@@ -156,12 +161,12 @@ export class S3Service {
                 Key: Image1||Image2||Image3||Image4||Image5
             }))
         }
-        const key =`${blogid}/${file.originalname}`
+        const key =`${blogid}/${file.originalname}.webp`
        
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
@@ -184,6 +189,7 @@ export class S3Service {
 
       // update cover image 
       async updatetestumonialIMages(testid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         if (!file) {
             throw new BadRequestException('File not provided');
           }
@@ -201,16 +207,16 @@ export class S3Service {
                 Key: Image1||Image2||Image3||Image4||Image5||ClientImage
             }))
         }
-        const key =`${testid}/${file.originalname}`
+        const key =`${testid}/${file.originalname}.webp`
        
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -229,6 +235,7 @@ export class S3Service {
 
 
     async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -251,15 +258,15 @@ export class S3Service {
                 Key: albumImageUrl
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -278,6 +285,7 @@ export class S3Service {
     }
 
     async updateMainImage(Id: string, mainimgId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -300,15 +308,15 @@ export class S3Service {
                 Key: MainImageUrl
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -326,8 +334,8 @@ export class S3Service {
 
     }
 
-
     async updatevisitedImage(Id: string, VimageId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -350,15 +358,15 @@ export class S3Service {
                 Key: VisitedImagePath
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {

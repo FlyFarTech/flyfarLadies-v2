@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res, ParseFilePipeBuilder } from '@nestjs/common';
 import { TestimonialService } from './testimonial.service';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import { Request, Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+
 
 
 @Controller('testimonial')
@@ -72,7 +73,17 @@ export class TestimonialController {
   { name: 'ClientImage', maxCount: 2 },
 ]))
 async updateimage(
-  @UploadedFiles()
+  @UploadedFiles( new ParseFilePipeBuilder()
+  .addFileTypeValidator({
+    fileType: 'webp',
+  })
+  .addMaxSizeValidator({
+    maxSize: 1024 * 1024 * 6,
+  })
+  .build({
+    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  }),)
+
   file: {
     Image1?: Express.Multer.File[],
     Image2?: Express.Multer.File[],

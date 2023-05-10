@@ -107,25 +107,6 @@ async getTourPackages(
     return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate, Country); // Use camelCase for variable names
 }
 
-// @Patch(':Id')
-// async update(
-//     @Param('Id') Id: string,
-//     @Req() req: Request,
-//     @Res() res: Response,
-//     @Body() updateTourPackageDto: UpdateTourpackageDto,
-// ) {
-//     const updatePackage = await this.tourpackageService.updatePackage(Id, updateTourPackageDto); // Use camelCase for variable names
-//     if (!updatePackage) {
-//         throw new HttpException(
-//             `TourPackage not found with this id=${Id}`,
-//             HttpStatus.BAD_REQUEST,
-//         );
-//     }
-//     return res.status(HttpStatus.OK).json({
-//         status: 'success',
-//         message: `Tour Package has been updated successfully`,
-//     });
-// }
 
 
   @Patch('updateimage/:Id')
@@ -218,18 +199,7 @@ async getTourPackages(
     FilesInterceptor('MainImageUrl', 20)
   )
   async AddmainImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
     @Param('Id') Id: string,
     @Req() req: Request,
@@ -581,18 +551,7 @@ async getTourPackages(
     FilesInterceptor('albumImageUrl',20)
   )
   async AddalbumImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
     @Param('Id') Id: string,
     @Req() req: Request,
@@ -626,18 +585,7 @@ async getTourPackages(
     FilesInterceptor('VisitedImagePath',20)
   )
   async AddvistitedImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
     @Param('Id') Id: string,
     @Req() req: Request,
