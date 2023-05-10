@@ -76,7 +76,7 @@ export class S3Service {
                 Key: coverimageurl
             }))
         }
-         const key =`${file.fieldname}.webp`
+         const key =`${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
