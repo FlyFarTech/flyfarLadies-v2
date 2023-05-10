@@ -677,14 +677,14 @@ async getTourPackages(
 
   /// add tour package 
 
-  @Post(':id/AddTourPackagePlan')
-  addTourPackagePlan(
+  @Post(':Id/AddTourPackagePlan')
+   async addTourPackagePlan(
     @Param('Id') Id: string,
     @Body() tourpackagePlandto: CreateTourPackagePlanDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const tourpackageplan = this.tourpackageService.AddTourpackagePlan(
+     await this.tourpackageService.AddTourpackagePlan(
       Id,
       tourpackagePlandto,
     );

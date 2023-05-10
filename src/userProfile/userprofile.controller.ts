@@ -23,8 +23,9 @@ import { use } from "passport";
 
 @Controller('user')
 export class userProfileController {
-   constructor(@InjectRepository(User) private UserRepository: Repository<User>,
-   @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
+   constructor(
+     @InjectRepository(User) private UserRepository: Repository<User>,
+     @InjectRepository(Cheque) private chequeRepository:Repository<Cheque>,
      @InjectRepository(Cash) private CashRepository:Repository<Cash>,
      @InjectRepository(BankTransfer) private BankTransferRepository:Repository<BankTransfer>,
      @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,

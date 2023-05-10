@@ -10,11 +10,22 @@ export class Blog {
    @Column({default:null})
    Title:string
    @Column({default:null, type:'longtext'})
+   Blogfor:string
+   @Column({default:null, type:'longtext'})
+   WrittenBy:string
+   @Column({default:null, type:'longtext'})
    Description:string
    @Column({default:null})
-   Name:string
+   Image1:string
+   @Column({default:null})
+   Image2:string
+   @Column({default:null})
+   Image3:string
+   @Column({default:null})
+   Image4:string
+   @Column({default:null})
+   Image5:string
    @CreateDateColumn()
-   @Column()
    Date:Date
 
 }
