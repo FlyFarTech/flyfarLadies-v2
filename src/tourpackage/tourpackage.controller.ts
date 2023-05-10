@@ -68,7 +68,7 @@ export class TourpackageController {
     tourpackage.Hotel = Hotel
     tourpackage.Country = Country
     await this.TourpackageRepo.save(tourpackage)
-    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully", })
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully",Id:tourpackage.Id })
 }
 
 
