@@ -1,9 +1,7 @@
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Res, HttpStatus, NotFoundException, UploadedFiles } from '@nestjs/common';
 import { BlogService } from './blog.service';
-import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
-import { AlbumImage } from 'src/tourpackage/entities/albumimage.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entities/blog.entity';
 import { Repository } from 'typeorm';
@@ -16,7 +14,6 @@ import { User } from 'src/userProfile/entitties/user.entity';
 export class BlogController {
   constructor(
     @InjectRepository(Blog) private BlogRepo: Repository<Blog>,
-    @InjectRepository(User) private UserRepository: Repository<User>,
     private readonly blogService: BlogService,
     private s3service: S3Service) {}
 

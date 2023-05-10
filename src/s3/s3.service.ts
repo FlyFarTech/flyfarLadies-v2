@@ -4,6 +4,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } fr
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/blog/entities/blog.entity';
+import { Testimonial } from 'src/testimonial/entities/testimonial.entity';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
@@ -22,6 +23,7 @@ export class S3Service {
         @InjectRepository(VisitedPlace) private VisitedPlaceRepo: Repository<VisitedPlace>,
         @InjectRepository(User) private UserRepository: Repository<User>,
         @InjectRepository(Blog) private blogRepository: Repository<Blog>,
+        @InjectRepository(Testimonial) private TestimonialRepository: Repository<Testimonial>,
         private ConfigService: ConfigService) {
         this.region = this.ConfigService.get<string>('DO_REGION') || 'sgp1';
         this.s3 = new S3Client({
@@ -178,6 +180,52 @@ export class S3Service {
         }
 
     }
+
+
+      // update cover image 
+      async updatetestumonialIMages(testid: string, file:Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const blog = await this.TestimonialRepository.findOneBy({testid})
+        const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
+        if (blog.Image1 || blog.Image2|| blog.Image3 || blog.Image4 || blog.Image5 || blog.ClientImage) {
+            const Image1 = blog.Image1.split('/').pop();
+            const Image2 = blog.Image1.split('/').pop();
+            const Image3 = blog.Image1.split('/').pop();
+            const Image4 = blog.Image1.split('/').pop();
+            const Image5 = blog.Image1.split('/').pop();
+            const ClientImage = blog.Image1.split('/').pop();
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: bucket,
+                Key: Image1||Image2||Image3||Image4||Image5||ClientImage
+            }))
+        }
+        const key =`${testid}/${file.originalname}`
+       
+        try {
+            const response: PutObjectCommandOutput = await this.s3.send(
+                new PutObjectCommand({
+                    Body: file.buffer,
+                    Bucket: bucket,
+                    Key: key,
+                    ACL: 'public-read',
+                    ContentType: file.mimetype
+                }),
+            );
+            if (response.$metadata.httpStatusCode === 200) {
+                return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+
+            }
+            throw new Error("image not update in digital ocean s3")
+        }
+        catch (err) {
+            this.logger.error("cannot save file inside s3 spacebucket", err);
+            throw err;
+        }
+
+    }
+
 
 
     async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {

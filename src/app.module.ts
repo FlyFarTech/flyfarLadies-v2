@@ -34,6 +34,8 @@ import { WishlistItem } from './userProfile/entitties/wishlist.entity';
 import { socialimageenity } from './userProfile/entitties/socialimages.entity';
 import { BlogModule } from './blog/blog.module';
 import { Blog } from './blog/entities/blog.entity';
+import { TestimonialModule } from './testimonial/testimonial.module';
+import { Testimonial } from './testimonial/entities/testimonial.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -51,6 +53,7 @@ import { Blog } from './blog/entities/blog.entity';
 
       port:3306,
       entities: [Admin,
+        Testimonial,
         Blog,
         User,
         Cheque,
@@ -85,6 +88,7 @@ import { Blog } from './blog/entities/blog.entity';
     ConfigModule,
     BookingModule,
     BlogModule,
+    TestimonialModule,
   ],
   controllers: [AppController],
   providers: [AppService],
