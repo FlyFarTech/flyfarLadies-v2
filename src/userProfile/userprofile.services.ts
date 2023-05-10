@@ -52,19 +52,19 @@ export class UserServices {
     async sendRegisterSuccecess(userdto: CreateUserDto) {
       // Create a transporter with SMTP configuration
       const transporter = nodemailer.createTransport({
-        host: 'mail.flyfarint.net', // Replace with your email service provider's SMTP host
+        host: 'b2b.flyfarint.com', // Replace with your email service provider's SMTP host
         port: 465, // Replace with your email service provider's SMTP port
         secure: true, // Use TLS for secure connection
         auth: {
-          user: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
-          pass: '123Next2$', // Replace with your email password
+          user: 'flyfarladies@mailservice.center', // Replace with your email address
+          pass: 'YVWJCU.?UY^R', // Replace with your email password
         },
       });
     
   
       // Compose the email message
       const mailOptions = {
-        from: 'registration@mailcenter.flyfarladies.com', // Replace with your email address
+        from: 'flyfarladies@mailservice.center', // Replace with your email address
         to:userdto.Email, // Recipient's email address
         subject: 'Welcome To Fly Far Ladies',
       }

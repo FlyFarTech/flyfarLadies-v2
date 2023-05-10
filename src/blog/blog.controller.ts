@@ -1,3 +1,4 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Res, HttpStatus, NotFoundException, UploadedFiles } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -58,9 +59,43 @@ export class BlogController {
     return res.status(HttpStatus.OK).send({ status: "success", message: "blog created successfully", })
 }
 
+@Patch('update/:blogid')
+@UseInterceptors(FileFieldsInterceptor([
+  { name: 'Image1', maxCount: 1 },
+  { name: 'Image2', maxCount: 1},
+  { name: 'Image3', maxCount: 1 },
+  { name: 'Image4', maxCount: 1 },
+  { name: 'Image5', maxCount: 1 },
+]))
+async updateimage(
+  @UploadedFiles()
+  file: {
+    Image1?: Express.Multer.File[],
+    Image2?: Express.Multer.File[],
+    Image3?: Express.Multer.File[],
+    Image4?: Express.Multer.File[] ,
+    Image5?: Express.Multer.File[]},
+  @Req() req: Request,
+  @Param ('blogid')blogid:string,
+  @Body() body,
+  @Res() res: Response) {
+  const image1 = file.Image1? await this.s3service.updateBlogIMages(blogid,file.Image1[0]):null
+  const image2 = file.Image2? await this.s3service.updateBlogIMages(blogid,file.Image2[0]):null
+  const image3 = file.Image3? await this.s3service.updateBlogIMages(blogid,file.Image3[0]):null
+  const image4 = file.Image4? await this.s3service.updateBlogIMages(blogid,file.Image4[0]):null
+  const image5 = file.Image5? await this.s3service.updateBlogIMages(blogid,file.Image5[0]):null
+  const blog = new Blog();
+  if(image1) blog.Image1 =image1
+  if(image2) blog.Image2 =image2
+  if(image3) blog.Image3 =image3
+  if(image4) blog.Image4 =image4
+  if(image5) blog.Image5 =image5
+  await this.BlogRepo.update({blogid},{...blog})
+  return res.status(HttpStatus.OK).send({ status: "success", message: " image update successfully", })
+}
 
   @Get('myblogs')
-  findAll(uuid:string) {
+  findAll() {
     return this.blogService.findAll();
   }
 
@@ -71,11 +106,11 @@ export class BlogController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-    return this.blogService.update(+id, updateBlogDto);
+    return this.blogService.update(id, updateBlogDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+ async remove(@Param('id') id: string) {
+    return this.blogService.remove(id);
   }
 }

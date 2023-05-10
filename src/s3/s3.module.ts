@@ -8,11 +8,12 @@ import { AlbumImage } from 'src/tourpackage/entities/albumimage.entity';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
 import { User } from 'src/userProfile/entitties/user.entity';
+import { Blog } from 'src/blog/entities/blog.entity';
 
 
 @Module({
   imports: [
-  TypeOrmModule.forFeature([Tourpackage, AlbumImage, MainImage, VisitedPlace, User])],
+  TypeOrmModule.forFeature([Tourpackage, AlbumImage, MainImage, VisitedPlace, User, Blog])],
   controllers: [S3Controller],
   providers: [S3Service],
   exports:[S3Service]

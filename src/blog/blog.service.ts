@@ -20,11 +20,11 @@ export class BlogService {
     return ;
   }
 
-  update(id: number, updateBlogDto: UpdateBlogDto) {
-    return `This action updates a #${id} blog`;
+ async update(id: string, updateBlogDto: UpdateBlogDto) {
+    return  await this.BlogRepo.update(id,{...updateBlogDto});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+ async remove(id: string) {
+    return await this.BlogRepo.delete(id);
   }
 }
