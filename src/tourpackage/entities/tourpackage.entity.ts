@@ -1,6 +1,6 @@
 
 import { Booking } from "src/booking/entity/booking.entity";
-import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { AlbumImage } from "./albumimage.entity";
 import { bookingpolicy } from "./bookingpolicy.entity";
 import { Installment } from "./installment.entity";
@@ -19,9 +19,9 @@ let userCount = Math.floor(Math.random() * 10000);
 
 @Entity()
 export class Tourpackage {
-    @PrimaryGeneratedColumn('uuid')
-    uuid: string;
-    @Column()
+    // @PrimaryGeneratedColumn('uuid')
+    // uuid: string;
+    @PrimaryColumn()
     Id:string
     @BeforeInsert()
     generateUserId() {

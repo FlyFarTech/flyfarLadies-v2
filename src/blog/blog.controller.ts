@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Res, HttpStatus, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Res, HttpStatus, NotFoundException, UploadedFiles } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
@@ -21,19 +21,35 @@ export class BlogController {
 
   @Post('/addblog')
   @UseInterceptors(FileFieldsInterceptor([
-    { name: 'image1', maxCount: 2 },
-    { name: 'image2', maxCount: 2},
-    { name: 'image3', maxCount: 2 },
+    { name: 'Image1', maxCount: 2 },
+    { name: 'Image2', maxCount: 2},
+    { name: 'Image3', maxCount: 2 },
+    { name: 'Image4', maxCount: 2 },
+    { name: 'Image5', maxCount: 2 },
  ]))
   async Createblog(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    file: {
+      Image1?: Express.Multer.File[],
+      Image2?: Express.Multer.File[],
+      Image3?: Express.Multer.File[],
+      Image4?: Express.Multer.File[] ,
+      Image5?: Express.Multer.File[]},
     @Req() req: Request,
     @Body() body,
     @Res() res: Response) {
     const { Title, Description,Blogfor,WrittenBy } = req.body;
-    const coverimageurl = await this.s3service.Addimage(file)
+    const image1 = await this.s3service.Addimage(file.Image1[0])
+    const image2 = await this.s3service.Addimage(file.Image2[0])
+    const image3 = await this.s3service.Addimage(file.Image3[0])
+    const image4 = await this.s3service.Addimage(file.Image4[0])
+    const image5 = await this.s3service.Addimage(file.Image5[0])
     const blog = new Blog();
-    blog.coverimage =coverimageurl
+    blog.Image1 =image1
+    blog.Image2 =image2
+    blog.Image3 =image3
+    blog.Image4 =image4
+    blog.Image5=image5
     blog.Title =Title
     blog.Description =Description
     blog.Blogfor =Blogfor
