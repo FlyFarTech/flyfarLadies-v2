@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res, ParseFilePipeBuilder } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, HttpStatus, Req, Res, ParseFilePipeBuilder, HttpException } from '@nestjs/common';
 import { TestimonialService } from './testimonial.service';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -118,9 +118,16 @@ async updateimage(
     return res.status(HttpStatus.OK).json({alltestimonila})
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.testimonialService.findOne(+id);
+  @Get(':testid')
+ async findOne(@Param('testid',) testid: string) {
+    const testimonial= await this.TestimonialRepository.findOne({where:{testid}})
+    if(!testimonial){
+      throw new HttpException(
+        "testimonial not found",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+    return testimonial;
   }
 
   @Patch(':id')

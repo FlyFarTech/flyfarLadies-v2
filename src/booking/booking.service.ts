@@ -811,7 +811,7 @@ export class BookingService {
    }
 
 
-   async ConfirmedBooking(Bookingid: string, uuid:string,
+   async MakePayementwithwallet(Bookingid: string, uuid:string,
     Email:string,): Promise<void>{
       // Find the booking object with the provided ID
       const booking = await this.bookingRepository.findOne({where:{Bookingid}});
@@ -839,6 +839,38 @@ export class BookingService {
       }
       
     }
+
+    
+   async MakePayementwitInatallemnt(Bookingid: string, uuid:string,
+    Email:string,): Promise<void>{
+      const booking = await this.bookingRepository.findOne({where:{Bookingid}});
+      if(booking.status!== BookingStatus.HOLD)
+      {
+         throw new NotFoundException('Booking request already approved or Rejected');
+      }
+
+      const tourpackage = await this.bookingRepository.findOne({where:{Bookingid}, relations:['tourPackage']})
+      // Update the booking status to approved
+      const profile = await this.UserRepository.findOne({ where: {uuid} });
+      if (!profile) {
+         throw new NotFoundException('user not found');
+      }
+      const totalprice  = booking.TotalPrice
+      if(profile.Wallet>=totalprice){
+         profile.Wallet -= totalprice
+         await this.UserRepository.save(profile);
+         booking.status = BookingStatus.APPROVED;
+         booking.Wallet =profile.Wallet
+         booking.UpdatedAt = new Date()
+         const updatedBooking = await this.bookingRepository.save(booking);
+         await this.sendBookingApprovalToUser(updatedBooking);
+      }
+      else{
+         throw new BadRequestException('Insufficient balance! please deposit to your wallet');
+      }
+      
+    }
+
 
 
     async sendBookingApprovalToUser(booking: Booking) {

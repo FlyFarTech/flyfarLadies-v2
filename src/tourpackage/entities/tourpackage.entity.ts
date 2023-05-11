@@ -11,7 +11,6 @@ import { Packageinclusion } from "./packageInclusion.entitry";
 import { refundpolicy } from "./refundpolicy.entity";
 import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
-import { User } from "src/userProfile/entitties/user.entity";
 import { IsNotEmpty } from "class-validator";
 import { WishlistItem } from "src/userProfile/entitties/wishlist.entity";
 
