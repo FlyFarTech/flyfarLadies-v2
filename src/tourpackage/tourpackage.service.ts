@@ -176,6 +176,7 @@ async FindAllPackages() {
   // }
 
   async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
+    const startTime = new Date().getTime();
     const [month, year] = StartDate.split(" ");
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
@@ -202,7 +203,14 @@ async FindAllPackages() {
     if (Country) {
       queryBuilder.andWhere('tourPackage.Country = :Country', { Country });
     }
+    const queryTime = new Date().getTime(); // record time taken by query building
+    const queryEndTime = new Date().getTime(); // record time taken by query execution
   
+    const totalTime = queryEndTime - startTime; // calculate total time taken
+    const queryTimeTaken = queryEndTime - queryTime; // calculate time taken by query execution
+  
+    console.log(`Total time taken: ${totalTime} ms`);
+    console.log(`Time taken by query execution: ${queryTimeTaken} ms`);
     const packages = await queryBuilder.getMany();
     return packages;
   }
