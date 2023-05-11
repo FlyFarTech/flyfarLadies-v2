@@ -126,7 +126,7 @@ export class UserServices {
       }
       const newWishlistItem = new WishlistItem();
       // newWishlistItem.tourPackage =[tourpackage]
-      user.wishlist.push(newWishlistItem);
+      // user.wishlist.push(newWishlistItem);
       return await this.userRepository.save(user);
     ;
    }

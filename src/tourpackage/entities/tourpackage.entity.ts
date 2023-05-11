@@ -19,14 +19,12 @@ let userCount = Math.floor(Math.random() * 10000);
 
 @Entity()
 export class Tourpackage {
-    // @PrimaryGeneratedColumn('uuid')
-    // uuid: string;
     @PrimaryColumn()
     Id:string
     @BeforeInsert()
     generateUserId() {
        userCount++;
-       this.Id = `FFLPKID${100 + userCount}`;
+       this.Id = `FFLPK${100 + userCount}`;
     }
     @IsNotEmpty({message:'Main title could not be empty'})
     @Column({ nullable: true })

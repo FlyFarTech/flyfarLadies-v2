@@ -1,20 +1,18 @@
 import { IsEmail } from "@nestjs/class-validator"
 import { IsNotEmpty } from "class-validator"
 import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity"
-import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, UpdateDateColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { Cheque } from "./cheq.entity"
 import { Cash } from "./cash.entity"
 import { MobileBanking } from "./MobileBanking.enity"
 import { BankTransfer } from "./BankTransfer.entity"
-import { WishlistItem } from "./wishlist.entity"
 import { Traveller } from "src/Traveller/entities/traveller.entity"
 const crypto = require('crypto');
 const secretKey = 'my-secret-key';
 const maxValue = 10000;
 @Entity()
 export class User{
-   @PrimaryColumn({type:"uuid"})
-   @Generated("uuid")
+  @PrimaryGeneratedColumn('uuid')
    uuid:string    
    @BeforeInsert()
     async generateUniqueRandomNumber() {
@@ -89,6 +87,9 @@ export class User{
    @IsNotEmpty()
    @Column({default:null})
    LinkedIn:string
+   @IsNotEmpty()
+   @Column({ default:null,type:'simple-array' })
+   wishlist: string[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
    chequeDeposit:Promise<Cheque[]>
    @OneToMany(() => Cash, (cash) => cash.userprofile,{lazy:true})
@@ -97,12 +98,8 @@ export class User{
    mobilebankDeposit:Promise<MobileBanking[]> 
    @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
    bankDeposit:Promise<BankTransfer[]> 
-   @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.user)
-   wishlist:WishlistItem[];
+  //  @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.user)
+  //  wishlist:WishlistItem[];
    @OneToMany(()=>Traveller, (traveller)=>traveller.user,{lazy:true})
    travelers:Promise<Traveller[]>
-   @CreateDateColumn()
-   CreatedAt:Date
-   @UpdateDateColumn()
-   UpdatedAt:Date
 }

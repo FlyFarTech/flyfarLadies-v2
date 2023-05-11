@@ -181,7 +181,7 @@ async FindAllPackages() {
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
     
-    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
+    const queryBuilder =await this.TourpackageRepo.createQueryBuilder('tourPackage')
       .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
       .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
       .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')

@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundExcep
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor} from "@nestjs/platform-express";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
-import { Equal, Repository } from "typeorm";;
+import { Equal, Repository, getRepository } from "typeorm";;
 import { S3Service } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user.dto";
 import { User } from "./entitties/user.entity";
@@ -31,6 +31,7 @@ export class userProfileController {
      @InjectRepository(CardPayment) private CardPaymentRepository:Repository<CardPayment>,
      @InjectRepository(Bkash) private BkashPaymentRepository:Repository<Bkash>,
      @InjectRepository(MobileBanking) private MobileBankingRepository:Repository<MobileBanking>,
+     @InjectRepository(Tourpackage) private tourpackageRepository:Repository<Tourpackage>,
      @InjectRepository(Traveller) private TravellerRepository:Repository<Traveller>,
      @InjectRepository(socialimageenity) private socialimageenityRepository:Repository<socialimageenity>,
       private readonly UserServices: UserServices,
@@ -195,6 +196,86 @@ export class userProfileController {
       }
      
 
+    @Post('addwishlist')
+    async  addWishlist(
+      @Body('Id') Id: string,
+      @Body('uuid')  uuid: string,
+      @Res() res: Response,
+      @Req() req: Request) {
+        const tourpackage = await this.tourpackageRepository
+        .createQueryBuilder("tourpackage")
+        .where("tourpackage.Id = :Id", { Id: Id })
+        .getOne();
+        if (!tourpackage) {
+            throw new Error("Tour package not found");
+        }
+
+      
+        const user = await this.UserRepository. findOne({where:{uuid}});
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        user.wishlist = user.wishlist || [];
+        const tourpackageIndex = user.wishlist.findIndex((pkg) => pkg === Id);
+
+        if (tourpackageIndex === -1) {
+            user.wishlist.push(Id);
+            await this. UserRepository.save(user);
+            return res.status(HttpStatus.CREATED).json({ status: "success", message: 'Wishlist added successfully' });
+        } else {
+          throw new HttpException("Tour package already exists in wishlist",HttpStatus.BAD_REQUEST);
+        }
+      }
+
+      @Get(':uuid/mywishlist')
+      async getAllWishlist(@Param('uuid')uuid: string, Id:string) {
+        const user = await this.UserRepository.findOne({where:{uuid}});
+        if (!user) {
+          throw new Error('User not found');
+        }
+        const tourPackages = user.wishlist.map(async (pkgId) => {
+          const tourpackage = await this.tourpackageRepository.findOne({where:{Id}});
+          if (!tourpackage) {
+            throw new Error(`Tour package with ID ${pkgId} not found`);
+          }
+      
+          return {
+            id: tourpackage.Id,
+            mainTitle: tourpackage.MainTitle,
+            subtitle: tourpackage.SubTitle,
+            CoverImage:tourpackage.coverimageurl,
+            Price:tourpackage.Price,
+            StartDate:tourpackage.StartDate,
+            EndDate:tourpackage.EndDate,
+            Duration:tourpackage.TotalDuration
+            
+            // add other properties you want to include here
+          };
+        });
+       
+      return Promise.all(tourPackages);
+      }
+      
+      @Patch('removewishlist')
+      async removeWishlist(
+        @Body('Id')Id: string,
+        @Body('uuid') uuid: string) {
+        const user = await this.UserRepository.findOne({where:{uuid}});
+        if (!user) {
+          throw new Error('User not found');
+        }
+      
+        const tourpackageIndex = user.wishlist.findIndex((pkgId) => pkgId === Id);
+        if (tourpackageIndex === -1) {
+          throw new Error('Tour package not found in wishlist');
+        }
+        user.wishlist.splice(tourpackageIndex, 1);
+        await this.UserRepository.save(user);
+        return 'Tour package removed from wishlist';
+      }
+      
 
    // all user
 
