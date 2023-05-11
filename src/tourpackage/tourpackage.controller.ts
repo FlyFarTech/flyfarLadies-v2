@@ -71,8 +71,6 @@ export class TourpackageController {
     return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully",Id:tourpackage.Id })
 }
 
-
-  
 @Get('AllPackage')
 async findAll(@Res() res: Response) {
     const allTourPackages = await this.tourpackageService.FindAllPackages(); // Use camelCase for variable names

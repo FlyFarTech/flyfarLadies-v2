@@ -83,15 +83,15 @@ async findOne(Id: string) {
 }
 
   async FindAllPackages() {
-    const packages = await this.TourpackageRepo.find({
-      relations: ['mainimage']
+    const packages = await this.TourpackageRepo.find({ where:{},
+      relations: ['installments']
     });
     for (const pack of packages) {
       await pack.albumImages;
       await pack.vistitedImages;
       await pack.tourpackageplans;
       await pack.exclusions;
-      await pack.installments;
+      await pack.mainimage;
       await pack.PackageInclusions;
       await pack.BookingPolicys;
       await pack.highlights;
@@ -137,43 +137,6 @@ async findOne(Id: string) {
   }
   
 
-  // async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
-  //   const [month, year] = StartDate.split(" ");
-  //   const startOfMonth = new Date(`${month} 1, ${year}`);
-  //   const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
-  //   const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
-  //     .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-  //     .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
-  //     .leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions')
-  //     .leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys')
-  //     .leftJoinAndSelect('tourPackage.highlights', 'highlights')
-  //     .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans')
-  //     .leftJoinAndSelect('tourPackage.refundpolicys', 'refundpolicys')
-  //     .leftJoinAndSelect('tourPackage.installments', 'installments')
-  //     .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
-  //     .leftJoin('tourPackage.mainimage', 'mainimage')
-  //     .where('tourPackage.TripType = :TripType', { TripType })
-  //     .andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth })
-  //     .andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
-  //   const conditions = [];
-  //   if (City) {
-  //     conditions.push(`tourPackage.City = :City`);
-  //   }
-  //   if (Country) {
-  //     conditions.push(`tourPackage.Country = :Country`);
-  //   }
-  //   if (conditions.length > 0) {
-  //     const whereClause = conditions.join(' OR ');
-  //     queryBuilder.andWhere(whereClause, { City, Country });
-  //   }
-  
-  //   const tourPackages = await queryBuilder.getMany();
-  //   if (tourPackages.length === 0) {
-  //     throw new HttpException('No tour packages found for the specified criteria', HttpStatus.BAD_REQUEST);
-  //   }
-  //   return tourPackages;
-  // }
-
 
   async getCityByTripType(TripType: string, StartDate:string): Promise<{City:string, Country:string}[]> {
     const [month, year] = StartDate.split(" ")
@@ -192,9 +155,6 @@ async findOne(Id: string) {
       return city.map(({ City, Country }) => ({ City, Country }));
   }
 
-// async  updatePackage(Id: string, updateTourpackageDto: UpdateTourpackageDto) {
-//     return await this.TourpackageRepo.update({Id}, {...updateTourpackageDto});
-//   }
 
 async  remove(Id: string) {
   const tourpackage=  this.TourpackageRepo.findOne({where:{Id}});
