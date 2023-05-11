@@ -183,7 +183,7 @@ async FindAllPackages() {
     const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
       .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
       .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-      .leftJoinAndSelect('tourPackage.visitedImages', 'visitedImages')
+      .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
       .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans')
       .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
       .leftJoinAndSelect('tourPackage.installments', 'installments')
