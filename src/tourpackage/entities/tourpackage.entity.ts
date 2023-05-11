@@ -90,7 +90,7 @@ export class Tourpackage {
     exclusions:Promise<packageexcluions[]>;
     @OneToMany(() => Packageinclusion, (inclsuions) => inclsuions.tourpackage,{lazy:true} )
     PackageInclusions:Promise<Packageinclusion[]> ;
-    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,{lazy:true, eager:true})
+    @OneToMany(() => bookingpolicy, (policy) => policy.tourpackage,{lazy:true})
     BookingPolicys:Promise<bookingpolicy[]> ;
     @OneToMany(() => packagehighlight, (highlights) => highlights.tourpackage,{lazy:true} )
     highlights:Promise<packagehighlight[]>;
@@ -104,6 +104,5 @@ export class Tourpackage {
     bookings:Promise<Booking[]>;  
     @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.tourPackage)
     wishlist: WishlistItem[];
-
-
+    
 }

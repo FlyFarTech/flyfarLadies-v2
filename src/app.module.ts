@@ -80,7 +80,7 @@ import { PressCoverages } from './blog/entities/press.entity';
         WishlistItem,
         socialimageenity,
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,
