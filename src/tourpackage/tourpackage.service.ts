@@ -82,23 +82,45 @@ async findOne(Id: string) {
   return gettourpackage;
 }
 
+  // async FindAllPackages() {
+  //   const packages = await this.TourpackageRepo.find({ where:{},
+  //     relations: ['albumImages']
+  //   });
+  //   for (const pack of packages) {
+  //     await pack.installments;
+  //     await pack.vistitedImages;
+  //     await pack.tourpackageplans;
+  //     await pack.exclusions;
+  //     await pack.mainimage;
+  //     await pack.PackageInclusions;
+  //     await pack.BookingPolicys;
+  //     await pack.highlights;
+  //     await pack.refundpolicys;
+  //   }
+  //   return packages;
+  // }
+
+
   async FindAllPackages() {
-    const packages = await this.TourpackageRepo.find({ where:{},
-      relations: ['albumImages']
-    });
-    for (const pack of packages) {
-      await pack.installments;
-      await pack.vistitedImages;
-      await pack.tourpackageplans;
-      await pack.exclusions;
-      await pack.mainimage;
-      await pack.PackageInclusions;
-      await pack.BookingPolicys;
-      await pack.highlights;
-      await pack.refundpolicys;
-    }
+    const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
+  
+    await Promise.all(packages.map(async (pack) => {
+      await Promise.all([
+        pack.installments,
+        pack.vistitedImages,
+        pack.tourpackageplans,
+        pack.exclusions,
+        pack.mainimage,
+        pack.PackageInclusions,
+        pack.BookingPolicys,
+        pack.highlights,
+        pack.refundpolicys,
+      ]);
+    }));
+  
     return packages;
   }
+  
 
   async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
     const [month, year] = StartDate.split(" ");
