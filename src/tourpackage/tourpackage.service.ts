@@ -82,44 +82,61 @@ async findOne(Id: string) {
   return gettourpackage;
 }
 
+async FindAllPackages() {
+  const packages = await this.TourpackageRepo
+    .createQueryBuilder('tourpackage')
+    .leftJoinAndSelect('tourpackage.albumImages', 'albumImages')
+    .leftJoinAndSelect('tourpackage.installments', 'installments')
+    .leftJoinAndSelect('tourpackage.vistitedImages', 'visitedImages')
+    .leftJoinAndSelect('tourpackage.tourpackageplans', 'tourpackageplans')
+    .leftJoinAndSelect('tourpackage.exclusions', 'exclusions')
+    .leftJoinAndSelect('tourpackage.mainimage', 'mainimage')
+    .leftJoinAndSelect('tourpackage.PackageInclusions', 'PackageInclusions')
+    .leftJoinAndSelect('tourpackage.BookingPolicys', 'BookingPolicys')
+    .leftJoinAndSelect('tourpackage.highlights', 'highlights')
+    .leftJoinAndSelect('tourpackage.refundpolicys', 'refundpolicys')
+    .getMany();
+
+  const promises = packages.map(async (pack) => {
+    await Promise.allSettled([
+      pack.installments,
+      pack.vistitedImages,
+      pack.tourpackageplans,
+      pack.exclusions,
+      pack.mainimage,
+      pack.PackageInclusions,
+      pack.BookingPolicys,
+      pack.highlights,
+      pack.refundpolicys,
+    ]);
+  });
+
+  await Promise.allSettled(promises);
+
+  return packages;
+}
+
+
+
   // async FindAllPackages() {
-  //   const packages = await this.TourpackageRepo.find({ where:{},
-  //     relations: ['albumImages']
-  //   });
-  //   for (const pack of packages) {
-  //     await pack.installments;
-  //     await pack.vistitedImages;
-  //     await pack.tourpackageplans;
-  //     await pack.exclusions;
-  //     await pack.mainimage;
-  //     await pack.PackageInclusions;
-  //     await pack.BookingPolicys;
-  //     await pack.highlights;
-  //     await pack.refundpolicys;
-  //   }
+  //   const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
+  
+  //   await Promise.all(packages.map(async (pack) => {
+  //     await Promise.all([
+  //       pack.installments,
+  //       pack.vistitedImages,
+  //       pack.tourpackageplans,
+  //       pack.exclusions,
+  //       pack.mainimage,
+  //       pack.PackageInclusions,
+  //       pack.BookingPolicys,
+  //       pack.highlights,
+  //       pack.refundpolicys,
+  //     ]);
+  //   }));
+  
   //   return packages;
   // }
-
-
-  async FindAllPackages() {
-    const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
-  
-    await Promise.all(packages.map(async (pack) => {
-      await Promise.all([
-        pack.installments,
-        pack.vistitedImages,
-        pack.tourpackageplans,
-        pack.exclusions,
-        pack.mainimage,
-        pack.PackageInclusions,
-        pack.BookingPolicys,
-        pack.highlights,
-        pack.refundpolicys,
-      ]);
-    }));
-  
-    return packages;
-  }
   
 
   async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
