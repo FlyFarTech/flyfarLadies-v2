@@ -87,7 +87,6 @@ export class User{
    @IsNotEmpty()
    @Column({default:null})
    LinkedIn:string
-   @IsNotEmpty()
    @Column({ default:null,type:'simple-array' })
    wishlist: string[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
