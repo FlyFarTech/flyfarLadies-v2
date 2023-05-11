@@ -31,7 +31,7 @@ export class BlogController {
     @Req() req: Request,
     @Body() body,
     @Res() res: Response) {
-    const { Title, Description,Blogfor,WrittenBy } = req.body;
+    const { Title, Description,Blogfor,WrittenBy,Type } = req.body;
     const testimonialimagess = [];
     if (file.blogimages) {
       for (let i = 0; i < file.blogimages.length; i++) {
@@ -42,6 +42,7 @@ export class BlogController {
     const blog = new Blog();
     blog.blogimages =testimonialimagess
     blog.Title =Title
+    blog.Type=Type
     blog.Description =Description
     blog.Blogfor =Blogfor
     blog.WrittenBy =WrittenBy
