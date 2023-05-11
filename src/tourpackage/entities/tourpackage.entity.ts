@@ -62,7 +62,7 @@ export class Tourpackage {
     @Column({ nullable: true })
     TotalDuration: string
     @IsNotEmpty({message:'PackageOverview could not be empty'})
-    @Column({ nullable: true,length: 1000, type:'text' })
+    @Column({ nullable: true,length: 1000 })
     PackageOverview: string;
     @Column('bool', { default: false, nullable: true })
     Availability: boolean
