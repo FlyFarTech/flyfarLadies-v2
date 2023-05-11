@@ -5,7 +5,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
     .setTitle('FlyFar-Ladies')
-    .setDescription('FlyFar-Ladies description')
+    .setDescription('FlyFar-Ladies Description')
     .setVersion('1.0')
     .addTag('FFL')
     .build();
