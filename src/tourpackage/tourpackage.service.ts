@@ -84,10 +84,10 @@ async findOne(Id: string) {
 
   async FindAllPackages() {
     const packages = await this.TourpackageRepo.find({ where:{},
-      relations: ['installments']
+      relations: ['albumImages']
     });
     for (const pack of packages) {
-      await pack.albumImages;
+      await pack.installments;
       await pack.vistitedImages;
       await pack.tourpackageplans;
       await pack.exclusions;
