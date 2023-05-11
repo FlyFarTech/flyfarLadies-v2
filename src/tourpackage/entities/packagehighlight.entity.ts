@@ -8,7 +8,7 @@ export class packagehighlight {
   @PrimaryGeneratedColumn()
   HiId: number;
   @IsNotEmpty()
-  @Column()
+  @Column({length: 1000})
   description: string;
   @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.highlights)
   @JoinColumn({ name: 'Tour_package_Hightlights' })

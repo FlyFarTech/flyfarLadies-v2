@@ -8,7 +8,7 @@ export class bookingpolicy {
     @PrimaryGeneratedColumn()
     BkId: number
     @IsNotEmpty()
-    @Column()
+    @Column({length: 1000})
     description:string;
     @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.BookingPolicys)
     @JoinColumn({name:'policyId'})

@@ -13,6 +13,7 @@ import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
 import { IsNotEmpty } from "class-validator";
 import { WishlistItem } from "src/userProfile/entitties/wishlist.entity";
+import { type } from "os";
 
 let userCount = Math.floor(Math.random() * 10000);
 
@@ -61,7 +62,7 @@ export class Tourpackage {
     @Column({ nullable: true })
     TotalDuration: string
     @IsNotEmpty({message:'PackageOverview could not be empty'})
-    @Column('text', { nullable: true })
+    @Column({ nullable: true,length: 1000, type:'text' })
     PackageOverview: string;
     @Column('bool', { default: false, nullable: true })
     Availability: boolean
