@@ -13,17 +13,9 @@ export class Testimonial {
    CompanyName:string
    @Column()
    ClientImage:string
-   @Column({default:null})
-   Image1:string
-   @Column({default:null})
-   Image2:string
-   @Column({default:null})
-   Image3:string
-   @Column({default:null})
-   Image4:string
-   @Column({default:null})
-   Image5:string
-   @Column({default:null, type:'longtext'})
+   @Column({default:null, type:'simple-array'})
+   testimonialimages:string[]
+   @Column({default:null, length:1000})
    Description:string
    @CreateDateColumn()
    Date:Date

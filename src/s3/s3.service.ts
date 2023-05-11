@@ -150,15 +150,11 @@ export class S3Service {
           }
         const blog = await this.blogRepository.findOneBy({blogid})
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-        if (blog.Image1 || blog.Image2|| blog.Image3 || blog.Image4 || blog.Image5) {
-            const Image1 = blog.Image1.split('/').pop();
-            const Image2 = blog.Image1.split('/').pop();
-            const Image3 = blog.Image1.split('/').pop();
-            const Image4 = blog.Image1.split('/').pop();
-            const Image5 = blog.Image1.split('/').pop();
+        if (blog.blogimages) {
+            const Image1 = blog.blogimages[0].split('/').pop();
             await this.s3.send(new DeleteObjectCommand({
                 Bucket: bucket,
-                Key: Image1||Image2||Image3||Image4||Image5
+                Key: Image1
             }))
         }
         const key =`${blogid}/${file.originalname}.webp`
@@ -195,16 +191,12 @@ export class S3Service {
           }
         const blog = await this.TestimonialRepository.findOneBy({testid})
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-        if (blog.Image1 || blog.Image2|| blog.Image3 || blog.Image4 || blog.Image5 || blog.ClientImage) {
-            const Image1 = blog.Image1.split('/').pop();
-            const Image2 = blog.Image1.split('/').pop();
-            const Image3 = blog.Image1.split('/').pop();
-            const Image4 = blog.Image1.split('/').pop();
-            const Image5 = blog.Image1.split('/').pop();
-            const ClientImage = blog.Image1.split('/').pop();
+        if (blog.testimonialimages || blog.ClientImage) {
+            const testimonialimages = blog.testimonialimages[0].split('/').pop();
+            const ClientImage =blog.ClientImage.split('/').pop();
             await this.s3.send(new DeleteObjectCommand({
                 Bucket: bucket,
-                Key: Image1||Image2||Image3||Image4||Image5||ClientImage
+                Key: testimonialimages||ClientImage
             }))
         }
         const key =`${testid}/${file.originalname}.webp`
