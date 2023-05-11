@@ -35,6 +35,7 @@ export class TourpackageController {
     @InjectRepository(VisitedPlace) private visitedplaceRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
     private s3service: S3Service) {}
+  
   @Post('Addpackage')
   @UseInterceptors(
     FileInterceptor('coverimageurl'),
