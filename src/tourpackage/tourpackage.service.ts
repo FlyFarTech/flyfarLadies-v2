@@ -120,7 +120,6 @@ async findOne(Id: string) {
 
   async FindAllPackages() {
     const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
-  
     await Promise.all(packages.map(async (pack) => {
       await Promise.all([
         pack.installments,
@@ -134,7 +133,6 @@ async findOne(Id: string) {
         pack.refundpolicys,
       ]);
     }));
-  
     return packages;
   }
   

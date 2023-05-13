@@ -90,8 +90,8 @@ export class User{
    @IsNotEmpty()
    @Column({default:null})
    LinkedIn:string
-  //  @Column({ default:null,type:'simple-array', nullable:true })
-  //  wishlist: string[];
+   @Column({ default:null,type:'simple-array', nullable:true })
+   wishlist: string[];
    @OneToMany(() => Cheque, (cheque) => cheque.userprofile,{lazy:true})
    chequeDeposit:Promise<Cheque[]>
    @OneToMany(() => Cash, (cash) => cash.userprofile,{lazy:true})

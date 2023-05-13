@@ -25,6 +25,13 @@ import { MainImage } from './entities/mainimage.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import { updateinstallmentdto } from './dto/update-installmentDto';
+import { Installment } from './entities/installment.entity';
+import { refundpolicy } from './entities/refundpolicy.entity';
+import { bookingpolicy } from './entities/bookingpolicy.entity';
+import { packagehighlight } from './entities/packagehighlight.entity';
+import { packageexcluions } from './entities/packageexclsuions.entity';
+import { tourpackageplan } from './entities/tourpackageplan.entity';
+import { Packageinclusion } from './entities/packageInclusion.entitry';
 
 @Controller('tourpackage')
 export class TourpackageController {
@@ -33,6 +40,25 @@ export class TourpackageController {
     @InjectRepository(MainImage) private MainImageRepo: Repository<MainImage>,
     @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
     @InjectRepository(VisitedPlace) private visitedplaceRepo: Repository<VisitedPlace>,
+
+    @InjectRepository(Packageinclusion)
+    private packageInclusionRepo: Repository<Packageinclusion>,
+    @InjectRepository(tourpackageplan)
+    private tourpackagePlanRepo: Repository<tourpackageplan>,
+    @InjectRepository(packageexcluions)
+    private packageexcluionsRepo: Repository<packageexcluions>,
+    @InjectRepository(packagehighlight)
+    private packageHighlightRepo: Repository<packagehighlight>,
+    @InjectRepository(bookingpolicy)
+    private bookingPolicyRepo: Repository<bookingpolicy>,
+    @InjectRepository(refundpolicy)
+    private refundPolicyRepo: Repository<refundpolicy>,
+    @InjectRepository(Installment)
+    private InstallmentRepo: Repository<Installment>,
+    @InjectRepository(AlbumImage)
+    private AlbumImageRepo: Repository<AlbumImage>,
+    @InjectRepository(VisitedPlace)
+    private visitedImageRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
     private s3service: S3Service) {}
   
@@ -71,6 +97,34 @@ export class TourpackageController {
     await this.TourpackageRepo.save(tourpackage)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully",Id:tourpackage.Id })
 }
+
+
+
+
+
+
+async AddNewInstallment(Id: string, CreateInstallmentDto:CreateInstallmentDto[]){
+  const tourpackage = await this.TourpackageRepo.findOneBy({Id})
+  if (!tourpackage) {
+    throw new HttpException(
+      "TourPackage not found",
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  const createinstallment: Installment[] =[];
+  for(const createinstallmentdto of CreateInstallmentDto){
+  const installment = await this.InstallmentRepo.create({...createinstallmentdto,tourpackage})
+  const createdinstallment =await this.InstallmentRepo.save(installment)
+  createinstallment.push(createdinstallment);
+  }
+  return createinstallment
+
+}
+
+
+
+
+
 
 @Get('AllPackage')
 async findAll(@Res() res: Response) {
@@ -166,6 +220,9 @@ async getTourPackages(
         message: `installment updated successfully`,
       });
     }
+
+
+
   
 
     @Delete(':Id/Installment/:InstallmentId')
