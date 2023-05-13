@@ -85,6 +85,7 @@ export class User{
    @Column({default:null})
    @CreateDateColumn()
    CreatedAt:Date
+   @Column()
    WhatsApp:string
    @IsNotEmpty()
    @Column({default:null})
