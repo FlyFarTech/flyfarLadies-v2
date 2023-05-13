@@ -97,23 +97,22 @@ async FindAllPackages() {
     .leftJoinAndSelect('tourpackage.refundpolicys', 'refundpolicys')
     .getMany();
 
-  const promises = packages.map(async (pack) => {
-    await Promise.all([
-      pack.installments,
-      pack.vistitedImages,
-      pack.tourpackageplans,
-      pack.exclusions,
-      pack.mainimage,
-      pack.PackageInclusions,
-      pack.BookingPolicys,
-      pack.highlights,
-      pack.refundpolicys,
-    ]);
-  });
-  await Promise.all(promises);
+  const promises = packages.flatMap(pack => [
+    pack.installments,
+    pack.vistitedImages,
+    pack.tourpackageplans,
+    pack.exclusions,
+    pack.mainimage,
+    pack.PackageInclusions,
+    pack.BookingPolicys,
+    pack.highlights,
+    pack.refundpolicys,
+  ].map(promise => Promise.resolve(promise)));
+  
+  await Promise.allSettled(promises);
+  
   return packages;
 }
-
 
 
   // async FindAllPackages() {
