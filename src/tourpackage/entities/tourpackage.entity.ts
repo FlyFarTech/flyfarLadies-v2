@@ -12,8 +12,6 @@ import { refundpolicy } from "./refundpolicy.entity";
 import { tourpackageplan } from "./tourpackageplan.entity";
 import { VisitedPlace } from "./visitedplace.entity";
 import { IsNotEmpty } from "class-validator";
-import { WishlistItem } from "src/userProfile/entitties/wishlist.entity";
-import { type } from "os";
 
 let userCount = Math.floor(Math.random() * 10000);
 
@@ -99,8 +97,6 @@ export class Tourpackage {
     @OneToMany(() => Installment, (installment) => installment.tourpackage,{lazy:true} )
     installments:Promise <Installment[]>;
     @OneToMany(() => Booking, (booking) => booking.tourPackage,{lazy:true})
-    bookings:Promise<Booking[]>;  
-    @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.tourPackage)
-    wishlist: WishlistItem[];
+    bookings:Promise<Booking[]>; 
     
 }

@@ -30,7 +30,6 @@ import { BankTransfer } from './userProfile/entitties/BankTransfer.entity';
 import { CardPayment } from './userProfile/entitties/Cardpayment.entity';
 import { Bkash } from './userProfile/entitties/Bkash.entity';
 import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
-import { WishlistItem } from './userProfile/entitties/wishlist.entity';
 import { socialimageenity } from './userProfile/entitties/socialimages.entity';
 import { BlogModule } from './blog/blog.module';
 import { Blog } from './blog/entities/blog.entity';
@@ -77,7 +76,6 @@ import { PressCoverages } from './blog/entities/press.entity';
         refundpolicy,
         Installment,
         Booking,
-        WishlistItem,
         socialimageenity,
       ],
       synchronize:false

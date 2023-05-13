@@ -1,4 +1,4 @@
-import { WishlistItem } from 'src/userProfile/entitties/wishlist.entity';
+
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -110,40 +110,6 @@ export class UserServices {
          return this.userRepo.findOne({ where:{Email} });
        }
 
-   async addToWishlist(uuid: string, Id: string): Promise<User> {
-      const user = await this.userRepository.findOne({
-         where: { uuid }  
-      });
-
-      const tourpackage =await this.tourPackageRepository.find({where:{Id}})
-      
-      if (!user) {
-         // Handle error, user or tourpackage not found
-         throw new HttpException('User or Tourpackage not Found',HttpStatus.BAD_REQUEST);
-      }
-      if (!user.wishlist) {
-        user.wishlist = []; // Initialize wishlist array if it's undefined
-      }
-      const newWishlistItem = new WishlistItem();
-      // newWishlistItem.tourPackage =[tourpackage]
-      // user.wishlist.push(newWishlistItem);
-      return await this.userRepository.save(user);
-    ;
-   }
-
-   async removeFromWishlist(uuid: string, id: string): Promise<User> {
-      const user = await this.userRepository.findOne({ where: { uuid }, relations: { wishlist: true } });
-      if (!user) {
-         // Handle error, user or tourpackage not found
-         throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
-      }
-      // user.wishlist = user.wishlist.filter((WishlistItem) => WishlistItem.tourPackage.id !== id);
-      return this.userRepository.save(user);
-   }
-
-   async getWishlist(uuid: string): Promise<User> {
-      return await this.userRepository.findOne({ where: { uuid } });
-   }
 
    // get All User
    async FindAllProfile() {

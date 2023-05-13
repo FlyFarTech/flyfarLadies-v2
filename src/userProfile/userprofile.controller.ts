@@ -126,8 +126,7 @@ export class userProfileController {
      });
    }
    
-
-
+   
 
    // Add Traveller
    @Post('upload/logos')
@@ -328,23 +327,7 @@ export class userProfileController {
       // return this.UserServices.addToWishlist(uuid,tourpackage);
    }
 
-   @Delete(':uuid')
-   async removeFromWishlist(
-      @Param('Uid', new ParseUUIDPipe) Uid: string,
-      @Param('FFLPKID') FFLPKID: string,
-      @Res() res: Response,
-   ) {
-      await this.UserServices.removeFromWishlist(Uid, FFLPKID);
-      return res.status(HttpStatus.OK).json({
-         status: "success",
-         message: `Wishlist has removed`,
-      });
-   }
 
-   @Get(':Uid')
-   async getWishlist(@Param('Uid', new ParseUUIDPipe) Uid: string) {
-      return this.UserServices.getWishlist(Uid);
-   }
 
 
    //cheque details

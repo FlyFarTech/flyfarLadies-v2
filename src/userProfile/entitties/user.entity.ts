@@ -97,8 +97,6 @@ export class User{
    mobilebankDeposit:Promise<MobileBanking[]> 
    @OneToMany(() => BankTransfer, (banktransfer) => banktransfer.userprofile,{lazy:true})
    bankDeposit:Promise<BankTransfer[]> 
-  //  @OneToMany(() => WishlistItem, wishlistItem => wishlistItem.user)
-  //  wishlist:WishlistItem[];
    @OneToMany(()=>Traveller, (traveller)=>traveller.user,{lazy:true})
    travelers:Promise<Traveller[]>
 }
