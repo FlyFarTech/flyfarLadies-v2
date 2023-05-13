@@ -98,7 +98,7 @@ async FindAllPackages() {
     .getMany();
 
   const promises = packages.map(async (pack) => {
-    await Promise.allSettled([
+    await Promise.all([
       pack.installments,
       pack.vistitedImages,
       pack.tourpackageplans,
@@ -110,9 +110,7 @@ async FindAllPackages() {
       pack.refundpolicys,
     ]);
   });
-
-  await Promise.allSettled(promises);
-
+  await Promise.all(promises);
   return packages;
 }
 
