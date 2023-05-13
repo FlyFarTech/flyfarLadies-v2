@@ -36,6 +36,7 @@ import { Blog } from './blog/entities/blog.entity';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
+import { Payement } from './booking/entity/payement.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
@@ -53,6 +54,7 @@ import { PressCoverages } from './blog/entities/press.entity';
 
       port:3306,
       entities: [Admin,
+        Payement,
         PressCoverages,
         Testimonial,
         Blog,

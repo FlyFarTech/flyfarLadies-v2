@@ -64,10 +64,12 @@ async AddPressCoverage(
   @Req() req: Request,
   @Body() body,
   @Res() res: Response) {
-  const { links } = req.body;
+  const { links , Date, Description} = req.body;
   const image = await this.s3service.Addimage(file.Image[0])
   const press = new PressCoverages();
   press.Image =image
+  press.Description=Description
+  press.Date = Date
   press.links =links
   await this.PressCoveragesrepo.save({...press})
   return res.status(HttpStatus.OK).send({ status: "success", message: "Press coverage uploaded successfully", })

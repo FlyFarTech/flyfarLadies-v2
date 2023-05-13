@@ -63,6 +63,7 @@ export class BookingService {
          LinkedIn:userprofile.LinkedIn,
          MainTitle:tourPackage.MainTitle,
          SubTitle:tourPackage.SubTitle,
+         userid:userprofile.uuid
       })
       const savebooking= await this.bookingRepository.save(newbooking)
       await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
@@ -870,6 +871,8 @@ export class BookingService {
       }
       
     }
+
+    
 
 
 

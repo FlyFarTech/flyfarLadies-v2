@@ -25,8 +25,10 @@ export class Booking{
    @Column()
    Email:string
    @Column()
-   MainTitle:string
+   userid:string
    @Column()
+   MainTitle:string
+   @Column({default:null})
    SubTitle:string
    @Column()
    Name:string

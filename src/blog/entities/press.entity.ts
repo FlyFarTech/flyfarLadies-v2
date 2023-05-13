@@ -6,6 +6,10 @@ export class PressCoverages{
    uuid:string
    @Column()
    Image:string
+   @Column({length:1000})
+   Description:string
+   @Column({type:'date'})
+   Date:Date
    @Column()
    links:string
 
