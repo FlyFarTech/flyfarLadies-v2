@@ -490,7 +490,7 @@ export class UserServices {
 
    // find user by Id
    async FindProfile(uuid: string): Promise<User> {
-      const Profile = await this.userRepository.findOne({ where: { uuid }, relations:['chequeDeposit','wishlist','mobilebankDeposit','bankDeposit'] });
+      const Profile = await this.userRepository.findOne({ where: { uuid }, relations:['chequeDeposit','mobilebankDeposit','bankDeposit'] });
       if (!Profile) {
          throw new HttpException("Profile not found", HttpStatus.BAD_REQUEST);
       }
