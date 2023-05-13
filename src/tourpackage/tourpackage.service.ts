@@ -86,16 +86,21 @@ async FindAllPackages() {
   const packages = await this.TourpackageRepo
     .createQueryBuilder('tourpackage')
     .leftJoinAndSelect('tourpackage.albumImages', 'albumImages')
-    .leftJoinAndSelect('tourpackage.installments', 'installments')
-    .leftJoinAndSelect('tourpackage.vistitedImages', 'visitedImages')
-    .leftJoinAndSelect('tourpackage.tourpackageplans', 'tourpackageplans')
-    .leftJoinAndSelect('tourpackage.exclusions', 'exclusions')
-    .leftJoinAndSelect('tourpackage.mainimage', 'mainimage')
-    .leftJoinAndSelect('tourpackage.PackageInclusions', 'PackageInclusions')
-    .leftJoinAndSelect('tourpackage.BookingPolicys', 'BookingPolicys')
-    .leftJoinAndSelect('tourpackage.highlights', 'highlights')
-    .leftJoinAndSelect('tourpackage.refundpolicys', 'refundpolicys')
     .getMany();
+    
+    const promises = packages.flatMap(pack => [
+      pack.installments,
+      pack.vistitedImages,
+      pack.tourpackageplans,
+      pack.exclusions,
+      pack.mainimage,
+      pack.PackageInclusions,
+      pack.BookingPolicys,
+      pack.highlights,
+      pack.refundpolicys,
+    ].map(promise => Promise.resolve(promise)));
+    
+    await Promise.allSettled(promises);
   
   return packages;
 }
