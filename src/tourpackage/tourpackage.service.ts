@@ -82,138 +82,138 @@ async findOne(Id: string) {
   return gettourpackage;
 }
 
-async FindAllPackages() {
-  const packages = await this.TourpackageRepo
-    .createQueryBuilder('tourpackage')
-    .leftJoinAndSelect('tourpackage.albumImages', 'albumImages')
-    .leftJoinAndSelect('tourpackage.installments', 'installments')
-    .leftJoinAndSelect('tourpackage.vistitedImages', 'visitedImages')
-    .leftJoinAndSelect('tourpackage.tourpackageplans', 'tourpackageplans')
-    .leftJoinAndSelect('tourpackage.exclusions', 'exclusions')
-    .leftJoinAndSelect('tourpackage.mainimage', 'mainimage')
-    .leftJoinAndSelect('tourpackage.PackageInclusions', 'PackageInclusions')
-    .leftJoinAndSelect('tourpackage.BookingPolicys', 'BookingPolicys')
-    .leftJoinAndSelect('tourpackage.highlights', 'highlights')
-    .leftJoinAndSelect('tourpackage.refundpolicys', 'refundpolicys')
-    .getMany();
+// async FindAllPackages() {
+//   const packages = await this.TourpackageRepo
+//     .createQueryBuilder('tourpackage')
+//     .leftJoinAndSelect('tourpackage.albumImages', 'albumImages')
+//     .leftJoinAndSelect('tourpackage.installments', 'installments')
+//     .leftJoinAndSelect('tourpackage.vistitedImages', 'visitedImages')
+//     .leftJoinAndSelect('tourpackage.tourpackageplans', 'tourpackageplans')
+//     .leftJoinAndSelect('tourpackage.exclusions', 'exclusions')
+//     .leftJoinAndSelect('tourpackage.mainimage', 'mainimage')
+//     .leftJoinAndSelect('tourpackage.PackageInclusions', 'PackageInclusions')
+//     .leftJoinAndSelect('tourpackage.BookingPolicys', 'BookingPolicys')
+//     .leftJoinAndSelect('tourpackage.highlights', 'highlights')
+//     .leftJoinAndSelect('tourpackage.refundpolicys', 'refundpolicys')
+//     .getMany();
 
-  const promises = packages.map(async (pack) => {
-    await Promise.allSettled([
-      pack.installments,
-      pack.vistitedImages,
-      pack.tourpackageplans,
-      pack.exclusions,
-      pack.mainimage,
-      pack.PackageInclusions,
-      pack.BookingPolicys,
-      pack.highlights,
-      pack.refundpolicys,
-    ]);
-  });
+//   const promises = packages.map(async (pack) => {
+//     await Promise.allSettled([
+//       pack.installments,
+//       pack.vistitedImages,
+//       pack.tourpackageplans,
+//       pack.exclusions,
+//       pack.mainimage,
+//       pack.PackageInclusions,
+//       pack.BookingPolicys,
+//       pack.highlights,
+//       pack.refundpolicys,
+//     ]);
+//   });
 
-  await Promise.allSettled(promises);
+//   await Promise.allSettled(promises);
 
-  return packages;
-}
+//   return packages;
+// }
 
 
 
-  // async FindAllPackages() {
-  //   const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
+  async FindAllPackages() {
+    const packages = await this.TourpackageRepo.find({ where:{}, relations: ['albumImages'] });
   
-  //   await Promise.all(packages.map(async (pack) => {
-  //     await Promise.all([
-  //       pack.installments,
-  //       pack.vistitedImages,
-  //       pack.tourpackageplans,
-  //       pack.exclusions,
-  //       pack.mainimage,
-  //       pack.PackageInclusions,
-  //       pack.BookingPolicys,
-  //       pack.highlights,
-  //       pack.refundpolicys,
-  //     ]);
-  //   }));
+    await Promise.all(packages.map(async (pack) => {
+      await Promise.all([
+        pack.installments,
+        pack.vistitedImages,
+        pack.tourpackageplans,
+        pack.exclusions,
+        pack.mainimage,
+        pack.PackageInclusions,
+        pack.BookingPolicys,
+        pack.highlights,
+        pack.refundpolicys,
+      ]);
+    }));
   
-  //   return packages;
-  // }
+    return packages;
+  }
   
-
-  // async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
-  //   const [month, year] = StartDate.split(" ");
-  //   const startOfMonth = new Date(`${month} 1, ${year}`);
-  //   const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
-  //   const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
-  //     .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
-  //     .where('tourPackage.TripType = :TripType', { TripType })
-  //     .andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth })
-  //     .andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
-  //   const conditions = [];
-  //   if (City) {
-  //     conditions.push(`tourPackage.City = :City`);
-  //   }
-  //   if (Country) {
-  //     conditions.push(`tourPackage.Country = :Country`);
-  //   }
-  //   if (conditions.length > 0) {
-  //     const whereClause = conditions.join(' OR ');
-  //     queryBuilder.andWhere(whereClause, { City, Country });
-  //   }
-    
-  //   const packages = await queryBuilder.getMany();
-  //   for (const pack of packages) {
-  //     await pack.albumImages;
-  //     await pack.vistitedImages;
-  //     await pack.tourpackageplans;
-  //     await pack.exclusions;
-  //     await pack.installments;
-  //     await pack.PackageInclusions;
-  //     await pack.BookingPolicys;
-  //     await pack.highlights;
-  //     await pack.refundpolicys;
-  //   }
-  //   return packages;
-  // }
 
   async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
-    const startTime = new Date().getTime();
     const [month, year] = StartDate.split(" ");
     const startOfMonth = new Date(`${month} 1, ${year}`);
     const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
-    
-    const queryBuilder =await this.TourpackageRepo.createQueryBuilder('tourPackage')
+    const queryBuilder = this.TourpackageRepo.createQueryBuilder('tourPackage')
       .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
-      .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-      .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
-      .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans')
-      .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
-      .leftJoinAndSelect('tourPackage.installments', 'installments')
-      .leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions')
-      .leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys')
-      .leftJoinAndSelect('tourPackage.highlights', 'highlights')
-      .leftJoinAndSelect('tourPackage.refundpolicys', 'refundpolicys')
       .where('tourPackage.TripType = :TripType', { TripType })
       .andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth })
       .andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
-  
+    const conditions = [];
     if (City) {
-      queryBuilder.andWhere('tourPackage.City = :City', { City });
+      conditions.push(`tourPackage.City = :City`);
     }
-  
     if (Country) {
-      queryBuilder.andWhere('tourPackage.Country = :Country', { Country });
+      conditions.push(`tourPackage.Country = :Country`);
     }
-    const queryTime = new Date().getTime(); // record time taken by query building
-    const queryEndTime = new Date().getTime(); // record time taken by query execution
-  
-    const totalTime = queryEndTime - startTime; // calculate total time taken
-    const queryTimeTaken = queryEndTime - queryTime; // calculate time taken by query execution
-  
-    console.log(`Total time taken: ${totalTime} ms`);
-    console.log(`Time taken by query execution: ${queryTimeTaken} ms`);
+    if (conditions.length > 0) {
+      const whereClause = conditions.join(' OR ');
+      queryBuilder.andWhere(whereClause, { City, Country });
+    }
+    
     const packages = await queryBuilder.getMany();
+    for (const pack of packages) {
+      await pack.albumImages;
+      await pack.vistitedImages;
+      await pack.tourpackageplans;
+      await pack.exclusions;
+      await pack.installments;
+      await pack.PackageInclusions;
+      await pack.BookingPolicys;
+      await pack.highlights;
+      await pack.refundpolicys;
+    }
     return packages;
   }
+
+  // async GetTourpackageByDiffirentfield(TripType: string, City: string, StartDate: string, Country: string): Promise<Tourpackage[]> {
+  //   const startTime = new Date().getTime();
+  //   const [month, year] = StartDate.split(" ");
+  //   const startOfMonth = new Date(`${month} 1, ${year}`);
+  //   const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0);
+    
+  //   const queryBuilder =await this.TourpackageRepo.createQueryBuilder('tourPackage')
+  //     .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
+  //     .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
+  //     .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
+  //     .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourpackageplans')
+  //     .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
+  //     .leftJoinAndSelect('tourPackage.installments', 'installments')
+  //     .leftJoinAndSelect('tourPackage.PackageInclusions', 'PackageInclusions')
+  //     .leftJoinAndSelect('tourPackage.BookingPolicys', 'BookingPolicys')
+  //     .leftJoinAndSelect('tourPackage.highlights', 'highlights')
+  //     .leftJoinAndSelect('tourPackage.refundpolicys', 'refundpolicys')
+  //     .where('tourPackage.TripType = :TripType', { TripType })
+  //     .andWhere('tourPackage.StartDate >= :startOfMonth', { startOfMonth })
+  //     .andWhere('tourPackage.StartDate <= :endOfMonth', { endOfMonth });
+  
+  //   if (City) {
+  //     queryBuilder.andWhere('tourPackage.City = :City', { City });
+  //   }
+  
+  //   if (Country) {
+  //     queryBuilder.andWhere('tourPackage.Country = :Country', { Country });
+  //   }
+  //   const queryTime = new Date().getTime(); // record time taken by query building
+  //   const queryEndTime = new Date().getTime(); // record time taken by query execution
+  
+  //   const totalTime = queryEndTime - startTime; // calculate total time taken
+  //   const queryTimeTaken = queryEndTime - queryTime; // calculate time taken by query execution
+  
+  //   console.log(`Total time taken: ${totalTime} ms`);
+  //   console.log(`Time taken by query execution: ${queryTimeTaken} ms`);
+  //   const packages = await queryBuilder.getMany();
+  //   return packages;
+  // }
   
   
 

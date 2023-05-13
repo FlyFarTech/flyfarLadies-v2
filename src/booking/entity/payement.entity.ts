@@ -17,7 +17,8 @@ export class Payement{
      const randomNumber = parseInt(hash, 16) % maxValue;
      this.PayementId = `FFLP${randomNumber.toString().padStart(4, '0')}`;
    }
-
+  @Column()
+  tourPackageId:string
   @Column()
   uuid: string;
   @Column()

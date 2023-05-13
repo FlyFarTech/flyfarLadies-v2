@@ -21,6 +21,17 @@ export class BookingController {
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
 
+   @Post(':bookingId/confirm-with-installment')
+  async confirmBookingWithInstallment(
+    @Param('Bookingid') Bookingid:string,
+    uuid:string,
+    @Req() req: Request,
+    @Res() res: Response) { 
+    await this.bookingService.confirmBookingWithInstallment(Bookingid,uuid)
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
+  }
+
+
   @Patch(':Bookingid/confirmed')
   async Approvedbooking(
     @Param('Bookingid') Bookingid:string,

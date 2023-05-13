@@ -7,6 +7,7 @@ import { Booking, BookingStatus } from './entity/booking.entity';
 import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
+import { Payement } from './entity/payement.entity';
 var converter = require('number-to-words');
 
 @Injectable()
@@ -17,6 +18,8 @@ export class BookingService {
       private travelerRepository: Repository<Traveller>,
       @InjectRepository(Booking)
       private bookingRepository: Repository<Booking>,
+      @InjectRepository(Payement)
+      private PayementRepository: Repository<Payement>,
       @InjectRepository(User)
       private UserRepository: Repository<User>,
    ) {}
@@ -70,6 +73,47 @@ export class BookingService {
       return savebooking;
    
    }
+
+   async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
+    const booking = await this.bookingRepository.findOne({where:{Bookingid}})
+    const tourPackageId = booking.tourPackage.Id;
+    const installmentCount =(await booking.tourPackage.installments).length;
+    const installmentAmount = booking.TotalPrice / (await booking.tourPackage.installments).length;
+    const user = await this.UserRepository.findOne({where:{uuid}})
+  
+    if (user.Wallet < booking.TotalPrice) {
+      throw new Error('Insufficient funds in wallet.');
+    }
+  
+    const lastPayment = await this.PayementRepository.createQueryBuilder('payment')
+      .where('payment.userId = :uuid', { uuid })
+      .andWhere('payment.tourPackageId = :tourPackageId', { tourPackageId })
+      .orderBy('payment.installmentId', 'DESC')
+      .getOne();
+  
+    let nextInstallmentId = 1;
+    if (lastPayment) {
+      if (lastPayment.installmentId >= installmentCount) {
+        throw new Error('All installments have been paid for this booking.');
+      }
+      nextInstallmentId = lastPayment.installmentId + 1;
+    }
+  
+    for (let i = nextInstallmentId; i <= installmentCount; i++) {
+      user.Wallet -= installmentAmount;
+      const payment = new Payement();
+      payment.uuid = uuid;
+      payment.tourPackageId = tourPackageId;
+      payment.installmentId = i;
+      payment.amount = installmentAmount;
+      await this.PayementRepository.save(payment);
+    }
+    user.Wallet = Math.round(user.Wallet * 100) / 100;
+    await this.UserRepository.save(user);
+    booking.status =BookingStatus.APPROVED
+    await this.bookingRepository.save(booking);
+  }
+  
 
    async sendBookingDetailsToUser(booking: Booking,Email:string, travelers: Traveller[] ) {
       const { Bookingid, tourPackage, TotalPrice } = booking;

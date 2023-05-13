@@ -83,6 +83,8 @@ export class User{
    FaceBookId:string
    @IsNotEmpty()
    @Column({default:null})
+   @CreateDateColumn()
+   CreatedAt:Date
    WhatsApp:string
    @IsNotEmpty()
    @Column({default:null})
