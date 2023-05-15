@@ -1,30 +1,37 @@
 
+import { User } from 'src/userProfile/entitties/user.entity';
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity()
 export class Traveller {
    @PrimaryGeneratedColumn('uuid')
    TravellerId:string
-   @Column()   
+   @Column({default:null})   
    FirstName:string
-   @Column()
+   @Column({default:null})   
+   Title:string
+   @Column({default:null})
    LastName:string
-   @Column()
+   @Column({default:null})
    DOB:string
    @Column({nullable:true})
    Email: string
-   @Column()
+   @Column({default:null})
    Gender:string
-   @Column()
+   @Column({default:null})
    Price:number
-   @Column()
+   @Column({default:null})
    Nationality:string
-   @Column()
+   @Column({default:null})
    PassportNumber:string
-   @Column()
+   @Column({default:null})
    PassportExpireDate:string
-   @Column()
+   @Column({default:null})
+   PaxType:string
+   @Column({default:null})
    PassportCopyURL:string
+   @ManyToOne(() => User, (user) => user.travelers)
+   user:User;
    @CreateDateColumn()
    CreatedAt:Date
    @UpdateDateColumn()

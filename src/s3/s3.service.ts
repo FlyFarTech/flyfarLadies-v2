@@ -1,12 +1,16 @@
 import { AlbumImage } from './../tourpackage/entities/albumimage.entity';
 import { DeleteObjectCommand, PutObjectCommand, PutObjectCommandInput, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Blog } from 'src/blog/entities/blog.entity';
+import { Testimonial } from 'src/testimonial/entities/testimonial.entity';
 import { MainImage } from 'src/tourpackage/entities/mainimage.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { VisitedPlace } from 'src/tourpackage/entities/visitedplace.entity';
+import { User } from 'src/userProfile/entitties/user.entity';
 import { Repository } from 'typeorm';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class S3Service {
@@ -18,6 +22,9 @@ export class S3Service {
         @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
         @InjectRepository(MainImage) private MainImageeRepo: Repository<MainImage>,
         @InjectRepository(VisitedPlace) private VisitedPlaceRepo: Repository<VisitedPlace>,
+        @InjectRepository(User) private UserRepository: Repository<User>,
+        @InjectRepository(Blog) private blogRepository: Repository<Blog>,
+        @InjectRepository(Testimonial) private TestimonialRepository: Repository<Testimonial>,
         private ConfigService: ConfigService) {
         this.region = this.ConfigService.get<string>('DO_REGION') || 'sgp1';
         this.s3 = new S3Client({
@@ -33,14 +40,15 @@ export class S3Service {
 
     // Add image 
     async Addimage(file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME');
-        const key = file.originalname
+        const key =`${file.originalname}.webp`
         const input: PutObjectCommandInput = {
-            Body: file.buffer,
+            Body: imageBuffer,
             Bucket: bucket,
             Key: key,
             ACL: 'public-read',
-            ContentType: file.mimetype
+            ContentType: 'image/webp'
         }
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
@@ -57,7 +65,8 @@ export class S3Service {
 
     }
     // update cover image 
-    async updateImage(Id: number, file: Express.Multer.File) {
+    async updateImage(Id: string, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
         if (tourpackage.coverimageurl) {
@@ -67,15 +76,15 @@ export class S3Service {
                 Key: coverimageurl
             }))
         }
-        const key = file.originalname
+         const key =`${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -92,8 +101,133 @@ export class S3Service {
 
 
     }
+    
+    // update cover image 
+     async updateImageuserphotos(uuid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const user = await this.UserRepository.findOneBy({uuid})
+        const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
+        if (user.PassportsizephotoUrl) {
+            const PassportsizephotoUrl = user.PassportsizephotoUrl.split('/').pop();
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: bucket,
+                Key: PassportsizephotoUrl
+            }))
+        }
+        const key =`${uuid}/${file.originalname}.webp`
+       
+        try {
+            const response: PutObjectCommandOutput = await this.s3.send(
+                new PutObjectCommand({
+                    Body: imageBuffer,
+                    Bucket: bucket,
+                    Key: key,
+                    ACL: 'public-read',
+                    ContentType: 'image/webp'
+                }),
+            );
+            if (response.$metadata.httpStatusCode === 200) {
+                return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
 
-    async updateAlbumImage(Id: number, AlbumId: number, file: Express.Multer.File) {
+            }
+            throw new Error("image not update in digital ocean s3")
+        }
+        catch (err) {
+            this.logger.error("cannot save file inside s3 spacebucket", err);
+            throw err;
+        }
+
+    }
+
+    // update cover image 
+    async updateBlogIMages(blogid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const blog = await this.blogRepository.findOneBy({blogid})
+        const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
+        if (blog.blogimages) {
+            const Image1 = blog.blogimages[0].split('/').pop();
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: bucket,
+                Key: Image1
+            }))
+        }
+        const key =`${blogid}/${file.originalname}.webp`
+       
+        try {
+            const response: PutObjectCommandOutput = await this.s3.send(
+                new PutObjectCommand({
+                    Body: imageBuffer,
+                    Bucket: bucket,
+                    Key: key,
+                    ACL: 'public-read',
+                    ContentType: 'image/webp'
+                }),
+            );
+            if (response.$metadata.httpStatusCode === 200) {
+                return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+
+            }
+            throw new Error("image not update in digital ocean s3")
+        }
+        catch (err) {
+            this.logger.error("cannot save file inside s3 spacebucket", err);
+            throw err;
+        }
+
+    }
+
+
+      // update cover image 
+      async updatetestumonialIMages(testid: string, file:Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const blog = await this.TestimonialRepository.findOneBy({testid})
+        const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
+        if (blog.testimonialimages || blog.ClientImage) {
+            const testimonialimages = blog.testimonialimages[0].split('/').pop();
+            const ClientImage =blog.ClientImage.split('/').pop();
+            await this.s3.send(new DeleteObjectCommand({
+                Bucket: bucket,
+                Key: testimonialimages||ClientImage
+            }))
+        }
+        const key =`${testid}/${file.originalname}.webp`
+       
+        try {
+            const response: PutObjectCommandOutput = await this.s3.send(
+                new PutObjectCommand({
+                    Body: imageBuffer,
+                    Bucket: bucket,
+                    Key: key,
+                    ACL: 'public-read',
+                    ContentType: 'image/webp'
+                }),
+            );
+            if (response.$metadata.httpStatusCode === 200) {
+                return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+
+            }
+            throw new Error("image not update in digital ocean s3")
+        }
+        catch (err) {
+            this.logger.error("cannot save file inside s3 spacebucket", err);
+            throw err;
+        }
+
+    }
+
+
+
+    async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -104,7 +238,7 @@ export class S3Service {
         const albummage = await this.AlbumimageRepo.findOneBy({ AlbumId })
         if (!albummage) {
             throw new HttpException(
-                `albummage not found with this id=${Id}`,
+                `albummage not found with this id=${AlbumId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -116,15 +250,15 @@ export class S3Service {
                 Key: albumImageUrl
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -142,7 +276,8 @@ export class S3Service {
 
     }
 
-    async updateMainImage(Id: number, mainimgId: number, file: Express.Multer.File) {
+    async updateMainImage(Id: string, mainimgId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -153,7 +288,7 @@ export class S3Service {
         const mainImage = await this.MainImageeRepo.findOneBy({ mainimgId })
         if (!mainImage) {
             throw new HttpException(
-                `mainImage not found with this id=${Id}`,
+                `mainImage not found with this id=${mainimgId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -165,15 +300,15 @@ export class S3Service {
                 Key: MainImageUrl
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {
@@ -191,8 +326,8 @@ export class S3Service {
 
     }
 
-
-    async updatevisitedImage(Id: number, VimageId: number, file: Express.Multer.File) {
+    async updatevisitedImage(Id: string, VimageId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
         const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
         if (!tourpackage) {
             throw new HttpException(
@@ -203,7 +338,7 @@ export class S3Service {
         const VisitedImage = await this.VisitedPlaceRepo.findOneBy({ VimageId })
         if (!VisitedImage) {
             throw new HttpException(
-                `VisitedImage not found with this id=${Id}`,
+                `VisitedImage not found with this id=${VimageId}`,
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -215,15 +350,15 @@ export class S3Service {
                 Key: VisitedImagePath
             }))
         }
-        const key = file.originalname
+        const key = `${file.originalname}.webp`
         try {
             const response: PutObjectCommandOutput = await this.s3.send(
                 new PutObjectCommand({
-                    Body: file.buffer,
+                    Body: imageBuffer,
                     Bucket: bucket,
                     Key: key,
                     ACL: 'public-read',
-                    ContentType: file.mimetype
+                    ContentType: 'image/webp'
                 }),
             );
             if (response.$metadata.httpStatusCode === 200) {

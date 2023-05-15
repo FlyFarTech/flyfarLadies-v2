@@ -1,20 +1,16 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 
-
 @Entity()
-export class Cash{
+export class socialimageenity{
    @PrimaryGeneratedColumn('uuid')
-   id:string
+   iconid:string
    @Column()
-   Name:string
+   Logo:string
    @Column()
-   ReceiverName:string
+   facebookIcon:string
    @Column()
-   Reference:string
+   linkedinIcon:string
    @Column()
-   Amount:number
-   @Column()
-   cashattachmenturl:string
-
+   whatsappIcon:string
 }

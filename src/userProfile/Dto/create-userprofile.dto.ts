@@ -10,6 +10,7 @@ export class CreateUserProfileDto{
    Profession:string
    Nationality:string
    NID:string
+   CreatedAt:string
    Mobile:string
    Address:string
    PassportNumber:string

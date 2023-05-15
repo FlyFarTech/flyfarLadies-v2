@@ -4,9 +4,9 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 // SSH into the remote server using SSH Agent
-                sshagent(['api_ladies']) {
+                sshagent(['api_ladies_new']) {
                     // Run docker-compose up command to build and start Docker containers
-                    sh 'ssh root@192.241.145.76 "cd /www/wwwroot/2ndvolume/api.flyfarladies.com && bash flyfar_ladies.sh"'
+                    sh 'ssh root@159.89.238.24 "cd /www/wwwroot/api.flyfarladies.com && bash flyfar_ladies.sh"'
                 }
             }
         }

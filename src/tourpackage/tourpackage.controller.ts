@@ -1,8 +1,7 @@
 
 import { CreateInstallmentDto } from './dto/create-installment.dto';
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, ParseIntPipe, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
 import { TourpackageService } from './tourpackage.service';
-import { UpdateTourpackageDto } from './dto/update-tourpackage.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { Tourpackage } from './entities/tourpackage.entity';
@@ -25,6 +24,13 @@ import { MainImage } from './entities/mainimage.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import { updateinstallmentdto } from './dto/update-installmentDto';
+import { Installment } from './entities/installment.entity';
+import { refundpolicy } from './entities/refundpolicy.entity';
+import { bookingpolicy } from './entities/bookingpolicy.entity';
+import { packagehighlight } from './entities/packagehighlight.entity';
+import { packageexcluions } from './entities/packageexclsuions.entity';
+import { tourpackageplan } from './entities/tourpackageplan.entity';
+import { Packageinclusion } from './entities/packageInclusion.entitry';
 
 @Controller('tourpackage')
 export class TourpackageController {
@@ -33,8 +39,28 @@ export class TourpackageController {
     @InjectRepository(MainImage) private MainImageRepo: Repository<MainImage>,
     @InjectRepository(AlbumImage) private AlbumimageRepo: Repository<AlbumImage>,
     @InjectRepository(VisitedPlace) private visitedplaceRepo: Repository<VisitedPlace>,
+
+    @InjectRepository(Packageinclusion)
+    private packageInclusionRepo: Repository<Packageinclusion>,
+    @InjectRepository(tourpackageplan)
+    private tourpackagePlanRepo: Repository<tourpackageplan>,
+    @InjectRepository(packageexcluions)
+    private packageexcluionsRepo: Repository<packageexcluions>,
+    @InjectRepository(packagehighlight)
+    private packageHighlightRepo: Repository<packagehighlight>,
+    @InjectRepository(bookingpolicy)
+    private bookingPolicyRepo: Repository<bookingpolicy>,
+    @InjectRepository(refundpolicy)
+    private refundPolicyRepo: Repository<refundpolicy>,
+    @InjectRepository(Installment)
+    private InstallmentRepo: Repository<Installment>,
+    @InjectRepository(AlbumImage)
+    private AlbumImageRepo: Repository<AlbumImage>,
+    @InjectRepository(VisitedPlace)
+    private visitedImageRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
     private s3service: S3Service) {}
+  
   @Post('Addpackage')
   @UseInterceptors(
     FileInterceptor('coverimageurl'),
@@ -68,23 +94,49 @@ export class TourpackageController {
     tourpackage.Hotel = Hotel
     tourpackage.Country = Country
     await this.TourpackageRepo.save(tourpackage)
-    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully", })
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package added successfully",Id:tourpackage.Id })
 }
 
 
-  
+
+
+
+
+async AddNewInstallment(Id: string, CreateInstallmentDto:CreateInstallmentDto[]){
+  const tourpackage = await this.TourpackageRepo.findOneBy({Id})
+  if (!tourpackage) {
+    throw new HttpException(
+      "TourPackage not found",
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+  const createinstallment: Installment[] =[];
+  for(const createinstallmentdto of CreateInstallmentDto){
+  const installment = await this.InstallmentRepo.create({...createinstallmentdto,tourpackage})
+  const createdinstallment =await this.InstallmentRepo.save(installment)
+  createinstallment.push(createdinstallment);
+  }
+  return createinstallment
+
+}
+
+
+
+
+
+
 @Get('AllPackage')
 async findAll(@Res() res: Response) {
     const allTourPackages = await this.tourpackageService.FindAllPackages(); // Use camelCase for variable names
     return res.status(HttpStatus.OK).json({ allTourPackages }); // Use camelCase for variable names
 }
 
-@Get(':id')
-async findOne(@Param('id') id: string) {
-    const getTourPackage = await this.tourpackageService.findOne(+id); // Use camelCase for variable names
+@Get(':Id')
+async findOne(@Param('Id: string') Id: string) {
+    const getTourPackage = await this.tourpackageService.findOne(Id); // Use camelCase for variable names
     if (!getTourPackage) {
         throw new HttpException(
-            `TourPackage not found with this id=${id}`,
+            `TourPackage not found with this id=${Id}`,
             HttpStatus.BAD_REQUEST,
         );
     }
@@ -107,32 +159,13 @@ async getTourPackages(
     return this.tourpackageService.GetTourpackageByDiffirentfield(TripType, City, StartDate, Country); // Use camelCase for variable names
 }
 
-@Patch(':id')
-async update(
-    @Param('id') id: number,
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() updateTourPackageDto: UpdateTourpackageDto,
-) {
-    const updatePackage = await this.tourpackageService.updatePackage(+id, updateTourPackageDto); // Use camelCase for variable names
-    if (!updatePackage) {
-        throw new HttpException(
-            `TourPackage not found with this id=${id}`,
-            HttpStatus.BAD_REQUEST,
-        );
-    }
-    return res.status(HttpStatus.OK).json({
-        status: 'success',
-        message: `Tour Package has been updated successfully`,
-    });
-}
 
 
   @Patch('updateimage/:Id')
   @UseInterceptors( FileInterceptor('coverimageurl'))
   async updateImageUrl(
     @UploadedFile() file: Express.Multer.File,
-    @Param('Id') Id: number,
+    @Param('Id') Id: string,
     @Body() bodyParser,
     @Req() req: Request,
     @Res() res: Response,
@@ -149,7 +182,7 @@ async update(
 
   @Post(':Id/addinstallment')
   async createInstallment(
-    @Param('Id') Id: number,
+    @Param('Id') Id: string,
     @Res() res: Response,
     @Body() installmentDto:CreateInstallmentDto[]
   ) {
@@ -158,13 +191,13 @@ async update(
   }
 
 
-  @Get(':id/getinstallment/:InstallmentId')
+  @Get(':Id/getinstallment/:InstallmentId')
   async GetInstallment(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('InstallmentId') InstallmentId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const installment = await this.tourpackageService.FindInstallment(id, InstallmentId)
+    const installment = await this.tourpackageService.FindInstallment(Id, InstallmentId)
     return res.status(HttpStatus.OK).json({
       status: "success", installment
     });
@@ -172,41 +205,44 @@ async update(
 
 
     // update booking policy  
-    @Patch(':id/updateinstallment/:InstallmentId')
+    @Patch(':Id/updateinstallment/:InstallmentId')
     async updateInstallment(
-      @Param('id') id: number,
+      @Param('Id') Id: string,
       @Param('InstallmentId') InstallmentId: number,
       @Body() updateinstall: updateinstallmentdto,
       @Req() req: Request,
       @Res() res: Response,
     ) {
-      await this.tourpackageService.updateInstallment(id, InstallmentId, updateinstall)
+      await this.tourpackageService.updateInstallment(Id, InstallmentId, updateinstall)
       return res.status(HttpStatus.OK).json({
         status: "success",
         message: `installment updated successfully`,
       });
     }
+
+
+
   
 
-    @Delete(':id/Installment/:InstallmentId')
+    @Delete(':Id/Installment/:InstallmentId')
   async DeleteInstallment(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('InstallmentId') InstallmentId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleteInstallment(id, InstallmentId)
+    await this.tourpackageService.DeleteInstallment(Id, InstallmentId)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `Installment has deleted successfully`,
     });
   }
 
-  @Delete(':id')
+  @Delete(':Id')
   async remove(
-    @Param('id') id: string,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.remove(+id);
+    await this.tourpackageService.remove(Id);
     return res.status(HttpStatus.OK).send({ status: "success", message: "Travel package deleted succesfully" })
   }
 
@@ -218,20 +254,9 @@ async update(
     FilesInterceptor('MainImageUrl', 20)
   )
   async AddmainImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: number,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,
@@ -259,16 +284,15 @@ async update(
 
 
   // add booking policy
-  @Post(':id/AddBookingPolicy')
+  @Post(':Id/AddBookingPolicy')
   addTourPackageBookingPolicy(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('Id') Id: string,
     @Body() bookingpolicydto: CreateBookingPolicyDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
-
     this.tourpackageService.createbookingPolicy(
-      id,
+      Id,
       bookingpolicydto,
     );
     return res.status(HttpStatus.OK).json({
@@ -277,13 +301,13 @@ async update(
     });
   }
 
-  @Get(':id/getpolicy/:BkId')
+  @Get(':Id/getpolicy/:BkId')
   async getsingleBookingPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('BkId') BkId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const bookingpolicy = await this.tourpackageService.FindbookingPolicy(id, BkId)
+    const bookingpolicy = await this.tourpackageService.FindbookingPolicy(Id, BkId)
     return res.status(HttpStatus.OK).json({
       status: "success", bookingpolicy
     });
@@ -292,28 +316,28 @@ async update(
 
 
   // update booking policy  
-  @Patch(':id/updatepolicy/:BkId')
+  @Patch(':Id/updatepolicy/:BkId')
   async updateBookingPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('BkId') BkId: number,
     @Body() updatebookingpolicyDto: updateBookingPolicyDto,
     req: Request,
     @Res() res: Response,
   ) {
-    const updatebooking = await this.tourpackageService.updateBookingolicy(id, BkId, updatebookingpolicyDto)
+    const updatebooking = await this.tourpackageService.updateBookingolicy(Id, BkId, updatebookingpolicyDto)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `Booking policy updated successfully`,
     });
   }
 
-  @Delete(':id/deletepolicy/:BkId')
+  @Delete(':Id/deletepolicy/:BkId')
   async DeleteBookingPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('BkId') BkId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeletebookingPolicy(id, BkId)
+    await this.tourpackageService.DeletebookingPolicy(Id, BkId)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `booking policy deleted successfully`,
@@ -323,15 +347,15 @@ async update(
   // booking policy end
   // refund policy start
 
-  @Post(':id/AddrefundPolicy')
+  @Post(':Id/AddrefundPolicy')
   async addrefundPolicy(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('Id') Id: string,
     @Body() refundpolicydto: createRefundPolicyDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
     await this.tourpackageService.AddRefundPolicy(
-      id,
+      Id,
       refundpolicydto,
     );
     return res.status(HttpStatus.OK).json({
@@ -341,26 +365,26 @@ async update(
   }
 
   // get refund policy
-  @Get(':id/getrefundpolicy/:RId')
+  @Get(':Id/getrefundpolicy/:RId')
   async getsinglerefundPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('RId') RId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const refundpolicy = await this.tourpackageService.FindRefundPolicy(id, RId)
+    const refundpolicy = await this.tourpackageService.FindRefundPolicy(Id, RId)
     return res.status(HttpStatus.OK).json({ refundpolicy });
   }
 
   // update refund policy  
-  @Patch(':id/updateRefundpolicy/:RId')
+  @Patch(':Id/updateRefundpolicy/:RId')
   async updateRefundPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('RId') RId: number,
     @Body() updateRefundlicyDto: UpdateRefundPolicy,
     req: Request,
     @Res() res: Response,
   ) {
-    const updaterefund = await this.tourpackageService.updateRefundolicy(id, RId, updateRefundlicyDto)
+    const updaterefund = await this.tourpackageService.updateRefundolicy(Id, RId, updateRefundlicyDto)
     return res.status(HttpStatus.OK).json({
       status: "success",
     });
@@ -368,13 +392,13 @@ async update(
 
 
   // delete refund policy
-  @Delete(':id/deleteRefundpolicy/:RId')
+  @Delete(':Id/deleteRefundpolicy/:RId')
   async DeleteRefundPolicy(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('RId') RId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleterefundPolicy(id, RId)
+    await this.tourpackageService.DeleterefundPolicy(Id, RId)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `refund policy Id=${RId} has deleted successfully`,
@@ -385,15 +409,15 @@ async update(
   // Inclusions  start
 
   // add inclsuions
-  @Post(':id/AddPackageInclusions')
+  @Post(':Id/AddPackageInclusions')
   async addInclusion(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('Id') Id: string,
     @Body() Inclusionsdto: createpackageincluionDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
     await this.tourpackageService.AddInclusions(
-      id,
+      Id,
       Inclusionsdto,
     );
     return res.status(HttpStatus.OK).json({
@@ -404,13 +428,13 @@ async update(
 
   // get Singel Inclsuions
 
-  @Get(':id/getinclsuions/:InId')
+  @Get(':Id/getinclsuions/:InId')
   async getsingleInclsuions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('InId') InId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const inclsuions = await this.tourpackageService.FindInclsuions(id, InId)
+    const inclsuions = await this.tourpackageService.FindInclsuions(Id, InId)
     return res.status(HttpStatus.OK).json({
       inclsuions
     });
@@ -418,15 +442,15 @@ async update(
 
 
   // update refund policy  
-  @Patch(':id/updateInclsuions/:InId')
+  @Patch(':Id/updateInclsuions/:InId')
   async updateInclsuions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('InId') InId: number,
     @Body() updateInclusionsDto: updatepackageInclusionDto,
     req: Request,
     @Res() res: Response,
   ) {
-    const updateInclsuions = await this.tourpackageService.updateInclusions(id, InId, updateInclusionsDto)
+    const updateInclsuions = await this.tourpackageService.updateInclusions(Id, InId, updateInclusionsDto)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `Inclsuions with Id=${InId} has updated successfully`,
@@ -436,13 +460,13 @@ async update(
 
 
   // delete Inclsuions
-  @Delete(':id/deleteinclusions/:InId')
+  @Delete(':Id/deleteinclusions/:InId')
   async DeleteExcluions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('InId') InId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleteInclusion(id, InId)
+    await this.tourpackageService.DeleteInclusion(Id, InId)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `Inclusion has deleted successfully`,
@@ -452,13 +476,13 @@ async update(
   //End refund policy
 
 
-  @Get(':id/FindAlbum/:AlbumTitle')
+  @Get(':Id/FindAlbum/:AlbumTitle')
   async getAllBumImage(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('AlbumTitle') AlbumTitle: string,
     @Req() req: Request,
     @Res() res: Response) {
-    const Albumimages = await this.tourpackageService.FindAlbum(id, AlbumTitle)
+    const Albumimages = await this.tourpackageService.FindAlbum(Id, AlbumTitle)
     return res.status(HttpStatus.OK).json({
       Albumimages,
     });
@@ -469,7 +493,7 @@ async update(
   async updateAlbumImageUrl(
     @UploadedFiles()
     files:Express.Multer.File[],
-    @Param('Id') Id: number,
+    @Param('Id') Id: string,
     @Param('AlbumId') AlbumId:number,
     @Body() bodyParser,
     @Req() req: Request,
@@ -499,7 +523,7 @@ async update(
   async updateMainImageUrl(
     @UploadedFiles()
     files:Express.Multer.File[],
-    @Param('Id') Id: number,
+    @Param('Id') Id: string,
     @Param('mainimgId') mainimgId:number,
     @Body() bodyParser,
     @Req() req: Request,
@@ -530,7 +554,7 @@ async update(
   async updateVistedImageUrl(
     @UploadedFiles()
     files:Express.Multer.File[],
-    @Param('Id') Id: number,
+    @Param('Id') Id: string,
     @Param('VimageId') VimageId:number,
     @Body() bodyParser,
     @Req() req: Request,
@@ -554,24 +578,24 @@ async update(
     });
   }
 
-  @Get(':id/allalbumimage')
+  @Get(':Id/allalbumimage')
   async getAllAlbumImage(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response) {
-    const AllAlbumimages = await this.tourpackageService.FindAllAlbum(id)
+    const AllAlbumimages = await this.tourpackageService.FindAllAlbum(Id)
     return res.status(HttpStatus.OK).json({
       AllAlbumimages,
     });
   }
 
-  @Get(':id/Allmainimage')
+  @Get(':Id/Allmainimage')
   async getAllmainImage(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
 
     @Req() req: Request,
     @Res() res: Response) {
-    const AllMainImage = await this.tourpackageService.AllMainImage(id)
+    const AllMainImage = await this.tourpackageService.AllMainImage(Id)
     return res.status(HttpStatus.OK).json({
       AllMainImage,
     });
@@ -582,20 +606,9 @@ async update(
     FilesInterceptor('albumImageUrl',20)
   )
   async AddalbumImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: number,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,
@@ -627,20 +640,9 @@ async update(
     FilesInterceptor('VisitedImagePath',20)
   )
   async AddvistitedImages(
-    @UploadedFiles(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'webp',
-        })
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 * 6,
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+    @UploadedFiles()
     files: Express.Multer.File[],
-    @Param('Id', ParseIntPipe) Id: number,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response,
     @Body() body,
@@ -664,12 +666,12 @@ async update(
   }
 
 
-  @Get(':id/visitedImage/getAllvisitedImage')
+  @Get(':Id/visitedImage/getAllvisitedImage')
   async getAllvisitedImage(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Req() req: Request,
     @Res() res: Response) {
-    const visitedImage = await this.tourpackageService.FindAllvisitedImage(id)
+    const visitedImage = await this.tourpackageService.FindAllvisitedImage(Id)
     return res.status(HttpStatus.OK).json({
       visitedImage
     });
@@ -678,15 +680,15 @@ async update(
 
   /// add tour package 
 
-  @Post(':id/AddTourPackagePlan')
-  addTourPackagePlan(
-    @Param('id', ParseIntPipe) id: number,
+  @Post(':Id/AddTourPackagePlan')
+   async addTourPackagePlan(
+    @Param('Id') Id: string,
     @Body() tourpackagePlandto: CreateTourPackagePlanDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const tourpackageplan = this.tourpackageService.AddTourpackagePlan(
-      id,
+     await this.tourpackageService.AddTourpackagePlan(
+      Id,
       tourpackagePlandto,
     );
     return res.status(HttpStatus.OK).json({
@@ -696,27 +698,27 @@ async update(
   }
 
 
-  @Get(':id/tourplan/:dayId')
+  @Get(':Id/tourplan/:dayId')
   async getdayplan(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('dayId') dayId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const tourplan = await this.tourpackageService.Finddayplan(id, dayId)
+    const tourplan = await this.tourpackageService.Finddayplan(Id, dayId)
     return res.status(HttpStatus.OK).json({ tourplan });
   }
 
   //update package exclsuions
 
-  @Patch(':id/updateplan/:dayId')
+  @Patch(':Id/updateplan/:dayId')
   async updatePackageplan(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('dayId') dayId: number,
     @Body() updatedayplanDto: updateTourPackagePlanDto,
     req: Request,
     @Res() res: Response,
   ) {
-    const updatedayplan = await this.tourpackageService.updatedayplan(id, dayId, updatedayplanDto)
+    const updatedayplan = await this.tourpackageService.updatedayplan(Id, dayId, updatedayplanDto)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `dayplan with Id=${dayId} has updated successfully`,
@@ -726,13 +728,13 @@ async update(
 
 
   // delete excluions
-  @Delete(':id/deletedayplan/:dayId')
+  @Delete(':Id/deletedayplan/:dayId')
   async DeleteDay(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('dayId') dayId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleteIdayplan(id, dayId)
+    await this.tourpackageService.Deleteayplan(Id, dayId)
     return res.status(HttpStatus.OK).json({
       message: `dayplan Id=${dayId} has deleted successfully`,
     });
@@ -741,15 +743,15 @@ async update(
 
 
   /// addd package excluions
-  @Post(':id/AddTourPackageExclusions')
+  @Post(':Id/AddTourPackageExclusions')
   async addTourPackageExclusions(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('Id') Id: string,
     @Body() packageexcluionsdto: CreatepackageExclsuionsDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
     const exclsuions = await this.tourpackageService.AddpackageExclsuions(
-      id,
+      Id,
       packageexcluionsdto,
     );
     return res.status(HttpStatus.OK).send({
@@ -759,13 +761,13 @@ async update(
 
   // get package exclsuions
 
-  @Get(':id/Exclsuions/:ExId')
+  @Get(':Id/Exclsuions/:ExId')
   async getPackageExclsuions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('ExId') ExId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const exclsuions = await this.tourpackageService.FindExclsuions(id, ExId)
+    const exclsuions = await this.tourpackageService.FindExclsuions(Id, ExId)
     return res.status(HttpStatus.OK).json({
       exclsuions
     });
@@ -775,15 +777,15 @@ async update(
 
 
 
-  @Patch(':id/updateExclsuions/:ExId')
+  @Patch(':Id/updateExclsuions/:ExId')
   async updateExlsuions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('ExId') ExId: number,
     @Body() updateExclusionsDto: updatepackageExclusionsDto,
     req: Request,
     @Res() res: Response,
   ) {
-    const updateexlsuions = await this.tourpackageService.updateExclusions(id, ExId, updateExclusionsDto)
+    const updateexlsuions = await this.tourpackageService.updateExclusions(Id, ExId, updateExclusionsDto)
     return res.status(HttpStatus.OK).json({
       message: `Exclsuions with Id=${ExId} has updated successfully`,
       updateexlsuions,
@@ -793,13 +795,13 @@ async update(
 
   // delete excluions
 
-  @Delete(':id/deleteExclusions/:ExId')
+  @Delete(':Id/deleteExclusions/:ExId')
   async DeleteIncluions(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('ExId') ExId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleteIExclusion(id, ExId)
+    await this.tourpackageService.DeleteIExclusion(Id, ExId)
     return res.status(HttpStatus.OK).json({
       message: `Exclusion Id=${ExId} has deleted successfully`,
     });
@@ -813,15 +815,15 @@ async update(
   // start package highlight............
 
   // add tour package highlight
-  @Post(':id/AddTourPackageHighlight')
+  @Post(':Id/AddTourPackageHighlight')
   addTourPackageHighlight(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('Id') Id: string,
     @Body() packageHighlightdto: CreatePackageHighlightDto[],
     @Req() req: Request,
     @Res() res: Response,
   ) {
     const tourpackagehighlight = this.tourpackageService.AddPackageHighlight(
-      id,
+      Id,
       packageHighlightdto,
     );
     return res.status(HttpStatus.OK).json({
@@ -833,13 +835,13 @@ async update(
 
 
 
-  @Get(':id/getHighlight/:HiId')
+  @Get(':Id/getHighlight/:HiId')
   async getPackageHighlight(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('HiId') HiId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    const Highlight = await this.tourpackageService.FindHighlight(id, HiId)
+    const Highlight = await this.tourpackageService.FindHighlight(Id, HiId)
     return res.status(HttpStatus.OK).json({
       Highlight
     });
@@ -849,15 +851,15 @@ async update(
 
 
 
-  @Patch(':id/updateHighlight/:HiId')
+  @Patch(':Id/updateHighlight/:HiId')
   async updateHiId(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('HiId') HiId: number,
     @Body() updatehighlightDto: UpdatepackageHighlightDto,
     req: Request,
     @Res() res: Response,
   ) {
-    const updateHighlight = await this.tourpackageService.updateHighlight(id, HiId, updatehighlightDto)
+    const updateHighlight = await this.tourpackageService.updateHighlight(Id, HiId, updatehighlightDto)
     return res.status(HttpStatus.OK).json({
       status: "success",
       message: `Highlight with Id ${HiId} has updated successfully`
@@ -866,13 +868,13 @@ async update(
 
   // delete Highlight
 
-  @Delete(':id/DeleteHighlight/:HiId')
+  @Delete(':Id/DeleteHighlight/:HiId')
   async DeleteHighlight(
-    @Param('id') id: number,
+    @Param('Id') Id: string,
     @Param('HiId') HiId: number,
     @Req() req: Request,
     @Res() res: Response) {
-    await this.tourpackageService.DeleteHighlight(id, HiId)
+    await this.tourpackageService.DeleteHighlight(Id, HiId)
     return res.status(HttpStatus.OK).json({
       message: `Highlight Id ${HiId} has deleted successfully`,
     });

@@ -9,7 +9,7 @@ export class packageexcluions {
   @PrimaryGeneratedColumn()
   ExId: number
   @IsNotEmpty()
-  @Column()
+  @Column({length: 1000})
   PackageExclusions: string;
   @ManyToOne(() => Tourpackage, (tourpackages) => tourpackages.exclusions)
   @JoinColumn({ name: 'exclsuionId' })

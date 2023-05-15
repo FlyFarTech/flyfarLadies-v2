@@ -7,6 +7,7 @@ export class CreateBookingDto {
   @IsNotEmpty()
   @IsString()
   bookingId: string;
+  userid:string
 
   @IsNotEmpty()
   @IsNumber()

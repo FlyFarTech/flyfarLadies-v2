@@ -1,6 +1,4 @@
-
 import { ConfigModule } from '@nestjs/config';
-import { Userprofile } from './userProfile/entitties/userprofile.entities';
 import { Tourpackage } from './tourpackage/entities/tourpackage.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -25,31 +23,41 @@ import { S3Module } from './s3/s3.module';
 import { Installment } from './tourpackage/entities/installment.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entity/booking.entity';
-import { DepositModule } from './deposit_request/deposit.module';
-import { Cheque } from './deposit_request/Entity/cheq.entity';
-import { Cash } from './deposit_request/Entity/cash.entity';
-import { BankTransfer } from './deposit_request/Entity/BankTransfer.entity';
-import { CardPayment } from './deposit_request/Entity/Cardpayment.entity';
-import { Bkash } from './deposit_request/Entity/Bkash.entity';
-import { MobileBanking } from './deposit_request/Entity/MobileBanking.entity';
-import { User } from './userProfile/entitties/user-login.entity';
-
+import { User } from './userProfile/entitties/user.entity';
+import { Cheque } from './userProfile/entitties/cheq.entity';
+import { Cash } from './userProfile/entitties/cash.entity';
+import { BankTransfer } from './userProfile/entitties/BankTransfer.entity';
+import { CardPayment } from './userProfile/entitties/Cardpayment.entity';
+import { Bkash } from './userProfile/entitties/Bkash.entity';
+import { MobileBanking } from './userProfile/entitties/MobileBanking.enity';
+import { socialimageenity } from './userProfile/entitties/socialimages.entity';
+import { BlogModule } from './blog/blog.module';
+import { Blog } from './blog/entities/blog.entity';
+import { TestimonialModule } from './testimonial/testimonial.module';
+import { Testimonial } from './testimonial/entities/testimonial.entity';
+import { PressCoverages } from './blog/entities/press.entity';
+import { Payement } from './booking/entity/payement.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      // username:"flyfarladies",
-      // password: "F3r2r28AsiFzW8Ke",
-      // host: "192.241.145.76",
-      // database:"flyfarladies",
+      username:"flyfarin_fflv2",
+      password: "123Next2$",
+      host: "flyfarint.com",
+      database:"flyfarin_fflv2",
 
-      username:process.env.LOCAL_USERNAME,
-      password: process.env.LOCAL_PASSWORD,
-      host : process.env.LOCAL_HOST,
-      database:process.env.LOCAL_DATABASE,
+      // username:process.env.LOCAL_USERNAME,
+      // password: process.env.LOCAL_PASSWORD,
+      // host : process.env.LOCAL_HOST,
+      // database:process.env.LOCAL_DATABASE,
+
       port:3306,
       entities: [Admin,
+        Payement,
+        PressCoverages,
+        Testimonial,
+        Blog,
         User,
         Cheque,
         Cash,
@@ -66,11 +74,11 @@ import { User } from './userProfile/entitties/user-login.entity';
         packagehighlight,
         bookingpolicy,
         VisitedPlace,
-        Userprofile,
         Traveller,
         refundpolicy,
         Installment,
-        Booking
+        Booking,
+        socialimageenity,
       ],
       synchronize:false
     }),
@@ -81,26 +89,10 @@ import { User } from './userProfile/entitties/user-login.entity';
     S3Module,
     ConfigModule,
     BookingModule,
-    DepositModule,
+    BlogModule,
+    TestimonialModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
-
-
-
-
-
-// username: "flyfarladies",
-// password: "AVNS_QLR4Y0JJtHk78Qibmst",
-// host : "db-mysql-nyc1-93583-do-user-11130883-0.b.db.ondigitalocean.com",
-// port:25060,
-// database:"flyfarladies" ,
-
-
-// username: "root",
-// password: "",
-// host : "127.0.0.1",
-// port:3306,
-// database:"flyfar-ladies" ,
