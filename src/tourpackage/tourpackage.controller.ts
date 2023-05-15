@@ -2,7 +2,6 @@
 import { CreateInstallmentDto } from './dto/create-installment.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, ParseFilePipeBuilder, HttpStatus, Req, Res, ParseFilePipe, FileTypeValidator, HttpException, Logger, UploadedFile, Query, Put } from '@nestjs/common';
 import { TourpackageService } from './tourpackage.service';
-import { UpdateTourpackageDto } from './dto/update-tourpackage.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { Tourpackage } from './entities/tourpackage.entity';

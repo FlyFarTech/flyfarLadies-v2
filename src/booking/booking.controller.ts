@@ -28,7 +28,7 @@ export class BookingController {
     @Req() req: Request,
     @Res() res: Response) { 
     await this.bookingService.confirmBookingWithInstallment(Bookingid,uuid)
-    return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
+    return res.status(HttpStatus.OK).send({ status: "success", message: "Payment Successfull sucessfull"})
   }
 
 

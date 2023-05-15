@@ -80,7 +80,7 @@ import { Payement } from './booking/entity/payement.entity';
         Booking,
         socialimageenity,
       ],
-      synchronize:true
+      synchronize:false
     }),
     UserModule,
     TourpackageModule,

@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { S3Service } from 'src/s3/s3.service';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
-import { User } from 'src/userProfile/entitties/user.entity';
 import { PressCoverages } from './entities/press.entity';
 
 @Controller('blog')

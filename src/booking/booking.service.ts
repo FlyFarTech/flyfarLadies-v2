@@ -66,6 +66,7 @@ export class BookingService {
          LinkedIn:userprofile.LinkedIn,
          MainTitle:tourPackage.MainTitle,
          SubTitle:tourPackage.SubTitle,
+         packageId:tourPackage.Id,
          userid:userprofile.uuid
       })
       const savebooking= await this.bookingRepository.save(newbooking)
@@ -76,17 +77,16 @@ export class BookingService {
 
    async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
     const booking = await this.bookingRepository.findOne({where:{Bookingid}})
-    const tourPackageId = booking.tourPackage.Id;
-    const installmentCount =(await booking.tourPackage.installments).length;
-    const installmentAmount = booking.TotalPrice / (await booking.tourPackage.installments).length;
+    const tourPackageId = booking.packageId
+    const installmentCount =3
+    const installmentAmount = booking.TotalPrice/installmentCount
     const user = await this.UserRepository.findOne({where:{uuid}})
   
     if (user.Wallet < booking.TotalPrice) {
-      throw new Error('Insufficient funds in wallet.');
+      throw new HttpException('Insufficient funds in wallet.',HttpStatus.BAD_REQUEST);
     }
-  
     const lastPayment = await this.PayementRepository.createQueryBuilder('payment')
-      .where('payment.userId = :uuid', { uuid })
+      .where('payment.uuid = :uuid', { uuid })
       .andWhere('payment.tourPackageId = :tourPackageId', { tourPackageId })
       .orderBy('payment.installmentId', 'DESC')
       .getOne();

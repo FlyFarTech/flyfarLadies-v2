@@ -1,7 +1,7 @@
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Brackets, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateBookingPolicyDto } from './dto/creat-bookingpolicy.dto';
 import { CreatepackageExclsuionsDto } from './dto/create-packageexclusions.dto';
 import { CreatePackageHighlightDto } from './dto/create-packagehighlights.dto';
@@ -11,10 +11,8 @@ import { createRefundPolicyDto } from './dto/create-refundpolicy.dto';
 import { updateBookingPolicyDto } from './dto/update-bookingpolicy.dto';
 import { updatepackageExclusionsDto } from './dto/update-packageexclsuions.dto';
 import { UpdatepackageHighlightDto } from './dto/update-packagehighlightdto';
-import { UpdateTourpackageIncludedDto } from './dto/update-packageInclude.dto';
 import { updatepackageInclusionDto } from './dto/update-packageincluion.dto';
 import { UpdateRefundPolicy } from './dto/update-refundpolicy.dto';
-import { UpdateTourpackageDto } from './dto/update-tourpackage.dto';
 import { updateTourPackagePlanDto } from './dto/update-tourpackageplan.dto';
 import { AlbumImage } from './entities/albumimage.entity';
 import { bookingpolicy } from './entities/bookingpolicy.entity';
@@ -28,7 +26,6 @@ import { tourpackageplan } from './entities/tourpackageplan.entity';
 import { VisitedPlace } from './entities/visitedplace.entity';
 import { CreateInstallmentDto } from './dto/create-installment.dto';
 import { Installment } from './entities/installment.entity';
-import { Traveller } from 'src/Traveller/entities/traveller.entity';
 import { updateinstallmentdto } from './dto/update-installmentDto';
 
 // tour package ser

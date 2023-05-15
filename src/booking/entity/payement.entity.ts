@@ -1,6 +1,5 @@
 
 import { BeforeInsert, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-
 const crypto = require('crypto');
 const secretKey = 'my-secret-key';
 const maxValue = 10000;

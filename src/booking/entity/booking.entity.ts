@@ -44,6 +44,8 @@ export class Booking{
    LinkedIn:string
    @Column({default:null})
    Mobile:string
+   @Column({default:null})
+   packageId:string
    @Column()
    rejectionReason:string
    @BeforeInsert()
