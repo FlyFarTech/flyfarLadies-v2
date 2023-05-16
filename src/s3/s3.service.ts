@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { AlbumImage } from './../tourpackage/entities/albumimage.entity';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from 'src/blog/entities/blog.entity';
@@ -54,122 +54,105 @@ export class GCSStorageService  {
     
 
     // // update cover image 
-    // async updateImage(Id: string, file: Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (tourpackage.coverimageurl) {
-    //         const coverimageurl = tourpackage.coverimageurl.split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: coverimageurl
-    //         }))
-    //     }
-    //      const key =`${file.originalname}.webp`
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+    async updateImage(Id: string, file: Express.Multer.File) {
+      const tourpackage = await this.TourpackageRepo.findOne({where:{Id}})
+      if (!tourpackage) {
+        throw new Error('Image not found');
+      }
 
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
+      const serviceAccountKeyFile = 's3config.json';
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+      const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+      const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+      const bucket = storage.bucket(bucketName);
+      const fileName = `${file.originalname}.webp`;
+      const fileObject = bucket.file(fileName);
+      try {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        await fileObject.save(imageBuffer, {
+          contentType: 'image/webp',
+          public: true,
+          validation: 'md5',
+        });
+        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+        console.log(`File uploaded successfully to ${imageUrl}`);
+        return imageUrl;
+      } catch (err) {
+        console.error('Error uploading file to Google Cloud Storage:', err);
+        throw err;
+      }
 
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
-
+    }
 
     // }
     
     // // update cover image 
-    //  async updateImageuserphotos(uuid: string, file:Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     if (!file) {
-    //         throw new BadRequestException('File not provided');
-    //       }
-    //     const user = await this.UserRepository.findOneBy({uuid})
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (user.PassportsizephotoUrl) {
-    //         const PassportsizephotoUrl = user.PassportsizephotoUrl.split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: PassportsizephotoUrl
-    //         }))
-    //     }
-    //     const key =`${uuid}/${file.originalname}.webp`
-       
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+     async updateImageuserphotos(uuid: string, file:Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const user = await this.UserRepository.findOneBy({uuid})
+        if (!user) {
+          throw new BadRequestException('user not found');
+        }
 
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
+      const serviceAccountKeyFile = 's3config.json';
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+      const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+      const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+      const bucket = storage.bucket(bucketName);
+      const fileName = `${file.originalname}.webp`;
+      const fileObject = bucket.file(fileName);
+      try {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        await fileObject.save(imageBuffer, {
+          contentType: 'image/webp',
+          public: true,
+          validation: 'md5',
+        });
+        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+        console.log(`File uploaded successfully to ${imageUrl}`);
+        return imageUrl;
+      } catch (err) {
+        console.error('Error uploading file to Google Cloud Storage:', err);
+        throw err;
+      }
 
-    // }
+    }
 
-    // // update cover image 
-    // async updateBlogIMages(blogid: string, file:Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     if (!file) {
-    //         throw new BadRequestException('File not provided');
-    //       }
-    //     const blog = await this.blogRepository.findOneBy({blogid})
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (blog.blogimages) {
-    //         const Image1 = blog.blogimages[0].split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: Image1
-    //         }))
-    //     }
-    //     const key =`${blogid}/${file.originalname}.webp`
-       
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+    // update cover image 
+    async updateBlogIMages(blogid: string, file:Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('File not provided');
+          }
+        const blog = await this.blogRepository.findOneBy({blogid})
+        if (!blog) {
+          throw new BadRequestException('blog not found');
+        }
+        
+      const serviceAccountKeyFile = 's3config.json';
+      process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+      const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+      const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+      const bucket = storage.bucket(bucketName);
+      const fileName = `${file.originalname}.webp`;
+      const fileObject = bucket.file(fileName);
+      try {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        await fileObject.save(imageBuffer, {
+          contentType: 'image/webp',
+          public: true,
+          validation: 'md5',
+        });
+        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+        console.log(`File uploaded successfully to ${imageUrl}`);
+        return imageUrl;
+      } catch (err) {
+        console.error('Error uploading file to Google Cloud Storage:', err);
+        throw err;
+      }
 
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
-
-    // }
+    }
 
 
     //   // update cover image 
@@ -215,153 +198,125 @@ export class GCSStorageService  {
 
 
 
-    // async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
-    //     if (!tourpackage) {
-    //         throw new HttpException(
-    //             `TourPackage not found with this id=${Id}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const albummage = await this.AlbumimageRepo.findOneBy({ AlbumId })
-    //     if (!albummage) {
-    //         throw new HttpException(
-    //             `albummage not found with this id=${AlbumId}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (albummage.albumImageUrl) {
-    //         const albumImageUrl = albummage.albumImageUrl.split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: albumImageUrl
-    //         }))
-    //     }
-    //     const key = `${file.originalname}.webp`
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
+    async updateAlbumImage(Id: string, AlbumId: number, file: Express.Multer.File) {
+        const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
+        if (!tourpackage) {
+            throw new HttpException(
+                `TourPackage not found with this id=${Id}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const albummage = await this.AlbumimageRepo.findOneBy({ AlbumId })
+        if (!albummage) {
+            throw new HttpException(
+                `albummage not found with this id=${AlbumId}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const serviceAccountKeyFile = 's3config.json';
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+        const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+        const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+        const bucket = storage.bucket(bucketName);
+        const fileName = `${file.originalname}.webp`;
+        const fileObject = bucket.file(fileName);
+        try {
+          const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+          await fileObject.save(imageBuffer, {
+            contentType: 'image/webp',
+            public: true,
+            validation: 'md5',
+          });
+          const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+          console.log(`File uploaded successfully to ${imageUrl}`);
+          return imageUrl;
+        } catch (err) {
+          console.error('Error uploading file to Google Cloud Storage:', err);
+          throw err;
+        }
+      
 
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
+   }
 
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
-
-
-    // }
-
-    // async updateMainImage(Id: string, mainimgId: number, file: Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
-    //     if (!tourpackage) {
-    //         throw new HttpException(
-    //             `TourPackage not found with this id=${Id}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const mainImage = await this.MainImageeRepo.findOneBy({ mainimgId })
-    //     if (!mainImage) {
-    //         throw new HttpException(
-    //             `mainImage not found with this id=${mainimgId}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (mainImage.MainImageUrl) {
-    //         const MainImageUrl = mainImage.MainImageUrl.split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: MainImageUrl
-    //         }))
-    //     }
-    //     const key = `${file.originalname}.webp`
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
-
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
-
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
+    async updateMainImage(Id: string, mainimgId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
+        if (!tourpackage) {
+            throw new HttpException(
+                `TourPackage not found with this id=${Id}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const mainImage = await this.MainImageeRepo.findOneBy({ mainimgId })
+        if (!mainImage) {
+            throw new HttpException(
+                `mainImage not found with this id=${mainimgId}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const serviceAccountKeyFile = 's3config.json';
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+        const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+        const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+        const bucket = storage.bucket(bucketName);
+        const fileName = `${file.originalname}.webp`;
+        const fileObject = bucket.file(fileName);
+        try {
+          const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+          await fileObject.save(imageBuffer, {
+            contentType: 'image/webp',
+            public: true,
+            validation: 'md5',
+          });
+          const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+          console.log(`File uploaded successfully to ${imageUrl}`);
+          return imageUrl;
+        } catch (err) {
+          console.error('Error uploading file to Google Cloud Storage:', err);
+          throw err;
+        }
 
 
-    // }
+  }
 
-    // async updatevisitedImage(Id: string, VimageId: number, file: Express.Multer.File) {
-    //     const imageBuffer = await sharp(file.buffer).webp().toBuffer();
-    //     const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
-    //     if (!tourpackage) {
-    //         throw new HttpException(
-    //             `TourPackage not found with this id=${Id}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const VisitedImage = await this.VisitedPlaceRepo.findOneBy({ VimageId })
-    //     if (!VisitedImage) {
-    //         throw new HttpException(
-    //             `VisitedImage not found with this id=${VimageId}`,
-    //             HttpStatus.BAD_REQUEST,
-    //         );
-    //     }
-    //     const bucket = this.ConfigService.get<string>('DO_BUCKET_NAME')
-    //     if (VisitedImage.VisitedImagePath) {
-    //         const VisitedImagePath = VisitedImage.VisitedImagePath.split('/').pop();
-    //         await this.s3.send(new DeleteObjectCommand({
-    //             Bucket: bucket,
-    //             Key: VisitedImagePath
-    //         }))
-    //     }
-    //     const key = `${file.originalname}.webp`
-    //     try {
-    //         const response: PutObjectCommandOutput = await this.s3.send(
-    //             new PutObjectCommand({
-    //                 Body: imageBuffer,
-    //                 Bucket: bucket,
-    //                 Key: key,
-    //                 ACL: 'public-read',
-    //                 ContentType: 'image/webp'
-    //             }),
-    //         );
-    //         if (response.$metadata.httpStatusCode === 200) {
-    //             return `https://${bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
-
-    //         }
-    //         throw new Error("image not update in digital ocean s3")
-
-    //     }
-    //     catch (err) {
-    //         this.logger.error("cannot save file inside s3 spacebucket", err);
-    //         throw err;
-    //     }
+    async updatevisitedImage(Id: string, VimageId: number, file: Express.Multer.File) {
+        const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+        const tourpackage = await this.TourpackageRepo.findOneBy({ Id })
+        if (!tourpackage) {
+            throw new HttpException(
+                `TourPackage not found with this id=${Id}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const VisitedImage = await this.VisitedPlaceRepo.findOneBy({ VimageId })
+        if (!VisitedImage) {
+            throw new HttpException(
+                `VisitedImage not found with this id=${VimageId}`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const serviceAccountKeyFile = 's3config.json';
+        process.env.GOOGLE_APPLICATION_CREDENTIALS = serviceAccountKeyFile;
+        const storage = new Storage({ keyFilename: serviceAccountKeyFile });
+        const bucketName = 'cdn.flyfarladies.com'; // Replace with your actual bucket name
+        const bucket = storage.bucket(bucketName);
+        const fileName = `${file.originalname}.webp`;
+        const fileObject = bucket.file(fileName);
+        try {
+          const imageBuffer = await sharp(file.buffer).webp().toBuffer();
+          await fileObject.save(imageBuffer, {
+            contentType: 'image/webp',
+            public: true,
+            validation: 'md5',
+          });
+          const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+          console.log(`File uploaded successfully to ${imageUrl}`);
+          return imageUrl;
+        } catch (err) {
+          console.error('Error uploading file to Google Cloud Storage:', err);
+          throw err;
+        }
 
 
-    // }
+    }
 }

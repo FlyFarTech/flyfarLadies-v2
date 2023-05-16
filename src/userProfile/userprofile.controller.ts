@@ -111,12 +111,13 @@ export class userProfileController {
      @Body() @Req() req: Request,
      @Res() res: Response,
    ) {
-    //  const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
-    //  const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
+
+     const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
+     const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
    
      const userphotos = new User();
-    //  if (profilephoto) userphotos.PassportsizephotoUrl = profilephoto;
-    //  if (passportcopy) userphotos.PassportCopy = passportcopy;
+     if (profilephoto) userphotos.PassportsizephotoUrl = profilephoto;
+     if (passportcopy) userphotos.PassportCopy = passportcopy;
    
      await this.UserRepository.update({ uuid }, { ...userphotos });
    
