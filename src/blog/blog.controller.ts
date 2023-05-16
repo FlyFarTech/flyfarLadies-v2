@@ -5,10 +5,10 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Blog } from './entities/blog.entity';
 import { Repository } from 'typeorm';
-import { S3Service } from 'src/s3/s3.service';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { PressCoverages } from './entities/press.entity';
+import { GCSStorageService } from 'src/s3/s3.service';
 
 @Controller('blog')
 export class BlogController {
@@ -16,7 +16,7 @@ export class BlogController {
     @InjectRepository(Blog) private BlogRepo: Repository<Blog>,
     @InjectRepository(PressCoverages) private PressCoveragesrepo: Repository<PressCoverages>,
     private readonly blogService: BlogService,
-    private s3service: S3Service) {}
+    private s3service: GCSStorageService) {}
 
   @Post('/addblog')
   @UseInterceptors(FileFieldsInterceptor([

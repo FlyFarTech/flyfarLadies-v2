@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { S3Service } from './s3.service';
+import { GCSStorageService } from './s3.service';
 
 describe('S3Service', () => {
-  let service: S3Service;
+  let service: GCSStorageService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [S3Service],
+      providers: [GCSStorageService],
     }).compile();
 
-    service = module.get<S3Service>(S3Service);
+    service = module.get<GCSStorageService>(GCSStorageService);
   });
 
   it('should be defined', () => {

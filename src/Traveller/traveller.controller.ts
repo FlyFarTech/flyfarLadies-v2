@@ -7,14 +7,14 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { Traveller } from "./entities/traveller.entity";
 import { Repository } from "typeorm/repository/Repository";
 import { InjectRepository } from "@nestjs/typeorm";
-import { S3Service } from "src/s3/s3.service";
+import { GCSStorageService } from "src/s3/s3.service";
 
 
 @Controller('Traveller')
 export class TravellerController {
    constructor(@InjectRepository(Traveller) private tarvellerRepository: Repository<Traveller>,
       private readonly travellerServices: TravellerServices,
-      private s3service: S3Service
+      private s3service: GCSStorageService
       ) { }
 
    //Add Traveller

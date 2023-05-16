@@ -4,7 +4,7 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor} from "@nestjs
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
 import { Equal, Repository, getRepository } from "typeorm";;
-import { S3Service } from "src/s3/s3.service";
+import { GCSStorageService } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user.dto";
 import { User } from "./entitties/user.entity";
 import { Cheque, PaymentStatus } from "./entitties/cheq.entity";
@@ -35,7 +35,7 @@ export class userProfileController {
      @InjectRepository(Traveller) private TravellerRepository:Repository<Traveller>,
      @InjectRepository(socialimageenity) private socialimageenityRepository:Repository<socialimageenity>,
       private readonly UserServices: UserServices,
-      private s3service: S3Service
+      private s3service: GCSStorageService
       ) {}
 
       @Post('Register')
@@ -111,12 +111,12 @@ export class userProfileController {
      @Body() @Req() req: Request,
      @Res() res: Response,
    ) {
-     const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
-     const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
+    //  const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
+    //  const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
    
      const userphotos = new User();
-     if (profilephoto) userphotos.PassportsizephotoUrl = profilephoto;
-     if (passportcopy) userphotos.PassportCopy = passportcopy;
+    //  if (profilephoto) userphotos.PassportsizephotoUrl = profilephoto;
+    //  if (passportcopy) userphotos.PassportCopy = passportcopy;
    
      await this.UserRepository.update({ uuid }, { ...userphotos });
    

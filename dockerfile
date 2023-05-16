@@ -1,20 +1,20 @@
-# Use an official Node.js image as the base image
-FROM node:16.16.0-alpine
+# Base image
+FROM node:16
 
-# Set the working directory inside the container
-WORKDIR /app
+# Create app directory
+WORKDIR /flyfarladies/src/app
 
-# Copy package.json and package-lock.json to the container
-COPY . /app
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
 
-# Install dependencies
+# Install app dependencies
 RUN npm install
 
-# Build the Node.js application
+# Bundle app source
+COPY . .
+
+# Creates a "dist" folder with the production build
 RUN npm run build
 
-# Expose any necessary ports
-EXPOSE 5000
-
-# Start the application with pm2
-CMD node  --max-old-space-size=8192 dist/main.js
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]

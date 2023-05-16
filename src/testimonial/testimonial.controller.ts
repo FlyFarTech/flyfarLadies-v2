@@ -4,9 +4,9 @@ import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Testimonial } from './entities/testimonial.entity';
 import { Repository } from 'typeorm';
-import { S3Service } from 'src/s3/s3.service';
 import { Request, Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { GCSStorageService } from 'src/s3/s3.service';
 
 
 
@@ -14,7 +14,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 export class TestimonialController {
   constructor(
     @InjectRepository(Testimonial) private TestimonialRepository: Repository<Testimonial>,
-    private s3service: S3Service,
+    private s3service: GCSStorageService,
     private readonly testimonialService: TestimonialService) {}
     
   @Post('addtestimonial')
