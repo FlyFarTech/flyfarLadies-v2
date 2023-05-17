@@ -52,37 +52,13 @@ export class BookingController {
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking Confirmed"})
   }
 
+
   @Get(':Bookingid')
   async getBooking(
     @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
-
-  @Get(':uuid/alluserbookings')
-  async getalluserBooking(
-    @Param('uuid') uuid: string) {
-    const user = await this.UserRepository.find({ where: { uuid } });
-    if (!user) {
-      throw new NotFoundException('User Not valid');
-    }
-    const bookedPackages = await this.bookingRepository.find({
-      relations: [
-        'tourPackage',
-        'tourPackage.mainimage',
-        'tourPackage.albumImages',
-        'tourPackage.vistitedImages',
-        'tourPackage.exclusions',
-        'tourPackage.PackageInclusions',
-        'tourPackage.BookingPolicys',
-        'tourPackage.highlights',
-        'tourPackage.refundpolicys',
-        'tourPackage.tourpackageplans',
-        'tourPackage.installments',
-        'travelers'
-      ]
-  })
-    return bookedPackages
-  }
+  
 
       @Get('getall/booking')
       async getALlBooking(@Res() res: Response) {
