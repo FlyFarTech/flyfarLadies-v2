@@ -8,6 +8,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
+import { retry } from 'rxjs';
 var converter = require('number-to-words');
 
 @Injectable()
@@ -1375,47 +1376,10 @@ export class BookingService {
       'travelers']})
      return bookings;
    }
-
    
    async getBooking(Bookingid:string):Promise<Booking[]>{
     const bookedpackage = await this.bookingRepository.find({ where: { Bookingid },relations:[ 'tourPackage',
     'travelers']})
     return bookedpackage
   }
- 
-  async userAllBooking(uuid: string) {
-    const user = await this.UserRepository.findOne({ where: { uuid } });
-    if (!user) {
-      throw new NotFoundException('User Not valid');
-    }
-    
-    const bookedPackages = await this.bookingRepository.findAndCount({
-      where: {},
-      relations: [
-        'tourPackage',
-        'travelers',
-        'tourPackage.mainimage',
-        'tourPackage.albumImages',
-        'tourPackage.vistitedImages',
-        'tourPackage.exclusions',
-        'tourPackage.PackageInclusions',
-        'tourPackage.BookingPolicys',
-        'tourPackage.highlights',
-        'tourPackage.mainimage',
-        'tourPackage.refundpolicys',
-        'tourPackage.tourpackageplans',
-        'tourPackage.installments'
-      ]
-    });
-  
-    // const allBookedPackages = [];
-    // for (const booking of bookedPackages) {
-    //   allBookedPackages.push(booking.tourPackage);
-    // }
-  
-    return { bookedPackages: bookedPackages };
-  }
-  
-
-
 }

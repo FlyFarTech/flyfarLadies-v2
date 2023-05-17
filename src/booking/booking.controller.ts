@@ -1,13 +1,22 @@
 
-import { Body, HttpStatus, Post, Req, Res, Patch } from '@nestjs/common';
+import { Body, HttpStatus, Post, Req, Res, Patch, NotFoundException } from '@nestjs/common';
 import { Controller, Get, Param } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Express } from 'express';
 import { Request, Response } from 'express';
 import { CreateBookingDto } from './dto/booking.dto';
+import { User } from 'src/userProfile/entitties/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Booking } from './entity/booking.entity';
 @Controller('booking')
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) { }
+  constructor(@InjectRepository(User)
+  private UserRepository: Repository<User>,
+  @InjectRepository(Booking)
+  private bookingRepository: Repository<Booking>,
+
+  private readonly bookingService: BookingService) { }
 
   @Post(':Id/addbooking')
   async addbooking(
@@ -48,18 +57,40 @@ export class BookingController {
     @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
+
   @Get(':uuid/alluserbookings')
   async getalluserBooking(
     @Param('uuid') uuid: string) {
-    const bookings= await this.bookingService.userAllBooking(uuid)
-    return {MyBookings:bookings}
+    const user = await this.UserRepository.find({ where: { uuid } });
+    if (!user) {
+      throw new NotFoundException('User Not valid');
+    }
+    const bookedPackages = await this.bookingRepository.find({
+      relations: [
+        'tourPackage',
+        'tourPackage.mainimage',
+        'tourPackage.albumImages',
+        'tourPackage.vistitedImages',
+        'tourPackage.exclusions',
+        'tourPackage.PackageInclusions',
+        'tourPackage.BookingPolicys',
+        'tourPackage.highlights',
+        'tourPackage.refundpolicys',
+        'tourPackage.tourpackageplans',
+        'tourPackage.installments',
+        'travelers'
+      ]
+  })
+    return bookedPackages
   }
 
-  @Get('getall/booking')
-  async getALlBooking(@Res() res: Response) {
-    const bookings = await this.bookingService.FindAll()
-    return res.status(HttpStatus.OK).json({ bookings });
-
+      @Get('getall/booking')
+      async getALlBooking(@Res() res: Response) {
+        const bookings = await this.bookingService.FindAll()
+        return res.status(HttpStatus.OK).json({ bookings });
+    
+      }
   }
 
-}
+
+
