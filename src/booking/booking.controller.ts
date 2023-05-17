@@ -57,8 +57,7 @@ export class BookingController {
     return await this.bookingService.getBooking(Bookingid)
   }
 
-
-  @Get(':userid/mybookings')
+  @Get(':userid/getall/mybookings')
   async MyAllBookings(
     @Param('userid') userid: string
   ) {
