@@ -51,7 +51,7 @@ export class BookingController {
   @Get(':uuid/allbooking')
   async getalluserBooking(
     @Param('uuid') uuid: string) {
-    return await this.bookingService.userAllBooking(uuid,)
+    return await this.bookingService.userAllBooking(uuid)
   }
 
   @Get('getall/booking')
