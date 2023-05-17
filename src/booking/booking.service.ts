@@ -1382,37 +1382,36 @@ export class BookingService {
     'travelers']})
     return bookedpackage;
  }
-
+ 
  async userAllBooking(uuid:string) {
-  try {
-    const user = await this.UserRepository.findOne({ where: { uuid } });
-    if (!user) {
-      throw new NotFoundException('User Not valid');
-    }
-
-    const bookedpackage = await this.bookingRepository.find({
-      relations: [
-        'tourPackage',
-        'travelers',
-        'tourPackage.mainimage',
-        'tourPackage.albumImages',
-        'tourPackage.vistitedImages',
-        'tourPackage.exclusions',
-        'tourPackage.PackageInclusions',
-        'tourPackage.BookingPolicys',
-        'tourPackage.highlights',
-        'tourPackage.mainimage',
-        'tourPackage.refundpolicys',
-        'tourPackage.tourpackageplans',
-        'tourPackage.installments'
-      ]
+  return this.UserRepository.findOne({ where: { uuid } })
+    .then(user => {
+      if (!user) {
+        throw new NotFoundException('User Not valid');
+      }
+      return this.bookingRepository.find({
+        where: {},
+        relations: [
+          'tourPackage',
+          'travelers',
+          'tourPackage.mainimage',
+          'tourPackage.albumImages',
+          'tourPackage.vistitedImages',
+          'tourPackage.exclusions',
+          'tourPackage.PackageInclusions',
+          'tourPackage.BookingPolicys',
+          'tourPackage.highlights',
+          'tourPackage.mainimage',
+          'tourPackage.refundpolicys',
+          'tourPackage.tourpackageplans',
+          'tourPackage.installments'
+        ]
+      });
+    })
+    .then(bookedpackage => {
+      return { bookedpackage };
     });
-
-    return { bookedpackage };
-  } catch (error) {
-    // Handle and log the error appropriately
-    throw error;
-  }
 }
+
 
 }
