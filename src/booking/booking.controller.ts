@@ -15,7 +15,6 @@ export class BookingController {
   private UserRepository: Repository<User>,
   @InjectRepository(Booking)
   private bookingRepository: Repository<Booking>,
-
   private readonly bookingService: BookingService) { }
 
   @Post(':Id/addbooking')
@@ -59,15 +58,14 @@ export class BookingController {
     return await this.bookingService.getBooking(Bookingid)
   }
 
-  @Get(':uuid/mybookings')
+  @Get(':userid/mybookings')
   async MyAllBookings(
-    @Param('uuid') uuid: string) {
-      const user = await this.UserRepository.findOneBy({uuid})
+    @Param('userid') userid: string) {
+      const user = await this.bookingRepository.findOneBy({userid})
       if(!user)
       {
-         throw new NotFoundException('User Not Found');
+        throw new NotFoundException('User Not Found');
       }
-    
         const bookedPackages = await this.bookingRepository
           .createQueryBuilder('booking')
           .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
@@ -82,8 +80,8 @@ export class BookingController {
           .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
           .leftJoinAndSelect('tourPackage.installments', 'installments')
           .leftJoinAndSelect('booking.travelers', 'travelers')
+          .where('booking.userid = :userid', { userid: user.userid })
           .getMany();
-    
         return bookedPackages;
       }
 
