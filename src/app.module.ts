@@ -46,7 +46,7 @@ import { Payement } from './booking/entity/payement.entity';
       password: "123Next2$",
       host: "flyfarint.com",
       database:"flyfarin_fflv2",
-      
+
       // username:process.env.LOCAL_USERNAME,
       // password: process.env.LOCAL_PASSWORD,
       // host : process.env.LOCAL_HOST,

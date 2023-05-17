@@ -2,13 +2,13 @@
 import { Body, HttpStatus, Post, Req, Res, Patch, NotFoundException } from '@nestjs/common';
 import { Controller, Get, Param } from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { Express } from 'express';
 import { Request, Response } from 'express';
 import { CreateBookingDto } from './dto/booking.dto';
-import { User } from 'src/userProfile/entitties/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Booking } from './entity/booking.entity';
+
+
 @Controller('booking')
 export class BookingController {
   constructor(
@@ -57,32 +57,78 @@ export class BookingController {
     return await this.bookingService.getBooking(Bookingid)
   }
 
+
   @Get(':userid/mybookings')
   async MyAllBookings(
-    @Param('userid') userid: string) {
-      const user = await this.bookingRepository.findOneBy({userid})
-      if(!user)
-      {
-        throw new NotFoundException('User Not Found');
+    @Param('userid') userid: string
+  ) {
+    const user = await this.bookingRepository.findOne({ where: { userid } });
+  
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+  
+    const joinAliases = [
+      { property: 'tourPackage', alias: 'tourPackage' },
+      { property: 'tourPackage.mainimage', alias: 'mainimage' },
+      { property: 'tourPackage.albumImages', alias: 'albumImages' },
+      { property: 'tourPackage.vistitedImages', alias: 'vistitedImages' },
+      { property: 'tourPackage.exclusions', alias: 'exclusions' },
+      { property: 'tourPackage.PackageInclusions', alias: 'packageInclusions' },
+      { property: 'tourPackage.BookingPolicys', alias: 'bookingPolicys' },
+      { property: 'tourPackage.highlights', alias: 'highlights' },
+      { property: 'tourPackage.refundpolicys', alias: 'refundPolicys' },
+      { property: 'tourPackage.tourpackageplans', alias: 'tourPackagePlans' },
+      { property: 'tourPackage.installments', alias: 'installments' },
+      { property: 'booking.travelers', alias: 'travelers' }
+      // Add more join aliases here
+    ];
+  
+    const queryBuilder = this.bookingRepository.createQueryBuilder('booking');
+  
+    for (const { property, alias } of joinAliases) {
+      if (property !== 'tourPackage') {
+        queryBuilder.leftJoinAndSelect(property, alias);
+      } else {
+        queryBuilder.leftJoinAndSelect('booking.tourPackage', alias);
       }
-        const bookedPackages = await this.bookingRepository
-          .createQueryBuilder('booking')
-          .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
-          .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
-          .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-          .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
-          .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
-          .leftJoinAndSelect('tourPackage.PackageInclusions', 'packageInclusions')
-          .leftJoinAndSelect('tourPackage.BookingPolicys', 'bookingPolicys')
-          .leftJoinAndSelect('tourPackage.highlights', 'highlights')
-          .leftJoinAndSelect('tourPackage.refundpolicys', 'refundPolicys')
-          .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
-          .leftJoinAndSelect('tourPackage.installments', 'installments')
-          .leftJoinAndSelect('booking.travelers', 'travelers')
-          .where('booking.userid = :userid', { userid: user.userid })
-          .getMany();
-        return bookedPackages;
-      }
+    }
+  
+    const bookedPackages = await queryBuilder
+      .where('booking.userid = :userid', { userid })
+      .getMany();
+  
+    return bookedPackages;
+  }
+  
+
+
+  // @Get(':userid/mybookings')
+  // MyAllBookings(
+  //   @Param('userid') userid: string) {
+  //     const user =  this.bookingRepository.findOne({where:{userid}})
+  //     if(!user)
+  //     {
+  //       throw new NotFoundException('User Not Found');
+  //     }
+  //       const bookedPackages =  this.bookingRepository
+  //         .createQueryBuilder('booking')
+  //         .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
+  //         .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
+  //         .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
+  //         .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
+  //         .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
+  //         .leftJoinAndSelect('tourPackage.PackageInclusions', 'packageInclusions')
+  //         .leftJoinAndSelect('tourPackage.BookingPolicys', 'bookingPolicys')
+  //         .leftJoinAndSelect('tourPackage.highlights', 'highlights')
+  //         .leftJoinAndSelect('tourPackage.refundpolicys', 'refundPolicys')
+  //         .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
+  //         .leftJoinAndSelect('tourPackage.installments', 'installments')
+  //         .leftJoinAndSelect('booking.travelers', 'travelers')
+  //         .where('booking.userid = :userid', { userid: userid })
+  //         .getMany();
+  //       return bookedPackages;
+  //     }
 
   @Get('getall/booking')
   async getALlBooking(@Res() res: Response) {
