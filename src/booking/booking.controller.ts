@@ -58,15 +58,42 @@ export class BookingController {
     @Param('Bookingid') Bookingid: string) {
     return await this.bookingService.getBooking(Bookingid)
   }
-  
 
-      @Get('getall/booking')
-      async getALlBooking(@Res() res: Response) {
-        const bookings = await this.bookingService.FindAll()
-        return res.status(HttpStatus.OK).json({ bookings });
-    
+  @Get(':uuid/mybookings')
+  async MyAllBookings(
+    @Param('uuid') uuid: string) {
+      const user = await this.UserRepository.findOneBy({uuid})
+      if(!user)
+      {
+         throw new NotFoundException('User Not Found');
       }
+    
+        const bookedPackages = await this.bookingRepository
+          .createQueryBuilder('booking')
+          .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
+          .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
+          .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
+          .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
+          .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
+          .leftJoinAndSelect('tourPackage.PackageInclusions', 'packageInclusions')
+          .leftJoinAndSelect('tourPackage.BookingPolicys', 'bookingPolicys')
+          .leftJoinAndSelect('tourPackage.highlights', 'highlights')
+          .leftJoinAndSelect('tourPackage.refundpolicys', 'refundPolicys')
+          .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
+          .leftJoinAndSelect('tourPackage.installments', 'installments')
+          .leftJoinAndSelect('booking.travelers', 'travelers')
+          .getMany();
+    
+        return bookedPackages;
+      }
+
+  @Get('getall/booking')
+  async getALlBooking(@Res() res: Response) {
+    const bookings = await this.bookingService.FindAll()
+    return res.status(HttpStatus.OK).json({ bookings });
+
   }
+}
 
 
 
