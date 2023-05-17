@@ -11,8 +11,7 @@ import { Repository } from 'typeorm';
 import { Booking } from './entity/booking.entity';
 @Controller('booking')
 export class BookingController {
-  constructor(@InjectRepository(User)
-  private UserRepository: Repository<User>,
+  constructor(
   @InjectRepository(Booking)
   private bookingRepository: Repository<Booking>,
   private readonly bookingService: BookingService) { }
