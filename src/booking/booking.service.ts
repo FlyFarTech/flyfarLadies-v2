@@ -1380,38 +1380,42 @@ export class BookingService {
    async getBooking(Bookingid:string):Promise<Booking[]>{
     const bookedpackage = await this.bookingRepository.find({ where: { Bookingid },relations:[ 'tourPackage',
     'travelers']})
-    return bookedpackage;
- }
+    return bookedpackage
+  }
  
- async userAllBooking(uuid:string) {
-  return this.UserRepository.findOne({ where: { uuid } })
-    .then(user => {
-      if (!user) {
-        throw new NotFoundException('User Not valid');
-      }
-      return this.bookingRepository.find({
-        where: {},
-        relations: [
-          'tourPackage',
-          'travelers',
-          'tourPackage.mainimage',
-          'tourPackage.albumImages',
-          'tourPackage.vistitedImages',
-          'tourPackage.exclusions',
-          'tourPackage.PackageInclusions',
-          'tourPackage.BookingPolicys',
-          'tourPackage.highlights',
-          'tourPackage.mainimage',
-          'tourPackage.refundpolicys',
-          'tourPackage.tourpackageplans',
-          'tourPackage.installments'
-        ]
-      });
-    })
-    .then(bookedpackage => {
-      return { bookedpackage };
+  async userAllBooking(uuid: string) {
+    const user = await this.UserRepository.findOne({ where: { uuid } });
+    if (!user) {
+      throw new NotFoundException('User Not valid');
+    }
+    
+    const bookedPackages = await this.bookingRepository.findAndCount({
+      where: {},
+      relations: [
+        'tourPackage',
+        'travelers',
+        'tourPackage.mainimage',
+        'tourPackage.albumImages',
+        'tourPackage.vistitedImages',
+        'tourPackage.exclusions',
+        'tourPackage.PackageInclusions',
+        'tourPackage.BookingPolicys',
+        'tourPackage.highlights',
+        'tourPackage.mainimage',
+        'tourPackage.refundpolicys',
+        'tourPackage.tourpackageplans',
+        'tourPackage.installments'
+      ]
     });
-}
+  
+    // const allBookedPackages = [];
+    // for (const booking of bookedPackages) {
+    //   allBookedPackages.push(booking.tourPackage);
+    // }
+  
+    return { bookedPackages: bookedPackages };
+  }
+  
 
 
 }
