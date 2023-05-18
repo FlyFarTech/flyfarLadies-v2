@@ -60,11 +60,6 @@ export class BookingController {
     @Param('userid') userid: string
   ) {
     const user = await this.bookingRepository.findOne({ where: { userid } });
-  
-    if (!user) {
-      throw new NotFoundException('User Not Found');
-    }
-  
     const joinAliases = [
       { property: 'tourPackage', alias: 'tourPackage' },
       // { property: 'tourPackage.vistitedImages', alias: 'vistitedImages' },
@@ -97,7 +92,7 @@ export class BookingController {
     }
     
   
-    return bookedPackages;
+    return {bookedPackages:bookedPackages};
   }
   
 
