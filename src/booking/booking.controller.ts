@@ -18,10 +18,9 @@ export class BookingController {
 
   @Post(':Id/addbooking')
   async addbooking(
-
     @Body() bookingDto: CreateBookingDto,
-    @Param('FFLPKID') FFLPKID:string,
-    uuid:string,
+    @Param('uuid') uuid:string,
+    FFLPKID:string,
     @Req() req: Request,
     @Res() res: Response) { 
     await this.bookingService.BookTravelpackage(FFLPKID,bookingDto,uuid)
@@ -100,34 +99,6 @@ export class BookingController {
     return bookedPackages;
   }
   
-
-
-  // @Get(':userid/mybookings')
-  // MyAllBookings(
-  //   @Param('userid') userid: string) {
-  //     const user =  this.bookingRepository.findOne({where:{userid}})
-  //     if(!user)
-  //     {
-  //       throw new NotFoundException('User Not Found');
-  //     }
-  //       const bookedPackages =  this.bookingRepository
-  //         .createQueryBuilder('booking')
-  //         .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
-  //         .leftJoinAndSelect('tourPackage.mainimage', 'mainimage')
-  //         .leftJoinAndSelect('tourPackage.albumImages', 'albumImages')
-  //         .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
-  //         .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
-  //         .leftJoinAndSelect('tourPackage.PackageInclusions', 'packageInclusions')
-  //         .leftJoinAndSelect('tourPackage.BookingPolicys', 'bookingPolicys')
-  //         .leftJoinAndSelect('tourPackage.highlights', 'highlights')
-  //         .leftJoinAndSelect('tourPackage.refundpolicys', 'refundPolicys')
-  //         .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
-  //         .leftJoinAndSelect('tourPackage.installments', 'installments')
-  //         .leftJoinAndSelect('booking.travelers', 'travelers')
-  //         .where('booking.userid = :userid', { userid: userid })
-  //         .getMany();
-  //       return bookedPackages;
-  //     }
 
   @Get('getall/booking')
   async getALlBooking(@Res() res: Response) {

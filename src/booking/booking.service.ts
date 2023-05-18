@@ -8,7 +8,6 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
-import { retry } from 'rxjs';
 var converter = require('number-to-words');
 
 @Injectable()
