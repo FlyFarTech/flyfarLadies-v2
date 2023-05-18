@@ -92,6 +92,10 @@ export class BookingController {
     const bookedPackages = await queryBuilder
       .where('booking.userid = :userid', { userid })
       .getMany();
+    if (!bookedPackages) {
+      throw new NotFoundException('You dont have any booking');
+    }
+    
   
     return bookedPackages;
   }
