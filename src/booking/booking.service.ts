@@ -25,61 +25,56 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,uuid:string,Email:string ){
-      const {travelers,} =bookingDto
-      const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
-      if (!tourPackage) {
-         throw new HttpException(
-            `TourPackage not found with this id=${Id}`,
-            HttpStatus.BAD_REQUEST,
-         );
-      }
-      const userprofile = await this.UserRepository.findOne({ where: {uuid}})
-      if (!userprofile) {
-        throw new HttpException(
-           `userprofile not found with this id=${Id}`,
-           HttpStatus.BAD_REQUEST,
-        );
-     }
-      const arrayoftravlers =[]
-      let TotalPrice:number = 0
-      for(const traveler of travelers){
-      const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality, Price, Gender} = traveler;
-        const newTraveler = new Traveller();
-        newTraveler.FirstName = FirstName;
-        newTraveler.LastName = LastName;
-        newTraveler.Nationality =Nationality
-        newTraveler.Gender =Gender
-        newTraveler.DOB =DOB
-        newTraveler.PassportNumber =PassportNumber
-        newTraveler.PassportExpireDate =PassportExpireDate
-        newTraveler.Price = Price ? Price : tourPackage.Price;
-        await this.travelerRepository.save(newTraveler)
-        arrayoftravlers.push(newTraveler)
-        const discount = tourPackage.Price* tourPackage.Discount/100
-        TotalPrice +=newTraveler.Price-discount
-      }
-      const newbooking = await this.bookingRepository.create({
-         tourPackage,
-         travelers: arrayoftravlers,
-         TotalPrice:TotalPrice,
-         Email:userprofile.Email,
-         Name:userprofile.Name,
-         Wallet:userprofile.Wallet,
-         Mobile:userprofile.Mobile,
-         WhatsApp:userprofile.WhatsApp,
-         FaceBookId:userprofile.FaceBookId,
-         LinkedIn:userprofile.LinkedIn,
-         MainTitle:tourPackage.MainTitle,
-         SubTitle:tourPackage.SubTitle,
-         packageId:tourPackage.Id,
-         userid:userprofile.uuid
-      })
-      const savebooking= await this.bookingRepository.save(newbooking)
-      await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
-      return savebooking;
-   
-   }
+   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,Email:string ){
+    const {travelers,} =bookingDto
+    const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
+    if (!tourPackage) {
+       throw new HttpException(
+          `TourPackage not found with this id=${Id}`,
+          HttpStatus.BAD_REQUEST,
+       );
+    }
+    
+    const userprofile = await this.UserRepository.findOne({ where: {Email}})
+    const arrayoftravlers =[]
+    let TotalPrice:number = 0
+    for(const traveler of travelers){
+    const { FirstName, LastName, DOB,PassportExpireDate,PassportNumber,Nationality, Price, Gender} = traveler;
+      const newTraveler = new Traveller();
+      newTraveler.FirstName = FirstName;
+      newTraveler.LastName = LastName;
+      newTraveler.Nationality =Nationality
+      newTraveler.Gender =Gender
+      newTraveler.DOB =DOB
+      newTraveler.PassportNumber =PassportNumber
+      newTraveler.PassportExpireDate =PassportExpireDate
+      newTraveler.Price = Price ? Price : tourPackage.Price;
+      await this.travelerRepository.save(newTraveler)
+      arrayoftravlers.push(newTraveler)
+      const discount = tourPackage.Price* tourPackage.Discount/100
+      TotalPrice +=newTraveler.Price-discount
+    }
+    const newbooking = await this.bookingRepository.create({
+       tourPackage,
+       travelers: arrayoftravlers,
+       TotalPrice:TotalPrice,
+       Email:userprofile.Email,
+       Name:userprofile.Name,
+       Wallet:userprofile.Wallet,
+       Mobile:userprofile.Mobile,
+       WhatsApp:userprofile.WhatsApp,
+       FaceBookId:userprofile.FaceBookId,
+       LinkedIn:userprofile.LinkedIn,
+       MainTitle:tourPackage.MainTitle,
+       SubTitle:tourPackage.SubTitle,
+       userid:userprofile.uuid
+    })
+    const savebooking= await this.bookingRepository.save(newbooking)
+    await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
+    return savebooking;
+ 
+ }
+
 
    async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
     const booking = await this.bookingRepository.findOne({where:{Bookingid}})

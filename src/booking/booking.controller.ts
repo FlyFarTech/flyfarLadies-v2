@@ -16,18 +16,16 @@ export class BookingController {
   private bookingRepository: Repository<Booking>,
   private readonly bookingService: BookingService) { }
 
-  @Post(':uuid/addbooking')
+  @Post(':Id/addbooking')
   async addbooking(
     @Body() bookingDto: CreateBookingDto,
-    @Param('uuid') uuid:string,
-    Id:string,
-    Email:string,
+    @Param('Id') Id:string,
+    uuid:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.BookTravelpackage(Id,bookingDto,uuid,Email)
+    await this.bookingService.BookTravelpackage(Id,bookingDto,uuid)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
-
    @Post(':bookingId/confirm-with-installment')
   async confirmBookingWithInstallment(
     @Param('Bookingid') Bookingid:string,
