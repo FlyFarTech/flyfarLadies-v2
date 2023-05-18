@@ -25,7 +25,7 @@ export class BookingService {
    ) {}
 
 
-   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,Email:string ){
+   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,uuid:string,Email:string ){
       const {travelers,} =bookingDto
       const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
       if (!tourPackage) {
@@ -34,7 +34,13 @@ export class BookingService {
             HttpStatus.BAD_REQUEST,
          );
       }
-      const userprofile = await this.UserRepository.findOne({ where: {Email}})
+      const userprofile = await this.UserRepository.findOne({ where: {uuid}})
+      if (!userprofile) {
+        throw new HttpException(
+           `userprofile not found with this id=${Id}`,
+           HttpStatus.BAD_REQUEST,
+        );
+     }
       const arrayoftravlers =[]
       let TotalPrice:number = 0
       for(const traveler of travelers){
