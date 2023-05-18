@@ -67,15 +67,13 @@ export class BookingController {
   
     const joinAliases = [
       { property: 'tourPackage', alias: 'tourPackage' },
-      { property: 'tourPackage.mainimage', alias: 'mainimage' },
-      { property: 'tourPackage.albumImages', alias: 'albumImages' },
-      { property: 'tourPackage.vistitedImages', alias: 'vistitedImages' },
+      // { property: 'tourPackage.vistitedImages', alias: 'vistitedImages' },
       { property: 'tourPackage.exclusions', alias: 'exclusions' },
       { property: 'tourPackage.PackageInclusions', alias: 'packageInclusions' },
       { property: 'tourPackage.BookingPolicys', alias: 'bookingPolicys' },
-      { property: 'tourPackage.highlights', alias: 'highlights' },
+      // { property: 'tourPackage.highlights', alias: 'highlights' },
       { property: 'tourPackage.refundpolicys', alias: 'refundPolicys' },
-      { property: 'tourPackage.tourpackageplans', alias: 'tourPackagePlans' },
+      // { property: 'tourPackage.tourpackageplans', alias: 'tourPackagePlans' },
       { property: 'tourPackage.installments', alias: 'installments' },
       { property: 'booking.travelers', alias: 'travelers' }
       // Add more join aliases here
