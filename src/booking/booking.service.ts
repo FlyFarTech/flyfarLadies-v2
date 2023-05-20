@@ -34,7 +34,6 @@ export class BookingService {
           HttpStatus.BAD_REQUEST,
        );
     }
-    
     const userprofile = await this.UserRepository.findOne({ where: {Email}})
     const arrayoftravlers =[]
     let TotalPrice:number = 0
@@ -46,6 +45,12 @@ export class BookingService {
       newTraveler.Nationality =Nationality
       newTraveler.Gender =Gender
       newTraveler.DOB =DOB
+      if (newTraveler.Age < tourPackage.MinimumAge && newTraveler.Age > tourPackage.MaximumAge) {
+        throw new HttpException(
+          `Age not within the allowed range for this tour package`,
+          HttpStatus.UNAUTHORIZED,
+       );  
+      } 
       newTraveler.PassportNumber =PassportNumber
       newTraveler.PassportExpireDate =PassportExpireDate
       newTraveler.Price = Price ? Price : tourPackage.Price;
@@ -54,6 +59,21 @@ export class BookingService {
       const discount = tourPackage.Price* tourPackage.Discount/100
       TotalPrice +=newTraveler.Price-discount
     }
+
+    if (tourPackage.Totalseat <= 0) {
+      throw new HttpException(
+        `No seats available for this tour package`,
+        HttpStatus.BAD_REQUEST,
+     );  
+    }
+    const totalTravelers = travelers.length; 
+    if (tourPackage.Totalseat < totalTravelers) {
+      throw new HttpException(
+        `Not enough seats available for the number of travelers`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    tourPackage.Totalseat -= totalTravelers;
     const newbooking = await this.bookingRepository.create({
        tourPackage,
        travelers: arrayoftravlers,

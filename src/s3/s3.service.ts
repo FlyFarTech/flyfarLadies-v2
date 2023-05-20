@@ -74,7 +74,7 @@ export class GCSStorageService  {
           public: true,
           validation: 'md5',
         });
-        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+        const imageUrl = `https://storage.googleapis.com/${bucketName}/${fileName}new Date().getTime()`;
         console.log(`File uploaded successfully to ${imageUrl}`);
         return imageUrl;
       } catch (err) {
