@@ -24,16 +24,40 @@ export class BookingService {
       private UserRepository: Repository<User>,
    ) {}
 
-
-   async BookTravelpackage(Id:string,bookingDto: CreateBookingDto,Email:string ){
-    const {travelers,} =bookingDto
+   async BookTravelpackage(Id:string, bookingDto: CreateBookingDto,Email:string ){
+    const {travelers} =bookingDto
     const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
+
     if (!tourPackage) {
        throw new HttpException(
           `TourPackage not found with this id=${Id}`,
           HttpStatus.BAD_REQUEST,
        );
     }
+
+    if (tourPackage.TripType === "International"){
+      if (tourPackage.AvailableSeats <= 0) {
+        throw new HttpException(
+          `No seats available for this tour package`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const totalTravelers = travelers.length;
+    if (tourPackage.AvailableSeats < totalTravelers) {
+      throw new HttpException(
+        `Not enough seats available for the number of travelers`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    tourPackage.AvailableSeats -= totalTravelers;
+    if (tourPackage.AvailableSeats <= 0) {
+      tourPackage.Availability = false;
+    }
+    await this.tourPackageRepository.save(tourPackage);
+    }
+    
+  
+    
     const userprofile = await this.UserRepository.findOne({ where: {Email}})
     const arrayoftravlers =[]
     let TotalPrice:number = 0
@@ -45,35 +69,23 @@ export class BookingService {
       newTraveler.Nationality =Nationality
       newTraveler.Gender =Gender
       newTraveler.DOB =DOB
-      if (newTraveler.Age < tourPackage.MinimumAge && newTraveler.Age > tourPackage.MaximumAge) {
-        throw new HttpException(
-          `Age not within the allowed range for this tour package`,
-          HttpStatus.UNAUTHORIZED,
-       );  
-      } 
       newTraveler.PassportNumber =PassportNumber
       newTraveler.PassportExpireDate =PassportExpireDate
       newTraveler.Price = Price ? Price : tourPackage.Price;
       await this.travelerRepository.save(newTraveler)
       arrayoftravlers.push(newTraveler)
       const discount = tourPackage.Price* tourPackage.Discount/100
-      TotalPrice +=newTraveler.Price-discount
+      TotalPrice +=newTraveler.Price-discount;
+
+      if (newTraveler.Age <= tourPackage.MinimumAge || newTraveler.Age >= tourPackage.MaximumAge) {
+        throw new HttpException(
+          `Age not within the allowed range for this tour package`,
+          HttpStatus.UNAUTHORIZED,
+       );  
+      } 
     }
 
-    if (tourPackage.Totalseat <= 0) {
-      throw new HttpException(
-        `No seats available for this tour package`,
-        HttpStatus.BAD_REQUEST,
-     );  
-    }
-    const totalTravelers = travelers.length; 
-    if (tourPackage.Totalseat < totalTravelers) {
-      throw new HttpException(
-        `Not enough seats available for the number of travelers`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    tourPackage.Totalseat -= totalTravelers;
+
     const newbooking = await this.bookingRepository.create({
        tourPackage,
        travelers: arrayoftravlers,

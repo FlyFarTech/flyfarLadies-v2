@@ -13,11 +13,11 @@ export class Traveller {
    @Column({default:null})
    LastName:string
    @Column({default:null})
-   DOB:string
+   DOB:Date
    @Column({ nullable: true, type:'integer' })
    Age: number;
    @BeforeInsert()
-   calculateAge() {
+    calculateAge() {
      const today = new Date();
      const birthDate = new Date(this.DOB);
      let age = today.getFullYear() - birthDate.getFullYear();

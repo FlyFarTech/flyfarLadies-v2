@@ -71,7 +71,7 @@ export class TourpackageController {
     @Body() body,
     @Res() res: Response) {
     const { MainTitle, SubTitle, Price, City, Discount, Location, Availability, StartDate, EndDate,
-        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Country, Totalseat, MinimumAge, MaximumAge } = req.body;
+        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Country, AvailableSeats, MinimumAge, MaximumAge } = req.body;
     const coverimageurl = await this.s3service.Addimage(file)
     const tourpackage = new Tourpackage();
     tourpackage.coverimageurl = coverimageurl
@@ -86,7 +86,7 @@ export class TourpackageController {
     tourpackage.EndDate = EndDate
     tourpackage.TripType = TripType
     tourpackage.TotalDuration = TotalDuration
-    tourpackage.Totalseat = Totalseat
+    tourpackage.AvailableSeats = AvailableSeats
     tourpackage.MinimumAge = MinimumAge
     tourpackage.MaximumAge = MaximumAge
     tourpackage.PackageOverview = PackageOverview

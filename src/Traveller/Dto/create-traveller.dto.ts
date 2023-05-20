@@ -4,7 +4,7 @@ export class CreateTravellerDto{
    TravellerId:string
    FirstName:string
    LastName:string
-   DOB:string
+   DOB:Date
    Email:string
    Gender:string
    PassportNumber:string
@@ -12,5 +12,6 @@ export class CreateTravellerDto{
    PassportCopyURL:string
    Nationality:string
    Price:number
+   Age:number
 
 }

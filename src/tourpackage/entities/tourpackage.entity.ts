@@ -54,8 +54,8 @@ export class Tourpackage {
     @IsNotEmpty({message:'Country could not be empty'})
     @Column({ nullable: true })
     Country: string;
-    @Column({ nullable: true,type: 'integer'  })
-    Totalseat:number;
+    @Column({ default:0,type: 'integer'  })
+    AvailableSeats :number;
     @Column({ type: 'integer' })
     MinimumAge: number;
     @Column({ type: 'integer' })      
