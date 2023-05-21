@@ -24,6 +24,7 @@
     "@google-cloud/storage": "^6.10.1",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/class-validator": "^0.13.4",
+    "@nestjs/cli": "^9.0.0",
     "@nestjs/common": "^9.3.11",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.11",
@@ -47,13 +48,13 @@
     "number-to-words": "^1.2.4",
     "ormconfig.json": "^1.0.2",
     "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "pdfkit": "^0.13.0",
     "reflect-metadata": "^0.1.13",
     "runtime-config-loader": "^5.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.12",
-    "@nestjs/cli": "^9.0.0"
+    "typeorm": "^0.3.12"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

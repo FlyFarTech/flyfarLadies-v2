@@ -13,7 +13,7 @@ import { packagehighlight } from './tourpackage/entities/packagehighlight.entity
 import { bookingpolicy } from './tourpackage/entities/bookingpolicy.entity';
 import { VisitedPlace } from './tourpackage/entities/visitedplace.entity';
 import { Traveller } from './Traveller/entities/traveller.entity';
-import { Admin } from './Auth/entities/user.entity';
+import { Admin, Oauth } from './Auth/entities/user.entity';
 import { UserModule } from './Auth/user.module';
 import { TravellerModule } from './Traveller/traveller.module';
 import { UsderProfileModule } from './userProfile/userprofile.module';
@@ -37,9 +37,10 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
+import { oauthModule } from './Auth/oauth.module';
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal:true }),
+    ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
     TypeOrmModule.forRoot({
       type:'mysql',
       username:"flyfarin_fflv2",
@@ -54,6 +55,7 @@ import { Payement } from './booking/entity/payement.entity';
 
       port:3306,
       entities: [Admin,
+        Oauth,
         Payement,
         PressCoverages,
         Testimonial,
@@ -91,6 +93,7 @@ import { Payement } from './booking/entity/payement.entity';
     BookingModule,
     BlogModule,
     TestimonialModule,
+    oauthModule
   ],
   controllers: [AppController],
   providers: [AppService],
