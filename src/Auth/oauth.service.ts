@@ -7,8 +7,9 @@ export class oauthService {
       return 'No user from google';
     }
     return {
-      message: 'User information from google',
-      user: req.user,
+      status:"success",
+      message: 'login successful',
+      
     };
   }
 }

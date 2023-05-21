@@ -23,20 +23,31 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { name, emails, photos } = profile;
-
-    const user = new Oauth();
-    user.Email = emails[0].value;
-    user.firstName = name.givenName;
-    user.lastName = name.familyName;
-    user.picture = photos[0].value;
-    user.accessToken = accessToken;
-    user.refreshToken = refreshToken;
-  
     try {
-      await this.OauthRepo.save(user);
-      done(null, user);
-    } catch (error) {
-      done(error);
-    }
+      let user = await this.OauthRepo.findOne({ where:{Email: emails[0].value}})
+      if(user){
+        user.firstName = name.givenName;
+        user.lastName = name.familyName;
+        user.picture = photos[0].value;
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+      }
+      else{
+        const user = new Oauth();
+        user.Email = emails[0].value;
+        user.firstName = name.givenName;
+        user.lastName = name.familyName;
+        user.picture = photos[0].value;
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+        const savedUser= await this.OauthRepo.save(user)
+        done(null, savedUser);
+      }
+      const savedUser= await this.OauthRepo.save(user)
+      done(null,savedUser);
+   
+      } catch (error) {
+        done(error);
+      }
 }
 }
