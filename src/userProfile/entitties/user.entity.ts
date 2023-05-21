@@ -1,6 +1,5 @@
 import { IsEmail } from "@nestjs/class-validator"
 import { IsNotEmpty } from "class-validator"
-import { Tourpackage } from "src/tourpackage/entities/tourpackage.entity"
 import { BeforeInsert, Column, CreateDateColumn, Entity, Generated, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { Cheque } from "./cheq.entity"
 import { Cash } from "./cash.entity"
