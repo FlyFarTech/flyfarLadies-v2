@@ -4,10 +4,10 @@ import { ConfigModule } from '@nestjs/config';
 import { OauthController } from './oauth.controller';
 import { oauthService } from './oauth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Oauth } from './entities/user.entity';
+import { User } from './entitties/user.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([Oauth])],
+  imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([User])],
   controllers: [OauthController],
   providers: [oauthService, GoogleStrategy],
 })

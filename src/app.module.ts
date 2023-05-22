@@ -13,7 +13,7 @@ import { packagehighlight } from './tourpackage/entities/packagehighlight.entity
 import { bookingpolicy } from './tourpackage/entities/bookingpolicy.entity';
 import { VisitedPlace } from './tourpackage/entities/visitedplace.entity';
 import { Traveller } from './Traveller/entities/traveller.entity';
-import { Admin, Oauth } from './Auth/entities/user.entity';
+import { Admin } from './Auth/entities/user.entity';
 import { UserModule } from './Auth/user.module';
 import { TravellerModule } from './Traveller/traveller.module';
 import { UsderProfileModule } from './userProfile/userprofile.module';
@@ -37,7 +37,7 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
-import { oauthModule } from './Auth/oauth.module';
+import { oauthModule } from './userProfile/oauth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
@@ -55,7 +55,6 @@ import { oauthModule } from './Auth/oauth.module';
 
       port:3306,
       entities: [Admin,
-        Oauth,
         Payement,
         PressCoverages,
         Testimonial,

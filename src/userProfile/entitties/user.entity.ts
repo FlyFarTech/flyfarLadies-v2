@@ -41,6 +41,13 @@ export class User{
    @Column({nullable:true})
    NameTitle:string
    @IsNotEmpty()
+   @Column()
+   picture:string
+   @Column({nullable:true})
+   accessToken:string
+   @Column({nullable:true})
+   refreshToken:string
+   @IsNotEmpty()
    @Column({default:null})   
    FirstName:string
    @IsNotEmpty()

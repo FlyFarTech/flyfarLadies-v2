@@ -28,33 +28,3 @@ export class Admin{
    @UpdateDateColumn()
    UpdatedAt:Date
 }
-
-
-
-@Entity()
-export class Oauth{
-   @PrimaryColumn({type:"uuid"})
-   @Generated("uuid")
-   Oauthid:string
-   @IsNotEmpty()
-   @Column()
-   lastName:string
-   @IsNotEmpty()
-   @Column()
-   firstName:string
-   @IsEmail()
-   @IsNotEmpty()
-   @Column()
-   Email:string
-   @IsNotEmpty()
-   @Column()
-   picture:string
-   @Column({nullable:true})
-   accessToken:string
-   @Column({nullable:true})
-   refreshToken:string
-   @CreateDateColumn()
-   CreatedAt:Date
-   @UpdateDateColumn()
-   UpdatedAt:Date
-}
