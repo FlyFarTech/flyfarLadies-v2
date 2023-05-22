@@ -249,9 +249,33 @@ export class userProfileController {
             Price:tourpackage.Price,
             StartDate:tourpackage.StartDate,
             EndDate:tourpackage.EndDate,
-            Duration:tourpackage.TotalDuration
-            
+            Duration:tourpackage.TotalDuration,
+            Location:tourpackage.Location,
+            City:tourpackage.City,
+            Discount:tourpackage.Discount,
+            TripType:tourpackage.TripType,
+            Country:tourpackage.Country,
+            AvailableSeats:tourpackage.AvailableSeats,
+            MinimumAge:tourpackage.MinimumAge,
+            MaximumAge: tourpackage.MaximumAge,
+            PackageOverview:tourpackage.PackageOverview,
+            Availability:tourpackage.Availability,
+            Showpackage:tourpackage.Showpackage,
+            Flight:tourpackage.Flight,
+            Transport:tourpackage.Transport,
+            hotel:tourpackage.Hotel,
+            albumimages:tourpackage.albumImages,
+            visitedImage:tourpackage.vistitedImages,
+            installment:tourpackage.installments,
+            packageplan:tourpackage.tourpackageplans,
+            mainimage:tourpackage.mainimage,
+            exclusions:tourpackage.exclusions,
+            highlights:tourpackage.highlights,
+            bookingpolicy:tourpackage.BookingPolicys,
+            inclsuions:tourpackage.PackageInclusions,
+            refundpolicy:tourpackage.refundpolicys
             // add other properties you want to include here
+
           };
         });
        
