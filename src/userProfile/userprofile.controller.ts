@@ -284,20 +284,21 @@ export class userProfileController {
       
       @Patch('removewishlist')
       async removeWishlist(
+        @Res() res: Response,
         @Body('Id')Id: string,
         @Body('uuid') uuid: string) {
         const user = await this.UserRepository.findOne({where:{uuid}});
         if (!user) {
-          throw new Error('User not found');
+          throw new HttpException('User not found',HttpStatus.BAD_REQUEST);
         }
       
         const tourpackageIndex = user.wishlist.findIndex((pkgId) => pkgId === Id);
         if (tourpackageIndex === -1) {
-          throw new Error('Tour package not found in wishlist');
+          throw new HttpException('Tour package not found in wishlist',HttpStatus.BAD_REQUEST);
         }
         user.wishlist.splice(tourpackageIndex, 1);
         await this.UserRepository.save(user);
-        return 'Tour package removed from wishlist';
+        return res.status(HttpStatus.CREATED).json({ status: "success", message: 'remove wishlist successfully' });
       }
       
 
