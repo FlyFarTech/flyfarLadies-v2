@@ -22,7 +22,6 @@ import { CreatePackageHighlightDto } from './dto/create-packagehighlights.dto';
 import { UpdatepackageHighlightDto } from './dto/update-packagehighlightdto';
 import { MainImage } from './entities/mainimage.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3Service } from 'src/s3/s3.service';
 import { updateinstallmentdto } from './dto/update-installmentDto';
 import { Installment } from './entities/installment.entity';
 import { refundpolicy } from './entities/refundpolicy.entity';
@@ -31,6 +30,7 @@ import { packagehighlight } from './entities/packagehighlight.entity';
 import { packageexcluions } from './entities/packageexclsuions.entity';
 import { tourpackageplan } from './entities/tourpackageplan.entity';
 import { Packageinclusion } from './entities/packageInclusion.entitry';
+import { GCSStorageService } from 'src/s3/s3.service';
 
 @Controller('tourpackage')
 export class TourpackageController {
@@ -59,7 +59,7 @@ export class TourpackageController {
     @InjectRepository(VisitedPlace)
     private visitedImageRepo: Repository<VisitedPlace>,
     private readonly tourpackageService: TourpackageService,
-    private s3service: S3Service) {}
+    private s3service: GCSStorageService) {}
   
   @Post('Addpackage')
   @UseInterceptors(
@@ -71,7 +71,7 @@ export class TourpackageController {
     @Body() body,
     @Res() res: Response) {
     const { MainTitle, SubTitle, Price, City, Discount, Location, Availability, StartDate, EndDate,
-        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Country } = req.body;
+        TripType, TotalDuration, PackageOverview, Showpackage, Flight, Transport, Food, Hotel, Country, AvailableSeats, MinimumAge, MaximumAge } = req.body;
     const coverimageurl = await this.s3service.Addimage(file)
     const tourpackage = new Tourpackage();
     tourpackage.coverimageurl = coverimageurl
@@ -86,6 +86,9 @@ export class TourpackageController {
     tourpackage.EndDate = EndDate
     tourpackage.TripType = TripType
     tourpackage.TotalDuration = TotalDuration
+    tourpackage.AvailableSeats = AvailableSeats
+    tourpackage.MinimumAge = MinimumAge
+    tourpackage.MaximumAge = MaximumAge
     tourpackage.PackageOverview = PackageOverview
     tourpackage.Showpackage = Showpackage
     tourpackage.Flight = Flight

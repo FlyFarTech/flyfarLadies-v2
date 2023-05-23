@@ -54,6 +54,12 @@ export class Tourpackage {
     @IsNotEmpty({message:'Country could not be empty'})
     @Column({ nullable: true })
     Country: string;
+    @Column({ default:0,type: 'integer'  })
+    AvailableSeats :number;
+    @Column({ type: 'integer' })
+    MinimumAge: number;
+    @Column({ type: 'integer' })      
+    MaximumAge: number;
     @IsNotEmpty({message:'TotalDuration could not be empty'})
     @Column({ nullable: true })
     TotalDuration: string

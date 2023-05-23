@@ -1,6 +1,6 @@
 
 import { User } from 'src/userProfile/entitties/user.entity';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, BeforeInsert } from 'typeorm';
 
 @Entity()
 export class Traveller {
@@ -13,7 +13,22 @@ export class Traveller {
    @Column({default:null})
    LastName:string
    @Column({default:null})
-   DOB:string
+   DOB:Date
+   @Column({ nullable: true, type:'integer' })
+   Age: number;
+   @BeforeInsert()
+    calculateAge() {
+     const today = new Date();
+     const birthDate = new Date(this.DOB);
+     let age = today.getFullYear() - birthDate.getFullYear();
+     const monthDiff = today.getMonth() - birthDate.getMonth();
+ 
+     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+       age--;
+     }
+ 
+     this.Age = age;
+   }
    @Column({nullable:true})
    Email: string
    @Column({default:null})

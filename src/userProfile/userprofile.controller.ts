@@ -4,7 +4,7 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor} from "@nestjs
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request, Response } from 'express';
 import { Equal, Repository, getRepository } from "typeorm";;
-import { S3Service } from "src/s3/s3.service";
+import { GCSStorageService } from "src/s3/s3.service";
 import { CreateUserDto } from "./Dto/user.dto";
 import { User } from "./entitties/user.entity";
 import { Cheque, PaymentStatus } from "./entitties/cheq.entity";
@@ -35,7 +35,7 @@ export class userProfileController {
      @InjectRepository(Traveller) private TravellerRepository:Repository<Traveller>,
      @InjectRepository(socialimageenity) private socialimageenityRepository:Repository<socialimageenity>,
       private readonly UserServices: UserServices,
-      private s3service: S3Service
+      private s3service: GCSStorageService
       ) {}
 
       @Post('Register')
@@ -111,6 +111,7 @@ export class userProfileController {
      @Body() @Req() req: Request,
      @Res() res: Response,
    ) {
+
      const profilephoto = files.profilephoto ? await this.s3service.updateImageuserphotos(uuid, files.profilephoto[0]) : null;
      const passportcopy = files.passportcopy ? await this.s3service.updateImageuserphotos(uuid, files.passportcopy[0]) : null;
    
@@ -248,9 +249,33 @@ export class userProfileController {
             Price:tourpackage.Price,
             StartDate:tourpackage.StartDate,
             EndDate:tourpackage.EndDate,
-            Duration:tourpackage.TotalDuration
-            
+            Duration:tourpackage.TotalDuration,
+            Location:tourpackage.Location,
+            City:tourpackage.City,
+            Discount:tourpackage.Discount,
+            TripType:tourpackage.TripType,
+            Country:tourpackage.Country,
+            AvailableSeats:tourpackage.AvailableSeats,
+            MinimumAge:tourpackage.MinimumAge,
+            MaximumAge: tourpackage.MaximumAge,
+            PackageOverview:tourpackage.PackageOverview,
+            Availability:tourpackage.Availability,
+            Showpackage:tourpackage.Showpackage,
+            Flight:tourpackage.Flight,
+            Transport:tourpackage.Transport,
+            hotel:tourpackage.Hotel,
+            albumimages:tourpackage.albumImages,
+            visitedImage:tourpackage.vistitedImages,
+            installment:tourpackage.installments,
+            packageplan:tourpackage.tourpackageplans,
+            mainimage:tourpackage.mainimage,
+            exclusions:tourpackage.exclusions,
+            highlights:tourpackage.highlights,
+            bookingpolicy:tourpackage.BookingPolicys,
+            inclsuions:tourpackage.PackageInclusions,
+            refundpolicy:tourpackage.refundpolicys
             // add other properties you want to include here
+
           };
         });
        
@@ -259,20 +284,21 @@ export class userProfileController {
       
       @Patch('removewishlist')
       async removeWishlist(
+        @Res() res: Response,
         @Body('Id')Id: string,
         @Body('uuid') uuid: string) {
         const user = await this.UserRepository.findOne({where:{uuid}});
         if (!user) {
-          throw new Error('User not found');
+          throw new HttpException('User not found',HttpStatus.BAD_REQUEST);
         }
       
         const tourpackageIndex = user.wishlist.findIndex((pkgId) => pkgId === Id);
         if (tourpackageIndex === -1) {
-          throw new Error('Tour package not found in wishlist');
+          throw new HttpException('Tour package not found in wishlist',HttpStatus.BAD_REQUEST);
         }
         user.wishlist.splice(tourpackageIndex, 1);
         await this.UserRepository.save(user);
-        return 'Tour package removed from wishlist';
+        return res.status(HttpStatus.CREATED).json({ status: "success", message: 'remove wishlist successfully' });
       }
       
 

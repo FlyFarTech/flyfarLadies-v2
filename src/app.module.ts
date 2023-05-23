@@ -37,9 +37,10 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
+import { oauthModule } from './userProfile/oauth.module';
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal:true }),
+    ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
     TypeOrmModule.forRoot({
       type:'mysql',
       username:"flyfarin_fflv2",
@@ -91,6 +92,7 @@ import { Payement } from './booking/entity/payement.entity';
     BookingModule,
     BlogModule,
     TestimonialModule,
+    oauthModule
   ],
   controllers: [AppController],
   providers: [AppService],
