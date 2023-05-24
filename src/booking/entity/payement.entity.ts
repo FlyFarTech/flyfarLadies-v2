@@ -21,9 +21,9 @@ export class Payement{
   @Column()
   uuid: string;
   @Column()
-  installmentId: number;
-  @Column()
   amount: number; 
+  @Column()
+  installmentId:number
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   paymentDate: Date;
 

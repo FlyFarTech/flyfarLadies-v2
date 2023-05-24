@@ -81,7 +81,7 @@ import { oauthModule } from './userProfile/oauth.module';
         Booking,
         socialimageenity,
       ],
-      synchronize:false
+      synchronize:true
     }),
     UserModule,
     TourpackageModule,

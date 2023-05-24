@@ -4,6 +4,7 @@ import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
 import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository, Repository, getConnection } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+
 export enum BookingStatus {
    HOLD = 'hold',
    APPROVED = 'approved',
@@ -24,6 +25,8 @@ export class Booking{
    UpdatedAt:Date
    @Column()
    Email:string
+   @Column({type:'simple-array'})
+   installment:string
    @Column()
    userid:string
    @Column()

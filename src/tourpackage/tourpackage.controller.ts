@@ -662,7 +662,7 @@ async getTourPackages(
       const VisitedImagePath = await this.s3service.Addimage(file)
       const newalbum = new VisitedPlace();
       newalbum.VisitedImagePath = VisitedImagePath
-      newalbum.PlaceName = req.body.PlaceName
+      // newalbum.PlaceName = req.body.PlaceName
       await this.visitedplaceRepo.save({ ...newalbum, tourpackage })
     }
     return res.status(HttpStatus.OK).send({ status: "success", message: "visited Image Added Successfully", Tourpackage })

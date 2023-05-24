@@ -8,6 +8,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
+import { Installment } from 'src/tourpackage/entities/installment.entity';
 var converter = require('number-to-words');
 
 @Injectable()
@@ -22,12 +23,13 @@ export class BookingService {
       private PayementRepository: Repository<Payement>,
       @InjectRepository(User)
       private UserRepository: Repository<User>,
+      @InjectRepository(Installment)
+      private InstallmentRepo: Repository<Installment>,
    ) {}
 
    async BookTravelpackage(Id:string, bookingDto: CreateBookingDto,Email:string ){
     const {travelers} =bookingDto
-    const tourPackage = await this.tourPackageRepository.findOne({ where: { Id } })
-
+    const tourPackage = await this.tourPackageRepository.findOne({ where: { Id }, relations:['installments'] })
     if (!tourPackage) {
        throw new HttpException(
           `TourPackage not found with this id=${Id}`,
@@ -56,8 +58,6 @@ export class BookingService {
     await this.tourPackageRepository.save(tourPackage);
     }
     
-  
-    
     const userprofile = await this.UserRepository.findOne({ where: {Email}})
     const arrayoftravlers =[]
     let TotalPrice:number = 0
@@ -84,29 +84,25 @@ export class BookingService {
        );  
       } 
     }
-
-
-    const newbooking = await this.bookingRepository.create({
-       tourPackage,
-       travelers: arrayoftravlers,
-       TotalPrice:TotalPrice,
-       Email:userprofile.Email,
-       Name:userprofile.Name,
-       Wallet:userprofile.Wallet,
-       Mobile:userprofile.Mobile,
-       WhatsApp:userprofile.WhatsApp,
-       FaceBookId:userprofile.FaceBookId,
-       LinkedIn:userprofile.LinkedIn,
-       MainTitle:tourPackage.MainTitle,
-       SubTitle:tourPackage.SubTitle,
-       userid:userprofile.uuid
-    })
+    const newbooking = new Booking(); // Create a new booking entity
+    newbooking.tourPackage = tourPackage; // Assign the tourPackage to the booking
+    newbooking.travelers = arrayoftravlers;
+    newbooking.TotalPrice = TotalPrice;
+    newbooking.Email = userprofile.Email;
+    newbooking.Name = userprofile.Name;
+    newbooking.Wallet = userprofile.Wallet;
+    newbooking.Mobile = userprofile.Mobile;
+    newbooking.WhatsApp = userprofile.WhatsApp;
+    newbooking.FaceBookId = userprofile.FaceBookId;
+    newbooking.LinkedIn = userprofile.LinkedIn;
+    newbooking.MainTitle = tourPackage.MainTitle;
+    newbooking.SubTitle = tourPackage.SubTitle;
+    newbooking.userid = userprofile.uuid;
     const savebooking= await this.bookingRepository.save(newbooking)
     await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
     return savebooking;
  
  }
-
 
    async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
     const booking = await this.bookingRepository.findOne({where:{Bookingid}})
@@ -118,33 +114,33 @@ export class BookingService {
     if (user.Wallet < booking.TotalPrice) {
       throw new HttpException('Insufficient funds in wallet.',HttpStatus.BAD_REQUEST);
     }
-    const lastPayment = await this.PayementRepository.createQueryBuilder('payment')
-      .where('payment.uuid = :uuid', { uuid })
-      .andWhere('payment.tourPackageId = :tourPackageId', { tourPackageId })
-      .orderBy('payment.installmentId', 'DESC')
+    const lastPayment = await this.bookingRepository.createQueryBuilder('booking')
+      .where('booking.uuid = :uuid', { uuid })
+      .andWhere('booking.tourPackageId = :tourPackageId', { tourPackageId })
+      .orderBy('booking.tourpackage.installmentId', 'DESC')
       .getOne();
   
-    let nextInstallmentId = 1;
-    if (lastPayment) {
-      if (lastPayment.installmentId >= installmentCount) {
-        throw new Error('All installments have been paid for this booking.');
-      }
-      nextInstallmentId = lastPayment.installmentId + 1;
-    }
+    // let nextInstallmentId = 1;
+    // if (lastPayment) {
+    //   if (lastPayment.installmentId >= installmentCount) {
+    //     throw new Error('All installments have been paid for this booking.');
+    //   }
+    //   nextInstallmentId = lastPayment.installmentId + 1;
+    // }
   
-    for (let i = nextInstallmentId; i <= installmentCount; i++) {
-      user.Wallet -= installmentAmount;
-      const payment = new Payement();
-      payment.uuid = uuid;
-      payment.tourPackageId = tourPackageId;
-      payment.installmentId = i;
-      payment.amount = installmentAmount;
-      await this.PayementRepository.save(payment);
-    }
-    user.Wallet = Math.round(user.Wallet * 100) / 100;
-    await this.UserRepository.save(user);
-    booking.status =BookingStatus.APPROVED
-    await this.bookingRepository.save(booking);
+    // for (let i = nextInstallmentId; i <= installmentCount; i++) {
+    //   user.Wallet -= installmentAmount;
+    //   const payment = new Payement();
+    //   payment.uuid = uuid;
+    //   payment.tourPackageId = tourPackageId;
+    //   payment.installmentId = i;
+    //   payment.amount = installmentAmount;
+    //   await this.PayementRepository.save(payment);
+    // }
+    // user.Wallet = Math.round(user.Wallet * 100) / 100;
+    // await this.UserRepository.save(user);
+    // booking.status =BookingStatus.APPROVED
+    // await this.bookingRepository.save(booking);
   }
   
 

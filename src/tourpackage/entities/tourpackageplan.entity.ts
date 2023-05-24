@@ -8,6 +8,9 @@ export class tourpackageplan {
   dayId: number;
   @IsNotEmpty()
   @Column({length:1000})
+  Title: string;
+  @IsNotEmpty()
+  @Column({length:1000})
   dayplan: string;
   @ManyToOne(()=>Tourpackage, (tourpackages)=>tourpackages.tourpackageplans)
   @JoinColumn({ name: 'Tour_package_plan' })
