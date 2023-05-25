@@ -1,7 +1,8 @@
 
 import { Traveller } from 'src/Traveller/entities/traveller.entity';
+import { Installment } from 'src/tourpackage/entities/installment.entity';
 import { Tourpackage } from 'src/tourpackage/entities/tourpackage.entity';
-import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository, Repository, getConnection } from 'typeorm';
+import { ManyToOne, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, Column, BeforeInsert, getRepository, Repository, getConnection, OneToMany } from 'typeorm';
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 
@@ -9,10 +10,10 @@ export enum BookingStatus {
    HOLD = 'hold',
    APPROVED = 'approved',
    REJECTED = 'rejected',
+   PARTIAL = 'partial',
  }
 
 let userCount = Math.floor(Math.random() * 10000);
-
 @Entity()
 export class Booking{
    @PrimaryGeneratedColumn('uuid')
@@ -63,4 +64,6 @@ export class Booking{
    @ManyToMany(() => Traveller)
    @JoinTable({name: 'Traveler_bookings'})
    travelers: Traveller[];
+   @OneToMany(() => Installment, (installment) => installment.booking)
+   installments: Installment[];
 }

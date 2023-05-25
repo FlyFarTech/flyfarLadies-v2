@@ -8,7 +8,7 @@ import { CreateBookingDto } from './dto/booking.dto';
 import * as nodemailer from 'nodemailer'
 import { User } from 'src/userProfile/entitties/user.entity';
 import { Payement } from './entity/payement.entity';
-import { Installment } from 'src/tourpackage/entities/installment.entity';
+import { Installment, InstallmentStatus } from 'src/tourpackage/entities/installment.entity';
 var converter = require('number-to-words');
 
 @Injectable()
@@ -99,50 +99,71 @@ export class BookingService {
     newbooking.SubTitle = tourPackage.SubTitle;
     newbooking.userid = userprofile.uuid;
     const savebooking= await this.bookingRepository.save(newbooking)
+ 
+
+
+    for (let i = 0; i < 3; i++) {
+      const installment = new Installment();
+      installment.TotalAmount = TotalPrice; 
+      const installmentAmount = TotalPrice / 3;
+      installment.booking = savebooking;
+      installment.Amount = installmentAmount;
+      installment.InstallmentId = i + 1; // Set the installment number
+      await this.InstallmentRepo.save(installment);
+    }
+  
     await this.sendBookingDetailsToUser(savebooking,Email,arrayoftravlers);
     return savebooking;
- 
- }
-
-   async confirmBookingWithInstallment(uuid:string, Bookingid: string): Promise<void> {
-    const booking = await this.bookingRepository.findOne({where:{Bookingid}})
-    const tourPackageId = booking.packageId
-    const installmentCount =3
-    const installmentAmount = booking.TotalPrice/installmentCount
-    const user = await this.UserRepository.findOne({where:{uuid}})
-  
-    if (user.Wallet < booking.TotalPrice) {
-      throw new HttpException('Insufficient funds in wallet.',HttpStatus.BAD_REQUEST);
-    }
-    const lastPayment = await this.bookingRepository.createQueryBuilder('booking')
-      .where('booking.uuid = :uuid', { uuid })
-      .andWhere('booking.tourPackageId = :tourPackageId', { tourPackageId })
-      .orderBy('booking.tourpackage.installmentId', 'DESC')
-      .getOne();
-  
-    // let nextInstallmentId = 1;
-    // if (lastPayment) {
-    //   if (lastPayment.installmentId >= installmentCount) {
-    //     throw new Error('All installments have been paid for this booking.');
-    //   }
-    //   nextInstallmentId = lastPayment.installmentId + 1;
-    // }
-  
-    // for (let i = nextInstallmentId; i <= installmentCount; i++) {
-    //   user.Wallet -= installmentAmount;
-    //   const payment = new Payement();
-    //   payment.uuid = uuid;
-    //   payment.tourPackageId = tourPackageId;
-    //   payment.installmentId = i;
-    //   payment.amount = installmentAmount;
-    //   await this.PayementRepository.save(payment);
-    // }
-    // user.Wallet = Math.round(user.Wallet * 100) / 100;
-    // await this.UserRepository.save(user);
-    // booking.status =BookingStatus.APPROVED
-    // await this.bookingRepository.save(booking);
   }
-  
+
+  async confirmBookingWithInstallment(Bookingid: string, installmentId: number, uuid: string) {
+    const booking = await this.bookingRepository.findOne({where:{Bookingid}, relations: ['installments', 'tourPackage'] }, );
+    if (!booking) {
+      throw new HttpException('Booking not found', HttpStatus.BAD_REQUEST);
+    }
+
+    const installment = (await booking.tourPackage.installments).find(installment => installment.InstallmentId === installmentId);
+    if (!installment) {
+      throw new  HttpException('Installment not found',HttpStatus.BAD_REQUEST,);
+    }
+    // Check user's wallet balance
+    const user = await this.UserRepository.findOne({where:{uuid}});
+    if (!user) {
+      throw new HttpException('User not found',HttpStatus.BAD_REQUEST,);
+    }
+
+    const totalPayment = installment.Amount
+    if (user.Wallet < totalPayment) {
+      throw new HttpException('Insufficient wallet balance',HttpStatus.BAD_REQUEST,);
+    }
+
+    user.Wallet -= totalPayment;
+    installment.status =InstallmentStatus.PAID
+    await this.InstallmentRepo.save(installment)
+    await this.UserRepository.save(user);
+    const installmentIndex = booking.installments.findIndex(installment => installment.InstallmentId === installmentId);
+    const nextInstallment = booking.installments[installmentIndex + 1];
+    if (nextInstallment && nextInstallment.status !== InstallmentStatus.PENDING) {
+      throw new HttpException('The next installment is not available for payment',HttpStatus.BAD_REQUEST);
+    }
+
+    if (installmentIndex === booking.installments.length - 1 && installment.status === InstallmentStatus.PAID) {
+      booking.status = BookingStatus.APPROVED;
+    }
+     else {
+      booking.status = BookingStatus.PARTIAL;
+    }
+
+    if(booking.status === BookingStatus.APPROVED && !nextInstallment){
+      throw new HttpException('No installments remaining',HttpStatus.BAD_REQUEST);
+    }
+    await this.bookingRepository.save(booking);
+    
+    const remainingAmount = user.Wallet;
+    return { totalPayment, remainingAmount };
+  }
+
+
 
    async sendBookingDetailsToUser(booking: Booking,Email:string, travelers: Traveller[] ) {
       const { Bookingid, tourPackage, TotalPrice } = booking;
@@ -1388,7 +1409,6 @@ export class BookingService {
           </body>
         </html>
         `
-     
       }
       await transporter.sendMail(mailOptions,(error, info) => {
          if (error) {

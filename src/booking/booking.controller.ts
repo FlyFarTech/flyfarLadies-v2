@@ -26,14 +26,15 @@ export class BookingController {
     await this.bookingService.BookTravelpackage(Id,bookingDto,uuid)
     return res.status(HttpStatus.OK).send({ status: "success", message: "Booking sucessfull"})
   }
-   @Post(':bookingId/confirm-with-installment')
+   @Post(':Bookingid/confirm-with-installment')
   async confirmBookingWithInstallment(
     @Param('Bookingid') Bookingid:string,
+    @Body('installmentId') installmentId: number,
     uuid:string,
     @Req() req: Request,
     @Res() res: Response) { 
-    await this.bookingService.confirmBookingWithInstallment(Bookingid,uuid)
-    return res.status(HttpStatus.OK).send({ status: "success", message: "Payment Successfull sucessfull"})
+    await this.bookingService.confirmBookingWithInstallment(Bookingid,installmentId,uuid)
+    return res.status(HttpStatus.OK).send({ status: "success", message: `${installmentId}nd installment Payment Successfull`})
   }
 
 
