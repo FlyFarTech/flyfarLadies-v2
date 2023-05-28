@@ -11,6 +11,8 @@ import { Payement } from './entity/payement.entity';
 import { Installment, InstallmentStatus } from 'src/tourpackage/entities/installment.entity';
 var converter = require('number-to-words');
 
+
+
 @Injectable()
 export class BookingService {
    constructor(@InjectRepository(Tourpackage)
@@ -153,12 +155,12 @@ export class BookingService {
      else {
       booking.status = BookingStatus.PARTIAL;
     }
-
-    if(booking.status === BookingStatus.APPROVED && !nextInstallment){
-      throw new HttpException('No installments remaining',HttpStatus.BAD_REQUEST);
-    }
-    await this.bookingRepository.save(booking);
     
+    await this.bookingRepository.save(booking);
+    if(booking.status === BookingStatus.APPROVED){
+      throw new HttpException('Your Booking is Confirmed',HttpStatus.BAD_REQUEST);
+    }
+  
     const remainingAmount = user.Wallet;
     return { totalPayment, remainingAmount };
   }
