@@ -336,13 +336,13 @@ export class userProfileController {
    }
 
 
-   @Delete(':id')
-   async DeleteTraveller(
-      @Param('id') id: string,
+   @Delete(':uuid')
+   async DeleteUser(
+      @Param('uuid') uuid: string,
       @Req() req: Request,
       @Res() res: Response) {
-      await this.UserServices.DeleteProfile(id)
-      return res.status(HttpStatus.OK).json({ message: 'traveller has deleted' });
+      await this.UserServices.DeleteProfile(uuid)
+      return res.status(HttpStatus.OK).json({ status:"success", message: 'User has deleted' });
    }
 
 

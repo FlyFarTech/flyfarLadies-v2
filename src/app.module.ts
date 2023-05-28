@@ -82,6 +82,7 @@ import { oauthModule } from './userProfile/oauth.module';
         socialimageenity,
       ],
       synchronize:false
+
     }),
     UserModule,
     TourpackageModule,
