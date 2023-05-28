@@ -61,34 +61,20 @@ export class BookingController {
 async MyAllBookings(
   @Param('userid') userid: string
 ) {
-  const user = await this.bookingRepository.findOne({ where: { userid } });
+  const queryBuilder = this.bookingRepository.createQueryBuilder('booking')
+    .leftJoinAndSelect('booking.tourPackage', 'tourPackage')
+    .leftJoinAndSelect('tourPackage.vistitedImages', 'vistitedImages')
+    // .leftJoinAndSelect('tourPackage.exclusions', 'exclusions')
+    // .leftJoinAndSelect('tourPackage.PackageInclusions', 'packageInclusions')
+    .leftJoinAndSelect('tourPackage.BookingPolicys', 'bookingPolicys')
+    .leftJoinAndSelect('tourPackage.highlights', 'highlights')
+    .leftJoinAndSelect('tourPackage.refundpolicys', 'refundPolicys')
+    // .leftJoinAndSelect('tourPackage.tourpackageplans', 'tourPackagePlans')
+    .leftJoinAndSelect('tourPackage.installments', 'installments')
+    .leftJoinAndSelect('booking.travelers', 'travelers')
+    .where('booking.userid = :userid', { userid });
 
-  const joinAliases = [
-    { property: 'tourPackage', alias: 'tourPackage' },
-    { property: 'tourPackage.vistitedImages', alias: 'vistitedImages' },
-    { property: 'tourPackage.exclusions', alias: 'exclusions' },
-    { property: 'tourPackage.PackageInclusions', alias: 'packageInclusions' },
-    { property: 'tourPackage.BookingPolicys', alias: 'bookingPolicys' },
-    { property: 'tourPackage.highlights', alias: 'highlights' },
-    { property: 'tourPackage.refundpolicys', alias: 'refundPolicys' },
-    { property: 'tourPackage.tourpackageplans', alias: 'tourPackagePlans' },
-    { property: 'tourPackage.installments', alias: 'installments' },
-    { property: 'booking.travelers', alias: 'travelers' }
-    // Add more join aliases here
-  ];
-
-  const queryBuilder = this.bookingRepository.createQueryBuilder('booking');
-  for (const { property, alias } of joinAliases) {
-    if (property !== 'tourPackage') {
-      queryBuilder.leftJoinAndSelect(property, alias);
-    } else {
-      queryBuilder.leftJoinAndSelect('booking.tourPackage', alias);
-    }
-  }
-
-  const bookedPackages = await queryBuilder
-    .where('booking.userid = :userid', { userid })
-    .getMany();
+  const bookedPackages = await queryBuilder.getMany();
 
   if (bookedPackages.length === 0) {
     throw new NotFoundException('You dont have any booking');
