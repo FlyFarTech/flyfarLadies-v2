@@ -501,8 +501,7 @@ export class UserServices {
    // update user
    // Delete User
    async DeleteProfile(uuid: string) {
-      const Profile = await this.userRepository.delete(uuid)
-      return Profile;
+     await this.userRepository.delete(uuid) 
    }
 
    
