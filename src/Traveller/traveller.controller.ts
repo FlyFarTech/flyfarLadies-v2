@@ -8,8 +8,9 @@ import { Traveller } from "./entities/traveller.entity";
 import { Repository } from "typeorm/repository/Repository";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GCSStorageService } from "src/s3/s3.service";
+import { ApiTags } from '@nestjs/swagger';
 
-
+@ApiTags("Traveller Module")
 @Controller('Traveller')
 export class TravellerController {
    constructor(@InjectRepository(Traveller) private tarvellerRepository: Repository<Traveller>,
@@ -18,7 +19,7 @@ export class TravellerController {
       ) { }
 
    //Add Traveller
-   @Post('addnewtraveller')
+   @Post()
    @UseInterceptors(
       FilesInterceptor('passportimage',5
    ))
