@@ -38,20 +38,22 @@ import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
 import { oauthModule } from './userProfile/oauth.module';
+import { AskquestionModule } from './askquestion/askquestion.module';
+import { AskQuestion } from './askquestion/Entity/askquestion.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
     TypeOrmModule.forRoot({
       type:'mysql',
-      username:"flyfarin_fflv2",
-      password: "123Next2$",
-      host: "flyfarint.com",
-      database:"flyfarin_fflv2",
+      // username:"flyfarin_fflv2",
+      // password: "123Next2$",
+      // host: "flyfarint.com",
+      // database:"flyfarin_fflv2",
 
-      // username:process.env.LOCAL_USERNAME,
-      // password: process.env.LOCAL_PASSWORD,
-      // host : process.env.LOCAL_HOST,
-      // database:process.env.LOCAL_DATABASE,
+      username:process.env.LOCAL_USERNAME,
+      password: process.env.LOCAL_PASSWORD,
+      host : process.env.LOCAL_HOST,
+      database:process.env.LOCAL_DATABASE,
 
       port:3306,
       entities: [Admin,
@@ -80,6 +82,7 @@ import { oauthModule } from './userProfile/oauth.module';
         Installment,
         Booking,
         socialimageenity,
+        AskQuestion
       ],
       synchronize:false
     }),
@@ -92,7 +95,8 @@ import { oauthModule } from './userProfile/oauth.module';
     BookingModule,
     BlogModule,
     TestimonialModule,
-    oauthModule
+    oauthModule,
+    AskquestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
