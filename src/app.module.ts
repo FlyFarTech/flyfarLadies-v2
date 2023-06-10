@@ -38,6 +38,8 @@ import { Testimonial } from './testimonial/entities/testimonial.entity';
 import { PressCoverages } from './blog/entities/press.entity';
 import { Payement } from './booking/entity/payement.entity';
 import { oauthModule } from './userProfile/oauth.module';
+import { AskQuestion } from './askquestion/Entity/askquestion.entity';
+import { AskquestionModule } from './askquestion/askquestion.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal:true, envFilePath: '.env', }),
@@ -80,6 +82,7 @@ import { oauthModule } from './userProfile/oauth.module';
         Installment,
         Booking,
         socialimageenity,
+        AskQuestion
       ],
       synchronize:false
 
@@ -93,7 +96,8 @@ import { oauthModule } from './userProfile/oauth.module';
     BookingModule,
     BlogModule,
     TestimonialModule,
-    oauthModule
+    oauthModule,
+    AskquestionModule
   ],
   controllers: [AppController],
   providers: [AppService],
