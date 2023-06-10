@@ -15,14 +15,15 @@ export class AskquestionController {
      @Body() body,
      @Req() req: Request,
      @Res() res: Response){
-      const {FullName,Email,Phone,TourType,Traveller}=req.body
+      const {FullName,Email,Phone,TourType,Traveller,Date,Description}=req.body
       const question = new AskQuestion()
       question.FullName =FullName
-      question.Date = new Date
+      question.Date = Date
       question.Email =Email
       question.Phone =Phone
       question.TourType =TourType
       question.Traveller =Traveller
+      question.Description =Description
       await this.askQuestionRepository.save({...question})
       return res.status(HttpStatus.CREATED).json({
         status: 'success',

@@ -13,6 +13,8 @@ export class AskQuestion{
    @Column()
    TourType:string
    @Column()
+   Description:string
+   @Column()
    Date:Date
    @Column()
    Traveller:number
