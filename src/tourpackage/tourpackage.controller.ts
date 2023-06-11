@@ -102,9 +102,6 @@ export class TourpackageController {
 
 
 
-
-
-
 async AddNewInstallment(Id: string, CreateInstallmentDto:CreateInstallmentDto[]){
   const tourpackage = await this.TourpackageRepo.findOneBy({Id})
   if (!tourpackage) {
